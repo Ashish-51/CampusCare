@@ -68,44 +68,20 @@
     }
 
     @media print {
-      body {
-        background: #ffffff !important;
-        color: #000000 !important;
-        font-size: 12pt !important;
+      body * {
+        visibility: hidden !important;
       }
-      .sidebar, .top-navbar, .theme-toggle-btn, .mobile-toggle, #refresh-btn, #print-ticket-btn, #download-pdf-btn, .logout-btn, a[href="./dashboard.html"] {
-        display: none !important;
+      #print-document-wrapper, #print-document-wrapper * {
+        visibility: visible !important;
       }
-      .app-container {
-        display: block !important;
-      }
-      .main-content {
-        margin-left: 0 !important;
-        padding: 0 !important;
+      #print-document-wrapper {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
         width: 100% !important;
-      }
-      .page-body {
+        margin: 0 !important;
         padding: 0 !important;
-      }
-      .details-grid {
-        display: block !important;
-      }
-      .card {
-        border: 1px solid #ccc !important;
-        box-shadow: none !important;
-        margin-bottom: 1.25rem !important;
-        page-break-inside: avoid;
-      }
-      .ticket-id {
-        border: 1px solid #000 !important;
-        color: #000 !important;
-        background: transparent !important;
-        font-weight: bold !important;
-      }
-      .badge {
-        border: 1px solid #333 !important;
-        background: transparent !important;
-        color: #000 !important;
+        background: #ffffff !important;
       }
     }
   </style>
