@@ -13,6 +13,7 @@ import {
   query, 
   where, 
   getDocs,
+  onSnapshot,
   serverTimestamp
 } from '../config/firebase-config.js';
 import { generateTicketId } from '../utils/formatters.js';
@@ -505,5 +506,85 @@ export async function getAllFeedbacks() {
       satisfactionRate
     }
   };
+}
+
+/**
+ * Real-Time Firestore Listener for Student Complaints
+ */
+export function listenToStudentComplaints(studentId, callback) {
+  try {
+    const q = query(collection(db, 'complaints'), where('studentId', '==', studentId));
+    return onSnapshot(q, (snap) => {
+      if (!snap.empty) {
+        const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        callback(list);
+      } else {
+        const demo = getDemoComplaints().filter(c => c.studentId === studentId || studentId === 'demo-student-id');
+        callback(demo);
+      }
+    }, (err) => {
+      console.warn('Student complaints real-time listener warning (using fallback):', err.message);
+      const demo = getDemoComplaints().filter(c => c.studentId === studentId || studentId === 'demo-student-id');
+      callback(demo);
+    });
+  } catch (err) {
+    console.warn('Real-time listener setup error (using fallback):', err.message);
+    const demo = getDemoComplaints().filter(c => c.studentId === studentId || studentId === 'demo-student-id');
+    callback(demo);
+    return () => {};
+  }
+}
+
+/**
+ * Real-Time Firestore Listener for All Master Complaints (Admin View)
+ */
+export function listenToAllComplaints(callback) {
+  try {
+    const q = query(collection(db, 'complaints'));
+    return onSnapshot(q, (snap) => {
+      if (!snap.empty) {
+        const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        callback(list);
+      } else {
+        callback(getDemoComplaints());
+      }
+    }, (err) => {
+      console.warn('All complaints real-time listener warning (using fallback):', err.message);
+      callback(getDemoComplaints());
+    });
+  } catch (err) {
+    console.warn('Real-time all complaints listener error (using fallback):', err.message);
+    callback(getDemoComplaints());
+    return () => {};
+  }
+}
+
+/**
+ * Real-Time Firestore Listener for a Single Complaint Document
+ */
+export function listenToComplaintDetails(complaintId, callback) {
+  try {
+    const docRef = doc(db, 'complaints', complaintId);
+    return onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        callback({ id: docSnap.id, ...docSnap.data() });
+      } else {
+        const demoList = getDemoComplaints();
+        const found = demoList.find(c => c.id === complaintId || c.ticketId === complaintId);
+        callback(found || null);
+      }
+    }, (err) => {
+      console.warn('Single complaint real-time listener warning (using fallback):', err.message);
+      const demoList = getDemoComplaints();
+      const found = demoList.find(c => c.id === complaintId || c.ticketId === complaintId);
+      callback(found || null);
+    });
+  } catch (err) {
+    console.warn('Real-time single complaint listener error (using fallback):', err.message);
+    const demoList = getDemoComplaints();
+    const found = demoList.find(c => c.id === complaintId || c.ticketId === complaintId);
+    callback(found || null);
+    return () => {};
+  }
 }
 

@@ -3,7 +3,7 @@
    ========================================================================== */
 
 import { requireAuth, resolveUrl } from '../utils/guards.js';
-import { getStudentComplaints, searchStudentComplaints } from '../services/complaint.service.js';
+import { getStudentComplaints, listenToStudentComplaints } from '../services/complaint.service.js';
 import { formatDate, formatTimeAgo, renderStatusBadge, renderUrgencyBadge } from '../utils/formatters.js';
 import { initNotificationDropdown } from '../utils/notification-dropdown.js';
 
@@ -14,8 +14,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { user, profile } = await requireAuth('student');
     renderProfileSummary(profile);
     initNotificationDropdown(user.uid);
-    await loadComplaints(user.uid);
-    renderNotificationsFeed(allComplaints);
+    
+    // Subscribe to Firestore Real-Time Updates
+    listenToStudentComplaints(user.uid, (updatedList) => {
+      allComplaints = updatedList;
+      renderMetrics(allComplaints);
+      renderComplaintsTable(allComplaints);
+      renderNotificationsFeed(allComplaints);
+    });
+
     initFilterListeners();
   } catch (err) {
     console.error('Student dashboard init error:', err);

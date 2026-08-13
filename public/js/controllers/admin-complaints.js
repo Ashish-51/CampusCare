@@ -3,7 +3,7 @@
    ========================================================================== */
 
 import { requireAuth, resolveUrl } from '../utils/guards.js';
-import { getAllComplaints, updateComplaintStatus } from '../services/complaint.service.js';
+import { getAllComplaints, updateComplaintStatus, listenToAllComplaints } from '../services/complaint.service.js';
 import { formatDate, renderStatusBadge, renderUrgencyBadge } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
@@ -16,20 +16,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     const { profile } = await requireAuth('admin');
     adminUserObj = profile;
-    await loadComplaints();
+    
+    // Subscribe to Firestore Real-Time Stream
+    listenToAllComplaints((updatedList) => {
+      currentComplaintsList = updatedList;
+      renderComplaintsTable(currentComplaintsList);
+    });
+
     initFilterEvents();
     initModalEvents();
   } catch (err) {
     console.error('Admin complaints list init error:', err);
   }
 });
-
-async function loadComplaints() {
-  showLoader('Loading master complaint database...');
-  currentComplaintsList = await getAllComplaints();
-  hideLoader();
-  renderComplaintsTable(currentComplaintsList);
-}
 
 function renderComplaintsTable(list) {
   const tbody = document.getElementById('admin-complaints-tbody');

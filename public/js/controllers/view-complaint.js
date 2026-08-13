@@ -3,7 +3,7 @@
    ========================================================================== */
 
 import { requireAuth, resolveUrl } from '../utils/guards.js';
-import { getComplaintDetails, submitComplaintFeedback } from '../services/complaint.service.js';
+import { getComplaintDetails, submitComplaintFeedback, listenToComplaintDetails } from '../services/complaint.service.js';
 import { formatDate, renderStatusBadge, renderUrgencyBadge } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
@@ -30,7 +30,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    await loadComplaintDetails(profile);
+    // Real-Time Firestore Listener for Single Complaint Document
+    listenToComplaintDetails(currentComplaintId, (updatedComplaint) => {
+      if (updatedComplaint) {
+        loadedComplaintData = updatedComplaint;
+        renderComplaintDetailsUI(updatedComplaint, profile);
+      }
+    });
 
     const refreshBtn = document.getElementById('refresh-btn');
     if (refreshBtn) {
@@ -126,6 +132,10 @@ async function loadComplaintDetails(currentProfile) {
     return;
   }
 
+  renderComplaintDetailsUI(complaint, currentProfile);
+}
+
+function renderComplaintDetailsUI(complaint, currentProfile) {
   loadedComplaintData = complaint;
 
   // 1. Complaint ID (Ticket ID)
