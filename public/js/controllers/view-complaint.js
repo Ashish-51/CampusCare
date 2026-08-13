@@ -46,6 +46,36 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
+    const downloadPdfBtn = document.getElementById('download-pdf-btn');
+    if (downloadPdfBtn) {
+      downloadPdfBtn.addEventListener('click', async () => {
+        const ticketIdEl = document.getElementById('complaint-ticket-id');
+        const ticketId = ticketIdEl ? ticketIdEl.textContent.trim() : 'Complaint_Ticket';
+        const element = document.querySelector('.details-grid') || document.querySelector('.page-body');
+
+        if (window.html2pdf && element) {
+          showToast('Generating PDF document download...', 'info');
+          const opt = {
+            margin:       [0.4, 0.4, 0.4, 0.4],
+            filename:     `${ticketId}_Summary.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+          };
+          try {
+            await html2pdf().set(opt).from(element).save();
+            showToast('PDF summary downloaded successfully!', 'success');
+          } catch (err) {
+            console.error('PDF export error:', err);
+            showToast('Failed to export PDF file.', 'error');
+          }
+        } else {
+          showToast('PDF generator library not loaded. Triggering browser print dialog.', 'warning');
+          window.print();
+        }
+      });
+    }
+
   } catch (err) {
     console.error('View complaint controller error:', err);
   }
