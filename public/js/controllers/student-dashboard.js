@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initNotificationDropdown(user.uid);
     await loadComplaints(user.uid);
     renderNotificationsFeed(allComplaints);
-    initFilterListeners(user.uid);
+    initFilterListeners();
   } catch (err) {
     console.error('Student dashboard init error:', err);
   }
@@ -182,23 +182,39 @@ function renderNotificationsFeed(complaints) {
 }
 
 /**
- * Filter and Search Handlers using Firestore queries
+ * Filter and Search Handlers for Student Dashboard
  */
-function initFilterListeners(studentId) {
+function initFilterListeners() {
   const statusFilter = document.getElementById('status-filter');
   const categoryFilter = document.getElementById('category-filter');
   const searchInput = document.getElementById('search-input');
 
-  const applyFilters = async () => {
+  const applyFilters = () => {
     const statusVal = statusFilter ? statusFilter.value : 'ALL';
     const catVal = categoryFilter ? categoryFilter.value : 'ALL';
-    const queryVal = searchInput ? searchInput.value.trim() : '';
+    const queryVal = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
-    const filtered = await searchStudentComplaints(studentId, {
-      searchQuery: queryVal,
-      category: catVal,
-      status: statusVal
-    });
+    let filtered = allComplaints;
+
+    if (catVal && catVal !== 'ALL') {
+      filtered = filtered.filter(c => c.category === catVal);
+    }
+
+    if (statusVal && statusVal !== 'ALL') {
+      filtered = filtered.filter(c => c.status === statusVal);
+    }
+
+    if (queryVal) {
+      filtered = filtered.filter(c => 
+        (c.ticketId && c.ticketId.toLowerCase().includes(queryVal)) ||
+        (c.title && c.title.toLowerCase().includes(queryVal)) ||
+        (c.description && c.description.toLowerCase().includes(queryVal)) ||
+        (c.location && c.location.toLowerCase().includes(queryVal)) ||
+        (c.category && c.category.toLowerCase().includes(queryVal)) ||
+        (c.urgency && c.urgency.toLowerCase().includes(queryVal)) ||
+        (c.status && c.status.toLowerCase().includes(queryVal))
+      );
+    }
 
     renderComplaintsTable(filtered);
   };
