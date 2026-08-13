@@ -39,6 +39,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
+    const printBtn = document.getElementById('print-ticket-btn');
+    if (printBtn) {
+      printBtn.addEventListener('click', () => {
+        window.print();
+      });
+    }
+
   } catch (err) {
     console.error('View complaint controller error:', err);
   }

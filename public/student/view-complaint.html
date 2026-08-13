@@ -66,6 +66,48 @@
     @media (max-width: 1100px) {
       .details-grid { grid-template-columns: 1fr; }
     }
+
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 12pt !important;
+      }
+      .sidebar, .top-navbar, .theme-toggle-btn, .mobile-toggle, #refresh-btn, #print-ticket-btn, .logout-btn, a[href="./dashboard.html"] {
+        display: none !important;
+      }
+      .app-container {
+        display: block !important;
+      }
+      .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+      .page-body {
+        padding: 0 !important;
+      }
+      .details-grid {
+        display: block !important;
+      }
+      .card {
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+        margin-bottom: 1.25rem !important;
+        page-break-inside: avoid;
+      }
+      .ticket-id {
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        background: transparent !important;
+        font-weight: bold !important;
+      }
+      .badge {
+        border: 1px solid #333 !important;
+        background: transparent !important;
+        color: #000 !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -113,11 +155,18 @@
       </header>
 
       <div class="page-body">
-        <div style="margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+        <div style="margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
           <a href="./dashboard.html" style="color:var(--text-muted); font-size:0.9rem; font-weight:600;">
             <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
           </a>
-          <button class="btn btn-outline btn-sm" id="refresh-btn"><i class="fa-solid fa-rotate"></i> Refresh Firestore Data</button>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button class="btn btn-primary btn-sm" id="print-ticket-btn">
+              <i class="fa-solid fa-print"></i> Print Ticket / Save PDF
+            </button>
+            <button class="btn btn-outline btn-sm" id="refresh-btn">
+              <i class="fa-solid fa-rotate"></i> Refresh Firestore Data
+            </button>
+          </div>
         </div>
 
         <div class="details-grid">
