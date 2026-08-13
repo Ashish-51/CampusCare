@@ -114,10 +114,6 @@ CampusCare/
    ```
    http://localhost:3000
    ```
-
-4. **Quick Demo Logins**:
-   On `login.html`, click the **Auto-fill Student** or **Auto-fill Admin** demo buttons for instant testing.
-
 ---
 
 ## 🛡️ Firebase Deployment
