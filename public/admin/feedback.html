@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Ratings & Reviews - CampusCare Admin</title>
+  
+  <!-- Font Awesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/admin.css">
+
+  <style>
+    .rating-summary-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .rating-score-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .big-score {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .score-stars {
+      color: #f59e0b;
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+
+    .distribution-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dist-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.65rem;
+      font-size: 0.88rem;
+    }
+
+    .dist-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .dist-label {
+      width: 60px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .dist-bar-wrapper {
+      flex: 1;
+      height: 10px;
+      background: var(--border-light);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .dist-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      border-radius: var(--radius-full);
+      transition: width var(--transition-normal);
+    }
+
+    .dist-count {
+      width: 45px;
+      text-align: right;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 992px) {
+      .rating-summary-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <span class="sidebar-brand">CampusCare Admin</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="./dashboard.html" class="nav-item">
+          <i class="fa-solid fa-chart-line"></i> Analytics Dashboard
+        </a>
+        <a href="./complaints.html" class="nav-item">
+          <i class="fa-solid fa-folder-closed"></i> Manage Complaints
+        </a>
+        <a href="./feedback.html" class="nav-item active">
+          <i class="fa-solid fa-star-half-stroke"></i> Student Ratings
+        </a>
+        <a href="./profile.html" class="nav-item">
+          <i class="fa-solid fa-user-gear"></i> Admin Profile
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.1);">
+          <i class="fa-solid fa-right-from-bracket"></i> Log Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="top-navbar">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button class="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
+          <div class="navbar-title">
+            <h1>Student Ratings & Satisfaction Reviews</h1>
+          </div>
+        </div>
+        <div class="navbar-actions">
+          <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
+        </div>
+      </header>
+
+      <div class="page-body">
+        
+        <!-- Rating Summary & Star Distribution Grid -->
+        <div class="rating-summary-grid">
+          
+          <!-- Left: Big Rating Score -->
+          <div class="rating-score-box">
+            <div class="big-score" id="stat-avg-score">0.0</div>
+            <div class="score-stars" id="stat-avg-stars">★★★★★</div>
+            <div style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem;" id="stat-total-count">0 Total Ratings</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);" id="stat-satisfaction-pct">0% Satisfaction Rate</div>
+          </div>
+
+          <!-- Right: Star Rating Breakdown Bars -->
+          <div class="distribution-container">
+            <h3 style="font-size:1.05rem; font-weight:800; margin-bottom:1rem;"><i class="fa-solid fa-chart-bar" style="color:var(--primary);"></i> Satisfaction Rating Breakdown</h3>
+            
+            <div id="distribution-bars">
+              <!-- Dynamically populated 5 star to 1 star bars -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card" style="margin-bottom:1.5rem; padding:1rem 1.25rem;">
+          <div style="display:grid; grid-template-columns: 1fr 200px 200px; gap:1rem; align-items:center;">
+            
+            <div class="form-group" style="margin-bottom:0;">
+              <input type="text" id="search-reviews" class="form-control" placeholder="Search student name, ticket ID, or review comments..." />
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+              <select id="filter-star-rating" class="form-select">
+                <option value="ALL">All Star Ratings</option>
+                <option value="5">5 Stars (Excellent)</option>
+                <option value="4">4 Stars (Good)</option>
+                <option value="3">3 Stars (Average)</option>
+                <option value="2">2 Stars (Poor)</option>
+                <option value="1">1 Star (Very Poor)</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+              <select id="filter-category" class="form-select">
+                <option value="ALL">All Categories</option>
+                <option value="IT/Wifi">IT/Wifi</option>
+                <option value="Electrical">Electrical</option>
+                <option value="Plumbing">Plumbing</option>
+                <option value="Hostel">Hostel</option>
+                <option value="Academic">Academic</option>
+                <option value="Cleanliness">Cleanliness</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Reviews Cards Feed -->
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h2 style="font-size:1.2rem; font-weight:800;"><i class="fa-solid fa-comments" style="color:var(--primary);"></i> Student Review Feed</h2>
+            <span style="font-size:0.85rem; color:var(--text-muted);" id="showing-count-label">Showing reviews</span>
+          </div>
+
+          <div id="admin-reviews-feed" class="reviews-grid">
+            <!-- Dynamically populated review cards -->
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/controllers/admin-feedback.js"></script>
+</body>
+</html>

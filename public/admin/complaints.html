@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Complaints - CampusCare Admin</title>
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <span class="sidebar-brand">CampusCare Admin</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="./dashboard.html" class="nav-item">
+          <i class="fa-solid fa-chart-line"></i> Analytics Dashboard
+        </a>
+        <a href="./complaints.html" class="nav-item active">
+          <i class="fa-solid fa-folder-closed"></i> Manage Complaints
+        </a>
+        <a href="./feedback.html" class="nav-item">
+          <i class="fa-solid fa-star-half-stroke"></i> Student Ratings
+        </a>
+        <a href="./profile.html" class="nav-item">
+          <i class="fa-solid fa-user-gear"></i> Admin Profile
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.1);"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="top-navbar">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button class="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
+          <div class="navbar-title">
+            <h1>Master Complaints Database</h1>
+          </div>
+        </div>
+        <div class="navbar-actions">
+          <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
+        </div>
+      </header>
+
+      <div class="page-body">
+        <!-- Filter & Search Controls -->
+        <div class="filter-bar">
+          <div class="filter-inputs">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="search-input" class="form-control" placeholder="Search by Ticket ID, Title, Student Name, Dept..." />
+            </div>
+
+            <select id="status-filter" class="form-select" style="max-width:160px;">
+              <option value="ALL">All Statuses</option>
+              <option value="Submitted">Submitted</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Closed">Closed</option>
+            </select>
+
+            <select id="category-filter" class="form-select" style="max-width:160px;">
+              <option value="ALL">All Categories</option>
+              <option value="Hostel">Hostel</option>
+              <option value="Academics">Academics</option>
+              <option value="Infrastructure">Infrastructure</option>
+              <option value="Mess/Catering">Mess / Catering</option>
+              <option value="Electrical">Electrical</option>
+              <option value="IT/Wifi">IT / Wifi</option>
+              <option value="General">General</option>
+            </select>
+
+            <select id="urgency-filter" class="form-select" style="max-width:140px;">
+              <option value="ALL">All Urgencies</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Urgent">Urgent</option>
+            </select>
+          </div>
+          <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);" id="results-count">0 records</span>
+        </div>
+
+        <!-- Master Complaints Table -->
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>Title / Location</th>
+                <th>Student / Dept</th>
+                <th>Category</th>
+                <th>Urgency</th>
+                <th>Status</th>
+                <th>Triage Action</th>
+              </tr>
+            </thead>
+            <tbody id="admin-complaints-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Status Triage & Action Modal Overlay -->
+  <div class="modal-overlay" id="triage-modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 style="font-size:1.1rem; font-weight:700;"><i class="fa-solid fa-list-check"></i> Update Complaint Status</h3>
+        <button class="close-modal-btn close-modal-trigger">✕</button>
+      </div>
+
+      <form id="triage-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="modal-status-select">Status Lifecycle State *</label>
+            <select id="modal-status-select" name="status" class="form-select" required>
+              <option value="Submitted">Submitted (Under Review)</option>
+              <option value="In Progress">In Progress (Assigned & Dispatched)</option>
+              <option value="Resolved">Resolved (Issue Fixed)</option>
+              <option value="Rejected">Rejected (Invalid / Duplicate)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="modal-assigned-input">Assigned Lead / Team Name</label>
+            <input type="text" id="modal-assigned-input" name="assignedTo" class="form-control" placeholder="e.g. Electrical Maintenance Team 2" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="modal-remarks-input">Admin Remarks & Action Log *</label>
+            <textarea id="modal-remarks-input" name="remarks" class="form-control" placeholder="Add specific details for the student and timeline audit trail..." required></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline close-modal-trigger">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Status & Log Timeline</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/controllers/admin-complaints.js"></script>
+</body>
+</html>

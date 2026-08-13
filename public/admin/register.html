@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Staff Registration - CampusCare</title>
+  <meta name="description" content="Register an official Administrator account for CampusCare Digital Management Portal.">
+  
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/admin.css">
+
+  <style>
+    .auth-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.12) 0%, transparent 60%),
+                  var(--bg-app);
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+    }
+    .admin-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(37, 99, 235, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-wrapper">
+    <div class="card auth-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <div class="brand-icon" style="background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color:white;">
+            <i class="fa-solid fa-user-shield"></i>
+          </div>
+          <span style="font-weight:800; font-size:1.25rem; color:var(--text-primary);">CampusCare Admin</span>
+        </div>
+        <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
+      </div>
+
+      <div style="margin-bottom:1.5rem;">
+        <span class="admin-badge"><i class="fa-solid fa-shield-halved"></i> Protected Staff Onboarding</span>
+        <h2 style="font-size:1.35rem; font-weight:800; margin-top:0.6rem; margin-bottom:0.3rem;">Administrator Registration</h2>
+        <p style="color:var(--text-muted); font-size:0.88rem;">Create an official administration account to triage & resolve campus complaints.</p>
+      </div>
+
+      <!-- Admin Registration Form -->
+      <form id="admin-register-form">
+        <div class="form-group">
+          <label class="form-label" for="admin-name">Full Name *</label>
+          <input type="text" id="admin-name" name="fullName" class="form-control" placeholder="Dr. Robert Vance" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="admin-email">Institutional Admin Email *</label>
+          <input type="email" id="admin-email" name="email" class="form-control" placeholder="r.vance@campus.edu" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="admin-password">Password *</label>
+          <input type="password" id="admin-password" name="password" class="form-control" placeholder="At least 6 characters" required />
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label class="form-label" for="admin-dept">Department Lead</label>
+            <select id="admin-dept" name="department" class="form-select" required>
+              <option value="Central Administration">Central Administration</option>
+              <option value="Hostel & Estate Management">Hostel & Estate</option>
+              <option value="IT Infrastructure & Network">IT Infrastructure</option>
+              <option value="Electrical & Maintenance">Electrical & Maintenance</option>
+              <option value="Academic Affairs">Academic Affairs</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="admin-phone">Contact Phone</label>
+            <input type="tel" id="admin-phone" name="phone" class="form-control" placeholder="+91 9876543210" />
+          </div>
+        </div>
+
+        <!-- Secret Security Key Input -->
+        <div class="form-group" style="background:rgba(37, 99, 235, 0.08); padding:1rem; border-radius:var(--radius-md); border:1px solid rgba(37, 99, 235, 0.2); margin-top:0.5rem;">
+          <label class="form-label" for="admin-key" style="color:#38bdf8; font-weight:700;">
+            <i class="fa-solid fa-key"></i> Secret Admin Security Passcode *
+          </label>
+          <input type="password" id="admin-key" name="adminKey" class="form-control" placeholder="Enter Secret Admin Key" required />
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem;">
+            <i class="fa-solid fa-lock"></i> Requires authorized key (Default: <code style="color:#38bdf8;">CAMPUS_26</code>)
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem; background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">
+          Create Admin Account <i class="fa-solid fa-shield"></i>
+        </button>
+
+        <div style="text-align:center; margin-top:1.25rem; font-size:0.88rem; color:var(--text-muted);">
+          Already have an account? <a href="../login.html" style="font-weight:700; color:var(--primary);">Sign In Here</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/controllers/admin-register.controller.js"></script>
+</body>
+</html>

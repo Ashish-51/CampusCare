@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# Temporary / Local server files
+.DS_Store
+Thumbs.db
+.firebase/
+*.log
+
+# Miscellaneous / Documents
+*.docx
+*.tmp

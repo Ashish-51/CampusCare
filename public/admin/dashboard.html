@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics & Admin Dashboard - CampusCare</title>
+  
+  <!-- Font Awesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon" style="background:linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <span class="sidebar-brand">CampusCare Admin</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="./dashboard.html" class="nav-item active">
+          <i class="fa-solid fa-chart-line"></i> Analytics Dashboard
+        </a>
+        <a href="./complaints.html" class="nav-item">
+          <i class="fa-solid fa-folder-closed"></i> Manage Complaints
+        </a>
+        <a href="./feedback.html" class="nav-item">
+          <i class="fa-solid fa-star-half-stroke"></i> Student Ratings
+        </a>
+        <a href="./profile.html" class="nav-item">
+          <i class="fa-solid fa-user-gear"></i> Admin Profile
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-badge-nav">
+          <div class="user-avatar-sm" style="background:#3b82f6;">A</div>
+          <div>
+            <div style="font-weight:700; font-size:0.85rem;" id="admin-display-name">Administrator</div>
+            <div style="font-size:0.75rem; color:#94a3b8;">System Lead</div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; margin-top:0.75rem; color:#94a3b8; border-color:rgba(255,255,255,0.1);">
+          <i class="fa-solid fa-right-from-bracket"></i> Log Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="top-navbar">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button class="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
+          <div class="navbar-title">
+            <h1>Realtime Analytics & Command Dashboard</h1>
+          </div>
+        </div>
+        <div class="navbar-actions">
+          <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
+        </div>
+      </header>
+
+      <div class="page-body">
+        
+        <!-- 1. Metric Cards -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1.25rem; margin-bottom:1.75rem;">
+          <div class="card stat-card">
+            <div>
+              <div class="stat-val" id="stat-total">0</div>
+              <div class="stat-label">Total Complaints</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-folder-open"></i></div>
+          </div>
+
+          <div class="card stat-card submitted">
+            <div>
+              <div class="stat-val" id="stat-submitted">0</div>
+              <div class="stat-label">New Submitted</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-inbox"></i></div>
+          </div>
+
+          <div class="card stat-card inprogress">
+            <div>
+              <div class="stat-val" id="stat-inprogress">0</div>
+              <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-gears"></i></div>
+          </div>
+
+          <div class="card stat-card resolved">
+            <div>
+              <div class="stat-val" id="stat-resolved">0</div>
+              <div class="stat-label">Resolved / Closed</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-circle-check"></i></div>
+          </div>
+        </div>
+
+        <!-- 2. Chart.js Analytics Grid (4 Realtime Charts) -->
+        <div class="charts-grid" style="grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.75rem;">
+          
+          <!-- Chart 1: Complaints by Category -->
+          <div class="card chart-card">
+            <div class="chart-header">
+              <h3><i class="fa-solid fa-chart-pie" style="color:var(--primary);"></i> Complaints by Category</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="category-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Monthly Complaints Trend -->
+          <div class="card chart-card">
+            <div class="chart-header">
+              <h3><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> Monthly Complaints Trend</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="monthly-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 3: Status Distribution -->
+          <div class="card chart-card">
+            <div class="chart-header">
+              <h3><i class="fa-solid fa-chart-donut" style="color:var(--primary);"></i> Status Distribution</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="status-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 4: Priority / Urgency Distribution -->
+          <div class="card chart-card">
+            <div class="chart-header">
+              <h3><i class="fa-solid fa-chart-column" style="color:var(--primary);"></i> Priority / Urgency Breakdown</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="priority-chart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 3. Search & Filter Bar -->
+        <div class="filter-bar">
+          <div class="filter-inputs">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="search-input" class="form-control" placeholder="Search by Ticket ID, Title, Student Name, Dept..." />
+            </div>
+
+            <select id="status-filter" class="form-select" style="max-width:160px;">
+              <option value="ALL">All Statuses</option>
+              <option value="Submitted">Submitted</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Assigned">Assigned</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Closed">Closed</option>
+            </select>
+
+            <select id="category-filter" class="form-select" style="max-width:160px;">
+              <option value="ALL">All Categories</option>
+              <option value="Hostel">Hostel</option>
+              <option value="Academics">Academics</option>
+              <option value="Infrastructure">Infrastructure</option>
+              <option value="Mess/Catering">Mess / Catering</option>
+              <option value="Electrical">Electrical</option>
+              <option value="IT/Wifi">IT / Wifi</option>
+              <option value="General">General</option>
+            </select>
+
+            <select id="urgency-filter" class="form-select" style="max-width:140px;">
+              <option value="ALL">All Urgencies</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Urgent">Urgent</option>
+            </select>
+          </div>
+          <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);" id="results-count">0 records</span>
+        </div>
+
+        <!-- 4. Master Complaints Data Table -->
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>Title / Location</th>
+                <th>Student / Dept</th>
+                <th>Category</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Admin Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-complaints-tbody">
+              <!-- Dynamically rendered -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Status Triage & Assign Department Modal Overlay -->
+  <div class="modal-overlay" id="triage-modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 style="font-size:1.1rem; font-weight:700;"><i class="fa-solid fa-list-check"></i> Triage & Assign Complaint</h3>
+        <button class="close-modal-btn close-modal-trigger">✕</button>
+      </div>
+
+      <form id="triage-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="modal-status-select">Change Lifecycle Status *</label>
+            <select id="modal-status-select" name="status" class="form-select" required>
+              <option value="Submitted">Submitted (Lodge Received)</option>
+              <option value="Under Review">Under Review (Initial Triage)</option>
+              <option value="Assigned">Assigned (Team Dispatched)</option>
+              <option value="In Progress">In Progress (Maintenance Active)</option>
+              <option value="Resolved">Resolved (Issue Fixed)</option>
+              <option value="Rejected">Rejected (Invalid / Duplicate)</option>
+              <option value="Closed">Closed (Archived)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="modal-assigned-input">Assign Department / Team Lead</label>
+            <input type="text" id="modal-assigned-input" name="assignedTo" class="form-control" placeholder="e.g. Electrical Maintenance Team 2" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="modal-remarks-input">Admin Remarks & Action Log *</label>
+            <textarea id="modal-remarks-input" name="remarks" class="form-control" placeholder="Add official notes for the student timeline audit log..." required></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline close-modal-trigger">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save & Log Timeline</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/controllers/admin-dashboard.js"></script>
+</body>
+</html>

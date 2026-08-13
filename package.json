@@ -1,0 +1,11 @@
+{
+  "name": "campus-care",
+  "version": "1.0.0",
+  "description": "CampusCare - Digital Complaint Management System",
+  "main": "public/index.html",
+  "scripts": {
+    "start": "npx serve public -p 8080",
+    "dev": "npx serve public -p 8080",
+    "firebase": "firebase emulators:start"
+  }
+}

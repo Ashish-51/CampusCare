@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Triage Complaint - CampusCare Admin</title>
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <span class="sidebar-brand">CampusCare Admin</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="./dashboard.html" class="nav-item">
+          <i class="fa-solid fa-chart-line"></i> Analytics Dashboard
+        </a>
+        <a href="./complaints.html" class="nav-item active">
+          <i class="fa-solid fa-folder-closed"></i> Manage Complaints
+        </a>
+        <a href="./feedback.html" class="nav-item">
+          <i class="fa-solid fa-star-half-stroke"></i> Student Ratings
+        </a>
+        <a href="./profile.html" class="nav-item">
+          <i class="fa-solid fa-user-gear"></i> Admin Profile
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.1);"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-navbar">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button class="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
+          <div class="navbar-title">
+            <h1>Admin Triage View</h1>
+          </div>
+        </div>
+        <div class="navbar-actions">
+          <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
+        </div>
+      </header>
+
+      <div class="page-body">
+        <div style="margin-bottom:1.5rem;">
+          <a href="./complaints.html" style="color:var(--text-muted); font-size:0.9rem; font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Back to Complaints Database</a>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 380px; gap:1.5rem;">
+          <!-- Left Column -->
+          <div>
+            <div class="card" style="margin-bottom:1.5rem;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+                <span class="ticket-id" id="complaint-ticket-id">CC-2026-0000</span>
+                <div style="display:flex; gap:0.5rem;" id="badge-wrapper">
+                  <span id="complaint-status-badge"></span>
+                  <span id="complaint-priority-badge"></span>
+                </div>
+              </div>
+
+              <h2 style="font-size:1.35rem; font-weight:800; margin-bottom:0.75rem;" id="complaint-title">Loading...</h2>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1rem; background:var(--border-light); border-radius:var(--radius-md); font-size:0.88rem; margin-bottom:1.25rem;">
+                <div>
+                  <span style="color:var(--text-muted); display:block;"><i class="fa-solid fa-tag"></i> Category:</span>
+                  <strong id="meta-category">--</strong>
+                </div>
+                <div>
+                  <span style="color:var(--text-muted); display:block;"><i class="fa-solid fa-location-dot"></i> Location:</span>
+                  <strong id="meta-location">--</strong>
+                </div>
+                <div>
+                  <span style="color:var(--text-muted); display:block;"><i class="fa-solid fa-user"></i> Student Name:</span>
+                  <strong id="meta-student-name">--</strong>
+                </div>
+                <div>
+                  <span style="color:var(--text-muted); display:block;"><i class="fa-solid fa-calendar"></i> Lodged Date:</span>
+                  <strong id="meta-created-date">--</strong>
+                </div>
+              </div>
+
+              <div style="margin-bottom:1.5rem;">
+                <h4 style="font-size:0.92rem; font-weight:700; margin-bottom:0.4rem;">Description:</h4>
+                <p id="complaint-desc" style="color:var(--text-primary); line-height:1.6; white-space:pre-line;"></p>
+              </div>
+
+              <div id="admin-remarks-box"></div>
+              <div id="complaint-image-container" style="margin-top:1.5rem;"></div>
+            </div>
+
+            <div class="card" id="feedback-section" style="display:none;"></div>
+          </div>
+
+          <!-- Right Column: Timeline -->
+          <div>
+            <div class="card">
+              <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:1.25rem;"><i class="fa-solid fa-timeline"></i> Audit & Progress Log</h3>
+              <div id="timeline-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/controllers/view-complaint.js"></script>
+</body>
+</html>

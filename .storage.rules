@@ -1,0 +1,94 @@
+rules_version = '2';
+
+// =============================================================================
+//  CampusCare — Firebase Storage Security Rules
+//  Last updated: 2026-08-07
+//
+//  Paths protected:
+//    /complaint_images/{complaintId}/{fileName}   — evidence photos
+//    /avatars/{userId}/{fileName}                 — profile pictures
+// =============================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // =========================================================================
+    //  HELPER FUNCTIONS
+    // =========================================================================
+
+    // Is the caller authenticated?
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Is the uploaded file a valid image type?
+    //   Allowed: JPEG, PNG, WEBP, GIF.
+    function isImageFile() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    // Is the uploaded file within the size limit?
+    //   Maximum: 5 MB per file.
+    function isUnder5MB() {
+      return request.resource.size <= 5 * 1024 * 1024;
+    }
+
+
+    // =========================================================================
+    //  COMPLAINT EVIDENCE IMAGES  —  /complaint_images/{complaintId}/{fileName}
+    //
+    //  Evidence photos attached when a student raises a complaint.
+    // =========================================================================
+    match /complaint_images/{complaintId}/{fileName} {
+
+      // READ — any authenticated user can read complaint images.
+      //   (Admins viewing evidence; students viewing their own uploads.)
+      allow read: if isSignedIn();
+
+      // WRITE (upload) — any authenticated user may upload:
+      //   1. File must be an image (JPEG/PNG/WEBP/GIF).
+      //   2. File must be under 5 MB.
+      //   Students upload when filing complaints; admins may upload supplementary photos.
+      allow write: if isSignedIn()
+                   && isImageFile()
+                   && isUnder5MB();
+
+      // DELETE — authenticated users can delete (used when a complaint is deleted).
+      allow delete: if isSignedIn();
+    }
+
+
+    // =========================================================================
+    //  PROFILE AVATARS  —  /avatars/{userId}/{fileName}
+    //
+    //  Profile pictures uploaded from the student/admin profile pages.
+    // =========================================================================
+    match /avatars/{userId}/{fileName} {
+
+      // READ — anyone authenticated may read profile pictures.
+      //   Avatar URLs are displayed on complaint cards and profile pages.
+      allow read: if isSignedIn();
+
+      // WRITE — a user may only upload to their OWN avatar folder.
+      //   The path {userId} must match the caller's Firebase Auth UID.
+      //   File must be a valid image under 5 MB.
+      allow write: if isSignedIn()
+                   && request.auth.uid == userId
+                   && isImageFile()
+                   && isUnder5MB();
+
+      // DELETE — a user may only delete their own avatar files.
+      allow delete: if isSignedIn()
+                    && request.auth.uid == userId;
+    }
+
+
+    // =========================================================================
+    //  CATCH-ALL — deny access to any other storage path by default.
+    // =========================================================================
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+  }
+}

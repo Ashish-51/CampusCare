@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Complaint Details - CampusCare</title>
+  
+  <!-- Font Awesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/student.css">
+  
+  <style>
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 1.5rem;
+    }
+
+    .meta-box-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 1.25rem;
+      background: var(--border-light);
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .meta-item label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .meta-item strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .evidence-image-preview {
+      width: 100%;
+      max-height: 380px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-fast);
+    }
+
+    .evidence-image-preview:hover {
+      transform: scale(1.01);
+    }
+
+    @media (max-width: 1100px) {
+      .details-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <span class="sidebar-brand">CampusCare</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="./dashboard.html" class="nav-item active">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </a>
+        <a href="./raise-complaint.html" class="nav-item">
+          <i class="fa-solid fa-circle-plus"></i> Raise Complaint
+        </a>
+        <a href="./feedback.html" class="nav-item">
+          <i class="fa-solid fa-star"></i> Resolution Feedback
+        </a>
+        <a href="./profile.html" class="nav-item">
+          <i class="fa-solid fa-user-gear"></i> My Profile
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.1);">
+          <i class="fa-solid fa-right-from-bracket"></i> Log Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-navbar">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button class="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
+          <div class="navbar-title">
+            <h1>Complaint Lifecycle Details</h1>
+          </div>
+        </div>
+        <div class="navbar-actions">
+          <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
+        </div>
+      </header>
+
+      <div class="page-body">
+        <div style="margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+          <a href="./dashboard.html" style="color:var(--text-muted); font-size:0.9rem; font-weight:600;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+          </a>
+          <button class="btn btn-outline btn-sm" id="refresh-btn"><i class="fa-solid fa-rotate"></i> Refresh Firestore Data</button>
+        </div>
+
+        <div class="details-grid">
+          
+          <!-- Left Main Column: Complaint Info, Image, Admin Remarks & Feedback -->
+          <div>
+            
+            <!-- Main Details Card -->
+            <div class="card" style="margin-bottom:1.5rem;">
+              
+              <!-- Header Bar: Ticket ID, Status Badge & Priority Badge -->
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                  <span class="ticket-id" style="font-size:0.95rem; padding:0.25rem 0.75rem;" id="complaint-ticket-id">CC-2026-0000</span>
+                  <span id="complaint-status-badge"></span>
+                </div>
+                <div id="complaint-priority-badge"></div>
+              </div>
+
+              <!-- Title -->
+              <h2 style="font-size:1.45rem; font-weight:800; margin-bottom:1rem; color:var(--text-primary);" id="complaint-title">Loading complaint title...</h2>
+
+              <!-- Metadata Grid Bar -->
+              <div class="meta-box-grid">
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-user"></i> Student</label>
+                  <strong id="meta-student-name">--</strong>
+                </div>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-tag"></i> Category</label>
+                  <strong id="meta-category">--</strong>
+                </div>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-location-dot"></i> Location</label>
+                  <strong id="meta-location">--</strong>
+                </div>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-calendar-plus"></i> Created Date</label>
+                  <strong id="meta-created-date">--</strong>
+                </div>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-calendar-check"></i> Updated Date</label>
+                  <strong id="meta-updated-date">--</strong>
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div style="margin-bottom:1.5rem;">
+                <h4 style="font-size:0.92rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;">
+                  Issue Description:
+                </h4>
+                <p id="complaint-desc" style="color:var(--text-primary); line-height:1.65; white-space:pre-line; font-size:0.95rem;"></p>
+              </div>
+
+              <!-- Admin Remarks Section -->
+              <div id="admin-remarks-box" style="margin-bottom:1.5rem;"></div>
+
+              <!-- Image Attachment Section -->
+              <div id="complaint-image-container"></div>
+
+            </div>
+
+            <!-- Post-Resolution Feedback Card -->
+            <div class="card" id="feedback-section" style="display:none;">
+              <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.4rem;"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Resolution Feedback</h3>
+              <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:1rem;">Rate the resolution quality and service performance provided by maintenance staff.</p>
+
+              <div id="feedback-content">
+                <!-- Dynamically rendered (Form if active rating, or Review Card if submitted) -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Step-by-Step Interactive Timeline -->
+          <div>
+            <div class="card">
+              <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:1.25rem;"><i class="fa-solid fa-timeline" style="color:var(--primary);"></i> Lifecycle Timeline</h3>
+              <div id="timeline-container">
+                <!-- Dynamically populated timeline entries -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/controllers/view-complaint.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "liveServer.settings.root": "/public",
+  "liveServer.settings.port": 5500,
+  "liveServer.settings.CustomBrowser": "chrome",
+  "liveServer.settings.donotShowInfoMsg": true,
+  "livePreview.rootServerFolder": "/public",
+  "livePreview.defaultPreviewPath": "/index.html",
+  "fiveServer.root": "public"
+}
+

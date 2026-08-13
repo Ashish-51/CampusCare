@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - CampusCare</title>
+  
+  <!-- Font Awesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/student.css">
+  
+  <style>
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.5rem;
+    }
+
+    .profile-avatar-wrapper {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 1.25rem;
+    }
+
+    .profile-avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-full);
+      object-fit: cover;
+      border: 3px solid var(--primary-light);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .profile-avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: var(--primary);
+      color: white;
+      font-size: 3rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid var(--primary-light);
+    }
+
+    .avatar-upload-btn {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      background: var(--primary);
+      color: white;
+      border: 2px solid var(--bg-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: transform var(--transition-fast);
+    }
+
+    .avatar-upload-btn:hover {
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 992px) {
+      .profile-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <span class="sidebar-brand">CampusCare</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="./dashboard.html" class="nav-item">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </a>
+        <a href="./raise-complaint.html" class="nav-item">
+          <i class="fa-solid fa-circle-plus"></i> Raise Complaint
+        </a>
+        <a href="./feedback.html" class="nav-item">
+          <i class="fa-solid fa-star"></i> Resolution Feedback
+        </a>
+        <a href="./profile.html" class="nav-item active">
+          <i class="fa-solid fa-user-gear"></i> My Profile
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.1);">
+          <i class="fa-solid fa-right-from-bracket"></i> Log Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="top-navbar">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button class="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
+          <div class="navbar-title">
+            <h1>User Account Profile</h1>
+          </div>
+        </div>
+        <div class="navbar-actions">
+          <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
+        </div>
+      </header>
+
+      <div class="page-body">
+        
+        <div class="profile-grid">
+          
+          <!-- Left Column: Profile Card & Quick Stats -->
+          <div>
+            <div class="card" style="text-align:center;">
+              <input type="file" id="avatar-input" accept="image/png, image/jpeg, image/webp" style="display:none;" />
+              
+              <div class="profile-avatar-wrapper">
+                <div id="avatar-display">
+                  <div class="profile-avatar-placeholder" id="avatar-initial">S</div>
+                </div>
+                <label for="avatar-input" class="avatar-upload-btn" title="Upload New Profile Picture">
+                  <i class="fa-solid fa-camera"></i>
+                </label>
+              </div>
+
+              <h2 style="font-size:1.3rem; font-weight:800; margin-bottom:0.25rem;" id="profile-name-display">Student Name</h2>
+              <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.75rem;" id="profile-email-display">student@campuscare.edu</div>
+
+              <span class="badge badge-inprogress" id="profile-role-badge"><i class="fa-solid fa-graduation-cap"></i> Student Account</span>
+
+              <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--border-color); text-align:left;">
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                  <span style="font-size:0.85rem; color:var(--text-muted);"><i class="fa-solid fa-building-columns" style="width:20px; color:var(--primary);"></i> Department:</span>
+                  <strong style="font-size:0.85rem;" id="info-dept">Computer Science</strong>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                  <span style="font-size:0.85rem; color:var(--text-muted);"><i class="fa-solid fa-id-card" style="width:20px; color:var(--primary);"></i> Roll Number:</span>
+                  <strong style="font-size:0.85rem;" id="info-roll">CS2026-042</strong>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                  <span style="font-size:0.85rem; color:var(--text-muted);"><i class="fa-solid fa-phone" style="width:20px; color:var(--primary);"></i> Phone Number:</span>
+                  <strong style="font-size:0.85rem;" id="info-phone">+91 9876543210</strong>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:0.85rem; color:var(--text-muted);"><i class="fa-solid fa-folder-open" style="width:20px; color:var(--primary);"></i> Total Complaints:</span>
+                  <span class="badge badge-submitted" style="font-size:0.85rem;" id="info-complaint-count">0 Lodged</span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Edit Profile Form & Change Password Form -->
+          <div style="display:flex; flex-direction:column; gap:1.5rem;">
+            
+            <!-- 1. Edit Profile Form -->
+            <div class="card">
+              <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:1.25rem;"><i class="fa-solid fa-user-pen" style="color:var(--primary);"></i> Edit Profile Information</h3>
+
+              <form id="edit-profile-form">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                  
+                  <div class="form-group">
+                    <label class="form-label" for="edit-name">Full Name *</label>
+                    <input type="text" id="edit-name" name="fullName" class="form-control" required />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="edit-email">Email Address (Read-only)</label>
+                    <input type="email" id="edit-email" name="email" class="form-control" readonly style="background:var(--border-light); cursor:not-allowed;" />
+                  </div>
+
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                  
+                  <div class="form-group">
+                    <label class="form-label" for="edit-dept">Department / Branch</label>
+                    <select id="edit-dept" name="department" class="form-select">
+                      <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+                      <option value="Electrical & Electronics">Electrical & Electronics</option>
+                      <option value="Mechanical Engineering">Mechanical Engineering</option>
+                      <option value="Civil Engineering">Civil Engineering</option>
+                      <option value="Information Technology">Information Technology</option>
+                      <option value="General Science">General Science</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="edit-phone">Phone Number</label>
+                    <input type="text" id="edit-phone" name="phone" class="form-control" placeholder="+91 9876543210" />
+                  </div>
+
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; margin-top:1rem;">
+                  <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Profile Changes</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- 2. Change Password Form -->
+            <div class="card">
+              <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:1.25rem;"><i class="fa-solid fa-lock" style="color:var(--primary);"></i> Security & Change Password</h3>
+
+              <form id="change-password-form">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                  
+                  <div class="form-group">
+                    <label class="form-label" for="new-password">New Password *</label>
+                    <input type="password" id="new-password" name="newPassword" class="form-control" placeholder="Minimum 6 characters" required />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="confirm-password">Confirm New Password *</label>
+                    <input type="password" id="confirm-password" name="confirmPassword" class="form-control" placeholder="Re-enter password" required />
+                  </div>
+
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; margin-top:1rem;">
+                  <button type="submit" class="btn btn-outline" style="border-color:var(--primary); color:var(--primary);"><i class="fa-solid fa-shield-halved"></i> Update Password</button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/controllers/profile.controller.js"></script>
+</body>
+</html>

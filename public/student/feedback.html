@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resolution Feedback - CampusCare</title>
+  
+  <!-- Font Awesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/student.css">
+
+  <style>
+    .star-rating-input {
+      display: inline-flex;
+      gap: 0.5rem;
+      font-size: 2rem;
+      color: var(--border-color);
+      cursor: pointer;
+      user-select: none;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .star-rating-input .star {
+      transition: color 0.15s ease, transform 0.15s ease;
+    }
+
+    .star-rating-input .star:hover {
+      transform: scale(1.25);
+    }
+
+    .star-rating-input .star.active {
+      color: #f59e0b;
+    }
+
+    .rating-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #fef3c7;
+      color: #b45309;
+      font-weight: 800;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      border: 1px solid #fde68a;
+    }
+
+    .feedback-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .feedback-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <span class="sidebar-brand">CampusCare</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="./dashboard.html" class="nav-item">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </a>
+        <a href="./raise-complaint.html" class="nav-item">
+          <i class="fa-solid fa-circle-plus"></i> Raise Complaint
+        </a>
+        <a href="./feedback.html" class="nav-item active">
+          <i class="fa-solid fa-star"></i> Resolution Feedback
+        </a>
+        <a href="./profile.html" class="nav-item">
+          <i class="fa-solid fa-user-gear"></i> My Profile
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.1);">
+          <i class="fa-solid fa-right-from-bracket"></i> Log Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="top-navbar">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button class="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
+          <div class="navbar-title">
+            <h1>Resolution Feedback & Reviews</h1>
+          </div>
+        </div>
+        <div class="navbar-actions">
+          <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
+        </div>
+      </header>
+
+      <div class="page-body">
+        
+        <!-- Summary Cards Bar -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1.25rem; margin-bottom:1.75rem;">
+          
+          <div class="card stat-card resolved">
+            <div>
+              <div class="stat-val" id="count-pending">0</div>
+              <div class="stat-label">Pending Feedback</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-clock-rotate-left"></i></div>
+          </div>
+
+          <div class="card stat-card submitted">
+            <div>
+              <div class="stat-val" id="count-submitted">0</div>
+              <div class="stat-label">Reviews Submitted</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-star"></i></div>
+          </div>
+
+        </div>
+
+        <!-- Section 1: Pending Feedback Requests -->
+        <div style="margin-bottom:2rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h2 style="font-size:1.25rem; font-weight:800;"><i class="fa-solid fa-hourglass-half" style="color:var(--primary);"></i> Resolved Complaints Awaiting Your Review</h2>
+          </div>
+          
+          <div id="pending-feedback-list">
+            <!-- Dynamically populated or empty state -->
+          </div>
+        </div>
+
+        <!-- Section 2: Submitted Feedback History -->
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h2 style="font-size:1.25rem; font-weight:800;"><i class="fa-solid fa-comment-dots" style="color:#f59e0b;"></i> Your Feedback History</h2>
+          </div>
+
+          <div id="history-feedback-list" class="feedback-grid">
+            <!-- Dynamically populated or empty state -->
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/controllers/student-feedback.js"></script>
+</body>
+</html>
