@@ -3,14 +3,11 @@
    ========================================================================== */
 
 import { registerAdmin, DEFAULT_ADMIN_SECRET_KEY } from '../services/auth.service.js';
-import { redirectIfAuthenticated, resolveUrl } from '../utils/guards.js';
+import { resolveUrl } from '../utils/guards.js';
 import { showToast } from '../utils/toast.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // If user is already authenticated, redirect to dashboard
-  redirectIfAuthenticated();
-
   const adminRegisterForm = document.getElementById('admin-register-form');
   if (adminRegisterForm) {
     adminRegisterForm.addEventListener('submit', async (e) => {

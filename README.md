@@ -1,7 +1,5 @@
 # CampusCare – Digital Complaint Management System
 
-![CampusCare Banner](public/css/variables.css)
-
 CampusCare is a production-quality, modern, full-stack digital complaint management web application designed for educational institutions (Colleges, Universities, Hostels). It empowers Students to easily lodge complaints with photo evidence and track resolution lifecycles step-by-step, while providing Administrators with an analytics dashboard (powered by Chart.js) and triage tools to efficiently assign, manage, and resolve tickets.
 
 ---

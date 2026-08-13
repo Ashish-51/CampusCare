@@ -1,10 +1,9 @@
 import { registerStudent, loginUser, sendResetPassword } from '../services/auth.service.js';
-import { redirectIfAuthenticated, resolveUrl } from '../utils/guards.js';
+import { resolveUrl } from '../utils/guards.js';
 import { showToast } from '../utils/toast.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  redirectIfAuthenticated();
   initTabs();
   initForms();
   initForgotPasswordModal();
