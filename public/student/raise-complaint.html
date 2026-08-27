@@ -13,6 +13,160 @@
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/components.css">
   <link rel="stylesheet" href="../css/student.css">
+  
+  <style>
+    /* Guided Steps & Segmented Sections Styles */
+    .guided-steps-tracker {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      background: var(--bg-surface-raised);
+      padding: 0.85rem 1.25rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+    }
+
+    .guided-step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .guided-step-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--border-color);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-family: var(--font-family-mono);
+      font-weight: 700;
+    }
+
+    .guided-step.active {
+      color: var(--color-brand);
+    }
+
+    .guided-step.active .guided-step-circle {
+      background: var(--color-brand);
+      color: #ffffff;
+    }
+
+    .form-section-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .form-section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.75rem;
+    }
+
+    .form-section-header .section-number {
+      font-family: var(--font-family-mono);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--color-brand);
+      background: var(--color-brand-soft);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-section-header h3 {
+      font-family: var(--font-family-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .form-section-header p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 0.15rem;
+    }
+
+    /* Urgency Card Buttons selector */
+    .priority-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .priority-card-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      transition: all var(--transition-fast);
+    }
+
+    .priority-card-btn.low:hover, .priority-card-btn.low.active {
+      border-color: var(--color-info);
+      background: #EFF6FF;
+      color: #1E40AF;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.12);
+    }
+
+    .priority-card-btn.medium:hover, .priority-card-btn.medium.active {
+      border-color: #F59E0B;
+      background: #FFFBEB;
+      color: #B45309;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.12);
+    }
+
+    .priority-card-btn.high:hover, .priority-card-btn.high.active {
+      border-color: #EA580C;
+      background: #FFF5F1;
+      color: #C2410C;
+      box-shadow: 0 0 10px rgba(234, 88, 12, 0.12);
+    }
+
+    .priority-card-btn.urgent:hover, .priority-card-btn.urgent.active {
+      border-color: var(--color-danger);
+      background: #FFF1F1;
+      color: #B91C1C;
+      box-shadow: 0 0 12px rgba(220, 38, 38, 0.18);
+    }
+
+    @media (max-width: 768px) {
+      .priority-selector-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .guided-step span { display: none; }
+      .guided-steps-tracker { justify-content: space-around; }
+    }
+  </style>
+  <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
 
@@ -20,25 +174,30 @@
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-icon"><i class="fa-solid fa-building-shield"></i></div>
         <span class="sidebar-brand">CampusCare</span>
       </div>
       <nav class="sidebar-nav">
+        <div class="nav-group-title">Workspace</div>
         <a href="./dashboard.html" class="nav-item">
           <i class="fa-solid fa-chart-pie"></i> Dashboard
         </a>
         <a href="./raise-complaint.html" class="nav-item active">
           <i class="fa-solid fa-circle-plus"></i> Raise Complaint
         </a>
+        
+        <div class="nav-group-title">Feedback</div>
         <a href="./feedback.html" class="nav-item">
           <i class="fa-solid fa-star"></i> Resolution Feedback
         </a>
+        
+        <div class="nav-group-title">Account</div>
         <a href="./profile.html" class="nav-item">
           <i class="fa-solid fa-user-gear"></i> My Profile
         </a>
       </nav>
       <div class="sidebar-footer">
-        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.1);">
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.08);">
           <i class="fa-solid fa-right-from-bracket"></i> Log Out
         </button>
       </div>
@@ -60,24 +219,47 @@
 
       <div class="page-body" style="max-width:780px;">
         <div style="margin-bottom:1.5rem;">
-          <a href="./dashboard.html" style="color:var(--text-muted); font-size:0.9rem; font-weight:600;">
+          <a href="./dashboard.html" style="color:var(--text-secondary); font-size:0.9rem; font-weight:600;">
             <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
           </a>
         </div>
 
-        <div class="card">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
-            <h2 style="font-size:1.35rem; font-weight:800;">Lodge Facility / Service Issue</h2>
-            <span class="badge badge-inprogress" id="auto-ticket-id-badge"><i class="fa-solid fa-ticket"></i> Auto ID Generated on Submit</span>
+        <!-- 5 Steps Header Tracker -->
+        <div class="guided-steps-tracker">
+          <div class="guided-step active" id="step-tab-1">
+            <div class="guided-step-circle">1</div>
+            <span>Summary</span>
           </div>
+          <div class="guided-step" id="step-tab-2">
+            <div class="guided-step-circle">2</div>
+            <span>Location</span>
+          </div>
+          <div class="guided-step" id="step-tab-3">
+            <div class="guided-step-circle">3</div>
+            <span>Priority</span>
+          </div>
+          <div class="guided-step" id="step-tab-4">
+            <div class="guided-step-circle">4</div>
+            <span>Evidence</span>
+          </div>
+          <div class="guided-step" id="step-tab-5">
+            <div class="guided-step-circle">5</div>
+            <span>Submit</span>
+          </div>
+        </div>
 
-          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.75rem;">
-            Please provide accurate details and clear photo evidence. Your ticket will be automatically assigned a unique Complaint ID and dispatched to the maintenance department.
-          </p>
+        <form id="raise-complaint-form" novalidate>
+          
+          <!-- STEP 1: What is wrong? -->
+          <div class="form-section-card" id="form-sec-1">
+            <div class="form-section-header">
+              <span class="section-number">01</span>
+              <div>
+                <h3>What is wrong?</h3>
+                <p>Provide a descriptive title and select the matching category of the facility issue.</p>
+              </div>
+            </div>
 
-          <form id="raise-complaint-form" novalidate>
-            
-            <!-- 1. Complaint Title -->
             <div class="form-group">
               <label class="form-label" for="comp-title">Complaint Title *</label>
               <input 
@@ -85,47 +267,40 @@
                 id="comp-title" 
                 name="title" 
                 class="form-control" 
-                placeholder="e.g. Ceiling fan not working & making loud noise" 
+                placeholder="e.g. Wi-Fi connection dropping out & very slow in room" 
                 required 
               />
-              <span class="error-msg" id="title-error" style="color:#ef4444; font-size:0.78rem; display:none; margin-top:0.25rem;">Please enter a descriptive complaint title.</span>
+              <span class="error-msg" id="title-error" style="color:var(--color-danger); font-size:0.78rem; display:none; margin-top:0.25rem;">Please enter a descriptive complaint title.</span>
             </div>
 
-            <!-- 2. Category & Priority (2 columns) -->
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-              
-              <!-- Category -->
-              <div class="form-group">
-                <label class="form-label" for="comp-cat">Category *</label>
-                <select id="comp-cat" name="category" class="form-select" required>
-                  <option value="">Select Category...</option>
-                  <option value="Hostel">Hostel Maintenance</option>
-                  <option value="Academics">Academics & Labs</option>
-                  <option value="Infrastructure">Building & Infrastructure</option>
-                  <option value="Mess/Catering">Mess & Dining Facility</option>
-                  <option value="Electrical">Electrical & Plumbing</option>
-                  <option value="IT/Wifi">IT & Wi-Fi Network</option>
-                  <option value="General">General / Other</option>
-                </select>
-                <span class="error-msg" id="category-error" style="color:#ef4444; font-size:0.78rem; display:none; margin-top:0.25rem;">Please select a category.</span>
-              </div>
-
-              <!-- Priority / Urgency -->
-              <div class="form-group">
-                <label class="form-label" for="comp-urgency">Priority *</label>
-                <select id="comp-urgency" name="urgency" class="form-select" required>
-                  <option value="Low">Low (General suggestion / minor)</option>
-                  <option value="Medium" selected>Medium (Standard issue)</option>
-                  <option value="High">High (Impacting study / daily stay)</option>
-                  <option value="Urgent">Urgent (Safety / Emergency hazard)</option>
-                </select>
-              </div>
-
-            </div>
-
-            <!-- 3. Location -->
             <div class="form-group">
-              <label class="form-label" for="comp-location">Location / Room No. *</label>
+              <label class="form-label" for="comp-cat">Incident Category *</label>
+              <select id="comp-cat" name="category" class="form-select" required>
+                <option value="">Select Category...</option>
+                <option value="Hostel">Hostel Maintenance</option>
+                <option value="Academics">Academics & Labs</option>
+                <option value="Infrastructure">Building & Infrastructure</option>
+                <option value="Mess/Catering">Mess & Dining Facility</option>
+                <option value="Electrical">Electrical & Plumbing</option>
+                <option value="IT/Wifi">IT & Wi-Fi Network</option>
+                <option value="General">General / Other</option>
+              </select>
+              <span class="error-msg" id="category-error" style="color:var(--color-danger); font-size:0.78rem; display:none; margin-top:0.25rem;">Please select a category.</span>
+            </div>
+          </div>
+
+          <!-- STEP 2: Where is it? -->
+          <div class="form-section-card" id="form-sec-2">
+            <div class="form-section-header">
+              <span class="section-number">02</span>
+              <div>
+                <h3>Where is it located?</h3>
+                <p>Specify exact room, hall, building block, or floor space of the incident.</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="comp-location">Location / Room Number *</label>
               <input 
                 type="text" 
                 id="comp-location" 
@@ -134,49 +309,145 @@
                 placeholder="e.g. Hostel Block B, Room 204 OR Library 2nd Floor" 
                 required 
               />
-              <span class="error-msg" id="location-error" style="color:#ef4444; font-size:0.78rem; display:none; margin-top:0.25rem;">Please specify the location or room number.</span>
+              <span class="error-msg" id="location-error" style="color:var(--color-danger); font-size:0.78rem; display:none; margin-top:0.25rem;">Please specify the location or room number.</span>
             </div>
 
-            <!-- 4. Description -->
             <div class="form-group">
-              <label class="form-label" for="comp-desc">Detailed Description *</label>
+              <label class="form-label" for="comp-desc">Detailed Issue Description *</label>
               <textarea 
                 id="comp-desc" 
                 name="description" 
                 class="form-control" 
-                placeholder="Describe the issue in detail (when it started, exact symptoms, safety observations)..." 
+                placeholder="Describe symptoms, safety aspects, or specific details of the issue..." 
                 required
               ></textarea>
-              <span class="error-msg" id="desc-error" style="color:#ef4444; font-size:0.78rem; display:none; margin-top:0.25rem;">Please provide a detailed description (minimum 10 characters).</span>
+              <span class="error-msg" id="desc-error" style="color:var(--color-danger); font-size:0.78rem; display:none; margin-top:0.25rem;">Please provide a detailed description (minimum 10 characters).</span>
+            </div>
+          </div>
+
+          <!-- STEP 3: How urgent is it? -->
+          <div class="form-section-card" id="form-sec-3">
+            <div class="form-section-header">
+              <span class="section-number">03</span>
+              <div>
+                <h3>How urgent is it?</h3>
+                <p>Select the priority class to dispatch teams under correct SLA urgency window.</p>
+              </div>
             </div>
 
-            <!-- 5. Upload Image (Dropzone) -->
+            <div class="form-group">
+              <label class="form-label">Priority Classification *</label>
+              <div class="priority-selector-grid">
+                <div class="priority-card-btn low" data-value="Low">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <span>Low</span>
+                </div>
+                <div class="priority-card-btn medium active" data-value="Medium">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                  <span>Medium</span>
+                </div>
+                <div class="priority-card-btn high" data-value="High">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                  <span>High</span>
+                </div>
+                <div class="priority-card-btn urgent" data-value="Urgent">
+                  <i class="fa-solid fa-radiation"></i>
+                  <span>Urgent</span>
+                </div>
+              </div>
+
+              <!-- Synced Select Dropdown -->
+              <select id="comp-urgency" name="urgency" class="form-select" required style="display:none;">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+                <option value="Urgent">Urgent</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- STEP 4: Add Evidence -->
+          <div class="form-section-card" id="form-sec-4">
+            <div class="form-section-header">
+              <span class="section-number">04</span>
+              <div>
+                <h3>Attach Photo Evidence</h3>
+                <p>Provide a photo of the incident to help the maintenance department identify needed tools.</p>
+              </div>
+            </div>
+
             <div class="form-group">
               <label class="form-label">Upload Photo Evidence (Optional)</label>
               <input type="file" id="image-input" accept="image/png, image/jpeg, image/webp" style="display:none;" />
               
               <div class="file-dropzone" id="file-dropzone">
                 <div class="dropzone-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-                <div style="font-weight:700; font-size:0.95rem;">Drag and drop photo evidence here</div>
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">or click to browse files (PNG, JPG, WEBP - Max 5MB)</div>
+                <div style="font-weight:700; font-size:0.92rem;">Drag and drop photo evidence here</div>
+                <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.25rem;">or click to browse files (PNG, JPG, WEBP - Max 5MB)</div>
                 <div id="image-preview"></div>
               </div>
-              <span class="error-msg" id="image-error" style="color:#ef4444; font-size:0.78rem; display:none; margin-top:0.25rem;">Invalid file format or size exceeds 5MB limit.</span>
+              <span class="error-msg" id="image-error" style="color:var(--color-danger); font-size:0.78rem; display:none; margin-top:0.25rem;">Invalid file format or size exceeds 5MB limit.</span>
             </div>
+          </div>
 
-            <!-- Submit Button & Actions -->
-            <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.75rem;">
-              <a href="./dashboard.html" class="btn btn-outline">Cancel</a>
-              <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
-                <i class="fa-solid fa-paper-plane"></i> Submit Complaint
-              </button>
-            </div>
+          <!-- Actions Footer -->
+          <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-bottom:2rem;">
+            <a href="./dashboard.html" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
+              <i class="fa-solid fa-paper-plane"></i> Lodge Complaint
+            </button>
+          </div>
 
-          </form>
-        </div>
+        </form>
       </div>
     </main>
   </div>
+
+  <script>
+    // Inline Sync script for custom priority cards to select input
+    document.addEventListener('DOMContentLoaded', () => {
+      const selectEl = document.getElementById('comp-urgency');
+      const cards = document.querySelectorAll('.priority-card-btn');
+      const stepTabs = {
+        title: document.getElementById('comp-title'),
+        category: document.getElementById('comp-cat'),
+        location: document.getElementById('comp-location'),
+        description: document.getElementById('comp-desc'),
+        image: document.getElementById('image-input')
+      };
+
+      if (selectEl && cards.length > 0) {
+        cards.forEach(card => {
+          card.addEventListener('click', () => {
+            cards.forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            selectEl.value = card.dataset.value;
+            // update UI step indicator visual state
+            document.getElementById('step-tab-3').classList.add('completed');
+          });
+        });
+      }
+
+      // Add simple visual checklist validation updates for the guided steps at the top
+      const checkStepsStatus = () => {
+        if (stepTabs.title.value.trim().length >= 5 && stepTabs.category.value !== '') {
+          document.getElementById('step-tab-1').classList.add('completed');
+        } else {
+          document.getElementById('step-tab-1').classList.remove('completed');
+        }
+
+        if (stepTabs.location.value.trim() !== '' && stepTabs.description.value.trim().length >= 10) {
+          document.getElementById('step-tab-2').classList.add('completed');
+        } else {
+          document.getElementById('step-tab-2').classList.remove('completed');
+        }
+      };
+
+      ['input', 'change'].forEach(evName => {
+        document.body.addEventListener(evName, checkStepsStatus);
+      });
+    });
+  </script>
 
   <!-- Scripts -->
   <script type="module" src="../js/app.js"></script>

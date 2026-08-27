@@ -1,117 +1,166 @@
 /* ==========================================================================
    CampusCare - Design System & CSS Variables
-   Theme: Professional, Minimalist, Blue & White SaaS Aesthetic
+   Theme: Campus Operations Command Center (Premium Civic-Tech)
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Brand Color Palette - Professional Blue & White */
-  --primary-hsl: 221, 83%, 53%;
-  --primary: #2563eb;               /* Royal Blue */
-  --primary-hover: #1d4ed8;         /* Deep Blue */
-  --primary-active: #1e40af;
-  --primary-light: #eff6ff;         /* Ice Blue Tint */
-  --primary-subtle: #dbeafe;        /* Soft Blue Highlight */
-  --primary-border: #bfdbfe;
-  --primary-glow: rgba(37, 99, 235, 0.18);
-
-  /* Status Colors */
-  --status-submitted: #f59e0b;      /* Warm Amber */
-  --status-submitted-bg: #fffbeb;
-  --status-submitted-border: #fde68a;
-
-  --status-inprogress: #2563eb;     /* Blue */
-  --status-inprogress-bg: #eff6ff;
-  --status-inprogress-border: #bfdbfe;
-
-  --status-resolved: #10b981;       /* Emerald */
-  --status-resolved-bg: #ecfdf5;
-  --status-resolved-border: #a7f3d0;
-
-  --status-rejected: #ef4444;       /* Crimson */
-  --status-rejected-bg: #fef2f2;
-  --status-rejected-border: #fecaca;
-
-  --status-closed: #64748b;         /* Slate */
-  --status-closed-bg: #f8fafc;
-  --status-closed-border: #e2e8f0;
-
-  /* Neutral Light Tokens (Clean White SaaS Theme) */
-  --bg-app: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-sidebar: #0f172a;            /* Midnight Slate for contrast */
-  --bg-sidebar-hover: #1e293b;
-  --bg-sidebar-active: #2563eb;
-
-  --text-primary: #0f172a;          /* Slate 900 */
-  --text-secondary: #475569;        /* Slate 600 */
-  --text-muted: #64748b;            /* Slate 500 */
-  --text-inverse: #ffffff;
-
-  --border-color: #e2e8f0;          /* Slate 200 */
-  --border-light: #f1f5f9;          /* Slate 100 */
-  --input-bg: #ffffff;
-
-  /* Shadows */
-  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
-  --shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-  --shadow-blue: 0 4px 14px 0 rgba(37, 99, 235, 0.25);
-
-  /* Layout & Corners */
+  /* Typography */
   --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-display: 'Manrope', 'Inter', sans-serif;
   --font-family-mono: 'JetBrains Mono', monospace;
 
-  --sidebar-width: 250px;
-  --navbar-height: 64px;
+  /* Spacing Grid (8px rhythm) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
 
+  /* Border Radii */
   --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-xxl: 24px;
   --radius-full: 9999px;
 
+  /* Shadows - Super soft borders do the heavy lifting */
+  --shadow-xs: 0 1px 2px 0 rgba(11, 16, 32, 0.04);
+  --shadow-sm: 0 4px 20px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 20px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 20px 60px rgba(15, 23, 42, 0.1);
+  --shadow-floating: 0 20px 60px rgba(15, 23, 42, 0.12);
+  --shadow-blue: 0 4px 14px rgba(91, 92, 235, 0.15);
+
   /* Transitions */
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 100ms ease;
+  --transition-normal: 180ms ease;
+  --transition-slow: 250ms ease;
+
+  /* Brand Accents */
+  --color-brand: #5B5CEB;
+  --color-brand-hover: #4849D8;
+  --color-brand-soft: #EEF0FF;
+  --color-brand-glow: rgba(91, 92, 235, 0.12);
+  
+  --primary: #5B5CEB;
+  --primary-hover: #4849D8;
+  --primary-active: #3B82F6;
+  --primary-light: #EEF0FF;
+  --primary-subtle: #EEF0FF;
+  --primary-border: #5B5CEB;
+  --primary-glow: rgba(91, 92, 235, 0.12);
+
+  /* Structural Colors - LIGHT (Warm Cloud Theme) */
+  --bg-app: #F7F8FC;               /* Warm Cloud */
+  --bg-surface: #FFFFFF;           /* Pure White */
+  --bg-surface-raised: #F1F3F8;    /* Secondary surface */
+  --bg-surface-muted: #F7F8FC;
+  --border-color: #E5E7EB;          /* Neutral Border */
+  --border-light: #F1F3F8;
+
+  --bg-sidebar: #0B1020;           /* Deep Ink */
+  --bg-sidebar-hover: #11182B;     /* Midnight Navy */
+  --bg-sidebar-active: #EEF0FF;
+
+  --text-primary: #0B1020;         /* Deep Ink for high contrast readable text */
+  --text-secondary: #64748B;       /* Slate 500 */
+  --text-muted: #94A3B8;           /* Slate 400 */
+  --text-inverse: #FFFFFF;
+
+  /* Semantic Alerts */
+  --color-success: #16A34A;
+  --color-warning: #F59E0B;
+  --color-danger: #DC2626;
+  --color-info: #3B82F6;
+
+  /* Status Colors */
+  --status-submitted: #F59E0B;      /* Amber */
+  --status-submitted-bg: #FFFBEB;
+  --status-submitted-border: #FDE68A;
+
+  --status-inprogress: #3B82F6;     /* Cobalt / Blue */
+  --status-inprogress-bg: #EFF6FF;
+  --status-inprogress-border: #BFDBFE;
+
+  --status-resolved: #16A34A;       /* Green */
+  --status-resolved-bg: #ECFDF5;
+  --status-resolved-border: #A7F3D0;
+
+  --status-rejected: #DC2626;       /* Critical / Red */
+  --status-rejected-bg: #FEF2F2;
+  --status-rejected-border: #FECACA;
+
+  --status-closed: #64748B;         /* Slate */
+  --status-closed-bg: #F8FAFC;
+  --status-closed-border: #E2E8F0;
+
+  /* Other Dimensions */
+  --sidebar-width: 260px;
+  --navbar-height: 56px;
+  --input-bg: #FFFFFF;
 }
 
-/* Dark Theme Palette (Sleek Slate Dark Mode) */
+/* Structural Colors - DARK Mode */
 [data-theme="dark"] {
-  --bg-app: #0b0f19;
-  --bg-surface: #151c2c;
-  --bg-sidebar: #070a12;
-  --bg-sidebar-hover: #162032;
-  --bg-sidebar-active: #2563eb;
+  --bg-app: #090D18;               /* Deep Slate Black */
+  --bg-surface: #111827;           /* Midnight Dark Slate */
+  --bg-surface-raised: #151E30;    /* Dark Secondary Surface */
+  --bg-surface-muted: #151E30;
+  --border-color: #243047;         /* Deep Blue Grey Border */
+  --border-light: #151E30;
+  --input-bg: #090D18;
 
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --text-inverse: #0f172a;
+  --bg-sidebar: #090D18;
+  --bg-sidebar-hover: #111827;
+  --bg-sidebar-active: rgba(124, 131, 255, 0.15);
 
-  --border-color: #1e293b;
-  --border-light: #162032;
-  --input-bg: #0f172a;
+  --text-primary: #F8FAFC;         /* Warm Off-White */
+  --text-secondary: #CBD5E1;       /* Light Slate */
+  --text-muted: #94A3B8;           /* Muted Slate */
+  --text-inverse: #090D18;
 
-  --primary-light: rgba(37, 99, 235, 0.15);
-  --primary-subtle: rgba(37, 99, 235, 0.25);
-  --primary-border: rgba(37, 99, 235, 0.35);
+  --color-brand: #7C83FF;          /* Soft Indigo */
+  --color-brand-hover: #676EFF;
+  --color-brand-soft: rgba(124, 131, 255, 0.15);
+  
+  --primary: #7C83FF;
+  --primary-hover: #676EFF;
+  --primary-active: #3B82F6;
+  --primary-light: rgba(124, 131, 255, 0.12);
+  --primary-subtle: rgba(124, 131, 255, 0.2);
+  --primary-border: rgba(124, 131, 255, 0.35);
+  --primary-glow: rgba(124, 131, 255, 0.15);
 
-  --status-submitted-bg: rgba(245, 158, 11, 0.15);
+  /* Status Colors Dark Mode Overrides */
+  --status-submitted-bg: rgba(245, 158, 11, 0.12);
   --status-submitted-border: rgba(245, 158, 11, 0.3);
 
-  --status-inprogress-bg: rgba(37, 99, 235, 0.18);
-  --status-inprogress-border: rgba(37, 99, 235, 0.35);
+  --status-inprogress: #3B82F6;
+  --status-inprogress-bg: rgba(59, 130, 246, 0.12);
+  --status-inprogress-border: rgba(59, 130, 246, 0.3);
 
-  --status-resolved-bg: rgba(16, 185, 129, 0.18);
-  --status-resolved-border: rgba(16, 185, 129, 0.35);
+  --status-resolved: #10B981;
+  --status-resolved-bg: rgba(16, 185, 129, 0.12);
+  --status-resolved-border: rgba(16, 185, 129, 0.3);
 
-  --status-rejected-bg: rgba(239, 68, 68, 0.18);
-  --status-rejected-border: rgba(239, 68, 68, 0.35);
+  --status-rejected: #EF4444;
+  --status-rejected-bg: rgba(239, 68, 68, 0.12);
+  --status-rejected-border: rgba(239, 68, 68, 0.3);
 
-  --status-closed-bg: rgba(100, 116, 139, 0.18);
-  --status-closed-border: rgba(100, 116, 139, 0.35);
+  --status-closed: #94A3B8;
+  --status-closed-bg: rgba(148, 163, 184, 0.12);
+  --status-closed-border: rgba(148, 163, 184, 0.3);
+
+  --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 25px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5);
+  --shadow-floating: 0 20px 60px rgba(0, 0, 0, 0.6);
 }

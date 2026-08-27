@@ -4,12 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manage Complaints - CampusCare Admin</title>
+  
   <!-- Font Awesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheets -->
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/components.css">
   <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
 
@@ -17,25 +21,32 @@
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div class="brand-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <div class="brand-icon"><i class="fa-solid fa-building-shield"></i></div>
         <span class="sidebar-brand">CampusCare Admin</span>
       </div>
       <nav class="sidebar-nav">
+        <div class="nav-group-title">Workspace</div>
         <a href="./dashboard.html" class="nav-item">
           <i class="fa-solid fa-chart-line"></i> Analytics Dashboard
         </a>
         <a href="./complaints.html" class="nav-item active">
           <i class="fa-solid fa-folder-closed"></i> Manage Complaints
         </a>
+        
+        <div class="nav-group-title">Feedback</div>
         <a href="./feedback.html" class="nav-item">
           <i class="fa-solid fa-star-half-stroke"></i> Student Ratings
         </a>
+        
+        <div class="nav-group-title">Account</div>
         <a href="./profile.html" class="nav-item">
           <i class="fa-solid fa-user-gear"></i> Admin Profile
         </a>
       </nav>
       <div class="sidebar-footer">
-        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.1);"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.08);">
+          <i class="fa-solid fa-right-from-bracket"></i> Log Out
+        </button>
       </div>
     </aside>
 
@@ -54,6 +65,7 @@
       </header>
 
       <div class="page-body">
+        
         <!-- Filter & Search Controls -->
         <div class="filter-bar">
           <div class="filter-inputs">
@@ -62,7 +74,7 @@
               <input type="text" id="search-input" class="form-control" placeholder="Search by Ticket ID, Title, Student Name, Dept..." />
             </div>
 
-            <select id="status-filter" class="form-select" style="max-width:160px;">
+            <select id="status-filter" class="form-select" style="max-width:150px;">
               <option value="ALL">All Statuses</option>
               <option value="Submitted">Submitted</option>
               <option value="In Progress">In Progress</option>
@@ -71,26 +83,26 @@
               <option value="Closed">Closed</option>
             </select>
 
-            <select id="category-filter" class="form-select" style="max-width:160px;">
+            <select id="category-filter" class="form-select" style="max-width:150px;">
               <option value="ALL">All Categories</option>
               <option value="Hostel">Hostel</option>
               <option value="Academics">Academics</option>
               <option value="Infrastructure">Infrastructure</option>
-              <option value="Mess/Catering">Mess / Catering</option>
+              <option value="Mess/Catering">Mess / Dining</option>
               <option value="Electrical">Electrical</option>
               <option value="IT/Wifi">IT / Wifi</option>
               <option value="General">General</option>
             </select>
 
             <select id="urgency-filter" class="form-select" style="max-width:140px;">
-              <option value="ALL">All Urgencies</option>
+              <option value="ALL">All Priorities</option>
               <option value="Low">Low</option>
               <option value="Medium">Medium</option>
               <option value="High">High</option>
               <option value="Urgent">Urgent</option>
             </select>
           </div>
-          <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);" id="results-count">0 records</span>
+          <span style="font-size:0.85rem; font-weight:700; color:var(--text-secondary);" id="results-count">0 records</span>
         </div>
 
         <!-- Master Complaints Table -->
@@ -102,13 +114,13 @@
                 <th>Title / Location</th>
                 <th>Student / Dept</th>
                 <th>Category</th>
-                <th>Urgency</th>
+                <th>Priority</th>
                 <th>Status</th>
                 <th>Triage Action</th>
               </tr>
             </thead>
             <tbody id="admin-complaints-tbody">
-              <!-- Dynamically populated -->
+              <!-- Dynamically populated by admin-complaints.js -->
             </tbody>
           </table>
         </div>
@@ -118,9 +130,9 @@
 
   <!-- Status Triage & Action Modal Overlay -->
   <div class="modal-overlay" id="triage-modal-overlay">
-    <div class="modal">
+    <div class="modal" style="max-width:460px;">
       <div class="modal-header">
-        <h3 style="font-size:1.1rem; font-weight:700;"><i class="fa-solid fa-list-check"></i> Update Complaint Status</h3>
+        <h3 style="font-family:var(--font-family-display); font-size:1.05rem; font-weight:800;"><i class="fa-solid fa-list-check" style="color:var(--color-brand);"></i> Update Complaint Status</h3>
         <button class="close-modal-btn close-modal-trigger">✕</button>
       </div>
 
@@ -148,13 +160,14 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline close-modal-trigger">Cancel</button>
-          <button type="submit" class="btn btn-primary">Update Status & Log Timeline</button>
+          <button type="button" class="btn btn-outline btn-sm close-modal-trigger">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Update Status & Log Timeline</button>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- Scripts -->
   <script type="module" src="../js/app.js"></script>
   <script type="module" src="../js/controllers/admin-complaints.js"></script>
 </body>

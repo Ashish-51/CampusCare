@@ -17,14 +17,14 @@
   <style>
     .profile-grid {
       display: grid;
-      grid-template-columns: 320px 1fr;
+      grid-template-columns: 300px 1fr;
       gap: 1.5rem;
     }
 
     .profile-avatar-wrapper {
       position: relative;
-      width: 120px;
-      height: 120px;
+      width: 110px;
+      height: 110px;
       margin: 0 auto 1.25rem;
     }
 
@@ -41,9 +41,9 @@
       width: 100%;
       height: 100%;
       border-radius: var(--radius-full);
-      background: var(--primary);
+      background: var(--color-brand);
       color: white;
-      font-size: 3rem;
+      font-size: 2.8rem;
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -55,17 +55,17 @@
       position: absolute;
       bottom: 2px;
       right: 2px;
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: var(--radius-full);
-      background: var(--primary);
+      background: var(--color-brand);
       color: white;
       border: 2px solid var(--bg-surface);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       transition: transform var(--transition-fast);
     }
 
@@ -77,6 +77,7 @@
       .profile-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
 
@@ -84,25 +85,30 @@
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div class="brand-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <div class="brand-icon"><i class="fa-solid fa-building-shield"></i></div>
         <span class="sidebar-brand">CampusCare Admin</span>
       </div>
       <nav class="sidebar-nav">
+        <div class="nav-group-title">Workspace</div>
         <a href="./dashboard.html" class="nav-item">
           <i class="fa-solid fa-chart-line"></i> Analytics Dashboard
         </a>
         <a href="./complaints.html" class="nav-item">
           <i class="fa-solid fa-folder-closed"></i> Manage Complaints
         </a>
+        
+        <div class="nav-group-title">Feedback</div>
         <a href="./feedback.html" class="nav-item">
           <i class="fa-solid fa-star-half-stroke"></i> Student Ratings
         </a>
+        
+        <div class="nav-group-title">Account</div>
         <a href="./profile.html" class="nav-item active">
           <i class="fa-solid fa-user-gear"></i> Admin Profile
         </a>
       </nav>
       <div class="sidebar-footer">
-        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.1);">
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.08);">
           <i class="fa-solid fa-right-from-bracket"></i> Log Out
         </button>
       </div>
@@ -128,7 +134,7 @@
           
           <!-- Left Column: Profile Card & Quick Stats -->
           <div>
-            <div class="card" style="text-align:center;">
+            <div class="card" style="text-align:center; background:var(--bg-surface);">
               <input type="file" id="avatar-input" accept="image/png, image/jpeg, image/webp" style="display:none;" />
               
               <div class="profile-avatar-wrapper">
@@ -140,31 +146,31 @@
                 </label>
               </div>
 
-              <h2 style="font-size:1.3rem; font-weight:800; margin-bottom:0.25rem;" id="profile-name-display">Administrator</h2>
-              <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.75rem;" id="profile-email-display">admin@campus.edu</div>
+              <h2 style="font-family:var(--font-family-display); font-size:1.25rem; font-weight:800; margin-bottom:0.25rem;" id="profile-name-display">Administrator</h2>
+              <div style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:0.75rem;" id="profile-email-display">admin@campus.edu</div>
 
               <span class="badge badge-inprogress" id="profile-role-badge"><i class="fa-solid fa-user-shield"></i> Administrator</span>
 
               <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--border-color); text-align:left;">
                 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-                  <span style="font-size:0.85rem; color:var(--text-muted);"><i class="fa-solid fa-building-columns" style="width:20px; color:var(--primary);"></i> Department:</span>
-                  <strong style="font-size:0.85rem;" id="info-dept">Central Administration</strong>
+                  <span style="font-size:0.85rem; color:var(--text-secondary);"><i class="fa-solid fa-building-columns" style="width:20px; color:var(--color-brand);"></i> Department:</span>
+                  <strong style="font-size:0.85rem; color:var(--text-primary);" id="info-dept">Central Administration</strong>
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-                  <span style="font-size:0.85rem; color:var(--text-muted);"><i class="fa-solid fa-id-card" style="width:20px; color:var(--primary);"></i> Admin ID:</span>
-                  <strong style="font-size:0.85rem;" id="info-roll">ADM-2026-001</strong>
+                  <span style="font-size:0.85rem; color:var(--text-secondary);"><i class="fa-solid fa-id-card" style="width:20px; color:var(--color-brand);"></i> Admin ID:</span>
+                  <strong style="font-size:0.85rem; color:var(--text-primary);" id="info-roll">ADM-2026-001</strong>
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-                  <span style="font-size:0.85rem; color:var(--text-muted);"><i class="fa-solid fa-phone" style="width:20px; color:var(--primary);"></i> Contact Phone:</span>
-                  <strong style="font-size:0.85rem;" id="info-phone">+91 9876543210</strong>
+                  <span style="font-size:0.85rem; color:var(--text-secondary);"><i class="fa-solid fa-phone" style="width:20px; color:var(--color-brand);"></i> Contact Phone:</span>
+                  <strong style="font-size:0.85rem; color:var(--text-primary);" id="info-phone">+91 9876543210</strong>
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="font-size:0.85rem; color:var(--text-muted);"><i class="fa-solid fa-folder-open" style="width:20px; color:var(--primary);"></i> Total Complaints:</span>
-                  <span class="badge badge-submitted" style="font-size:0.85rem;" id="info-complaint-count">0 Total Managed</span>
+                  <span style="font-size:0.85rem; color:var(--text-secondary);"><i class="fa-solid fa-folder-open" style="width:20px; color:var(--color-brand);"></i> Managed:</span>
+                  <span class="badge badge-submitted" style="font-size:0.82rem;" id="info-complaint-count">0 Triaged</span>
                 </div>
 
               </div>
@@ -176,7 +182,7 @@
             
             <!-- 1. Edit Profile Form -->
             <div class="card">
-              <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:1.25rem;"><i class="fa-solid fa-user-pen" style="color:var(--primary);"></i> Edit Profile Information</h3>
+              <h3 style="font-family:var(--font-family-display); font-size:1.1rem; font-weight:800; margin-bottom:1.25rem;"><i class="fa-solid fa-user-pen" style="color:var(--color-brand);"></i> Edit Profile Details</h3>
 
               <form id="edit-profile-form">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
@@ -188,7 +194,7 @@
 
                   <div class="form-group">
                     <label class="form-label" for="edit-email">Email Address (Read-only)</label>
-                    <input type="email" id="edit-email" name="email" class="form-control" readonly style="background:var(--border-light); cursor:not-allowed;" />
+                    <input type="email" id="edit-email" name="email" class="form-control" readonly style="background:var(--bg-surface-raised); cursor:not-allowed;" />
                   </div>
 
                 </div>
@@ -220,7 +226,7 @@
 
             <!-- 2. Change Password Form -->
             <div class="card">
-              <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:1.25rem;"><i class="fa-solid fa-lock" style="color:var(--primary);"></i> Security & Change Password</h3>
+              <h3 style="font-family:var(--font-family-display); font-size:1.1rem; font-weight:800; margin-bottom:1.25rem;"><i class="fa-solid fa-lock" style="color:var(--color-brand);"></i> Change Password</h3>
 
               <form id="change-password-form">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
@@ -238,7 +244,7 @@
                 </div>
 
                 <div style="display:flex; justify-content:flex-end; margin-top:1rem;">
-                  <button type="submit" class="btn btn-outline" style="border-color:var(--primary); color:var(--primary);"><i class="fa-solid fa-shield-halved"></i> Update Password</button>
+                  <button type="submit" class="btn btn-outline" style="border-color:var(--color-brand); color:var(--color-brand);"><i class="fa-solid fa-shield-halved"></i> Update Password</button>
                 </div>
               </form>
             </div>
@@ -256,4 +262,3 @@
   <script type="module" src="../js/controllers/profile.controller.js"></script>
 </body>
 </html>
-

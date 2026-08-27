@@ -15,19 +15,93 @@
   <link rel="stylesheet" href="../css/student.css">
   
   <style>
-    /* Student Dashboard Custom Dashboard Layout Widgets */
+    /* Student Dashboard Specific Custom Styles */
     .dashboard-top-grid {
       display: grid;
-      grid-template-columns: 1fr 340px;
+      grid-template-columns: 3fr 320px;
       gap: 1.5rem;
       margin-bottom: 1.75rem;
     }
 
     .metrics-row {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.1rem;
-      margin-bottom: 1.5rem;
+      grid-template-columns: repeat(3, 1fr) 320px;
+      gap: 1.5rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .student-hero-banner {
+      background: radial-gradient(circle at 0% 0%, rgba(91, 92, 235, 0.08) 0%, transparent 60%),
+                  var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .student-hero-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(91, 92, 235, 0.015) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(91, 92, 235, 0.015) 1px, transparent 1px);
+      background-size: 20px 24px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .student-hero-banner h2 {
+      font-family: var(--font-family-display);
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .student-hero-banner p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      max-width: 580px;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    .status-alert-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--color-success);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .status-alert-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-success);
+      box-shadow: 0 0 8px var(--color-success);
+      animation: status-badge-pulse 2s infinite;
+    }
+
+    @keyframes status-badge-pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
     }
 
     .quick-action-btn {
@@ -41,38 +115,37 @@
       color: var(--text-primary);
       font-weight: 600;
       font-size: 0.9rem;
-      transition: all var(--transition-fast);
       text-decoration: none;
     }
 
     .quick-action-btn:hover {
-      border-color: var(--primary);
+      border-color: var(--color-brand);
       background: var(--primary-light);
       transform: translateY(-2px);
     }
 
     .quick-action-icon {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: var(--radius-md);
       background: var(--primary-light);
-      color: var(--primary);
+      color: var(--color-brand);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
+      font-size: 1rem;
       flex-shrink: 0;
     }
 
     .quick-action-btn:hover .quick-action-icon {
-      background: var(--primary);
+      background: var(--color-brand);
       color: white;
     }
 
     .notification-item {
       display: flex;
-      gap: 0.85rem;
-      padding: 0.85rem 0;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
       border-bottom: 1px solid var(--border-color);
     }
 
@@ -82,15 +155,15 @@
     }
 
     .notification-icon {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       border-radius: var(--radius-full);
       background: var(--primary-light);
-      color: var(--primary);
+      color: var(--color-brand);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       flex-shrink: 0;
       margin-top: 0.1rem;
     }
@@ -100,10 +173,11 @@
       .metrics-row { grid-template-columns: repeat(2, 1fr); }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       .metrics-row { grid-template-columns: 1fr; }
     }
   </style>
+  <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
 
@@ -111,19 +185,24 @@
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-icon"><i class="fa-solid fa-building-shield"></i></div>
         <span class="sidebar-brand">CampusCare</span>
       </div>
       <nav class="sidebar-nav">
+        <div class="nav-group-title">Workspace</div>
         <a href="./dashboard.html" class="nav-item active">
           <i class="fa-solid fa-chart-pie"></i> Dashboard
         </a>
         <a href="./raise-complaint.html" class="nav-item">
           <i class="fa-solid fa-circle-plus"></i> Raise Complaint
         </a>
+        
+        <div class="nav-group-title">Feedback</div>
         <a href="./feedback.html" class="nav-item">
           <i class="fa-solid fa-star"></i> Resolution Feedback
         </a>
+        
+        <div class="nav-group-title">Account</div>
         <a href="./profile.html" class="nav-item">
           <i class="fa-solid fa-user-gear"></i> My Profile
         </a>
@@ -132,11 +211,11 @@
         <div class="user-badge-nav">
           <div class="user-avatar-sm" id="user-avatar-badge">S</div>
           <div>
-            <div style="font-weight:700; font-size:0.85rem;" id="user-display-name">Student</div>
+            <div style="font-weight:700; font-size:0.85rem; color:#ffffff;" id="user-display-name">Student</div>
             <div style="font-size:0.75rem; color:#94a3b8;" id="user-display-dept">Student Account</div>
           </div>
         </div>
-        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; margin-top:0.75rem; color:#94a3b8; border-color:rgba(255,255,255,0.1);">
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; margin-top:0.75rem; color:#94a3b8; border-color:rgba(255,255,255,0.08);">
           <i class="fa-solid fa-right-from-bracket"></i> Log Out
         </button>
       </div>
@@ -158,32 +237,33 @@
 
       <div class="page-body">
         
-        <!-- Top Section Grid: Welcome & Profile Summary -->
+        <!-- Top Section Grid: Welcome Banner & Profile Card -->
         <div class="dashboard-top-grid">
           <!-- Left: Hero Banner -->
-          <div class="student-hero" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:center;">
+          <div class="student-hero-banner">
             <h2>Welcome back, <span id="welcome-student-name">Student</span> 👋</h2>
-            <p>Track your active facility complaints, lodge new maintenance requests, and review resolution progress in real-time.</p>
+            <p>Your campus requests are organized here. Track active facility incidents, lodge new maintenance requests, and review resolution progress.</p>
+            <div class="status-alert-badge"><i class="fa-solid fa-circle-check"></i> Campus services fully operational</div>
           </div>
 
-          <!-- Right: Profile Summary Card -->
-          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+          <!-- Right: Profile Card (ID Badge Concept) -->
+          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; background:var(--bg-surface);">
             <div>
-              <div style="display:flex; align-items:center; gap:0.85rem; margin-bottom:0.85rem;">
-                <div class="user-avatar-sm" style="width:48px; height:48px; font-size:1.2rem;" id="card-avatar-sm">S</div>
+              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.85rem;">
+                <div class="user-avatar-sm" style="width:40px; height:40px; font-size:1.1rem;" id="card-avatar-sm">S</div>
                 <div>
-                  <h3 style="font-size:1.05rem; font-weight:800;" id="card-profile-name">Student Name</h3>
-                  <div style="font-size:0.8rem; color:var(--text-muted);" id="card-profile-email">student@campus.edu</div>
+                  <h3 style="font-size:0.95rem; font-weight:800; font-family:var(--font-family-display);" id="card-profile-name">Student Name</h3>
+                  <div style="font-size:0.78rem; color:var(--text-secondary);" id="card-profile-email">student@campus.edu</div>
                 </div>
               </div>
 
-              <div style="display:flex; flex-direction:column; gap:0.4rem; font-size:0.85rem; color:var(--text-secondary); background:var(--border-light); padding:0.75rem 0.9rem; border-radius:var(--radius-md);">
-                <div><i class="fa-solid fa-building-columns" style="width:18px; color:var(--primary);"></i> <span id="card-profile-dept">Computer Science</span></div>
-                <div><i class="fa-solid fa-id-card" style="width:18px; color:var(--primary);"></i> Roll No: <strong id="card-profile-roll">CS2026-042</strong></div>
+              <div style="display:flex; flex-direction:column; gap:0.4rem; font-size:0.82rem; color:var(--text-secondary); background:var(--bg-surface-raised); padding:0.75rem; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+                <div><i class="fa-solid fa-building-columns" style="width:16px; color:var(--color-brand);"></i> <span id="card-profile-dept">Computer Science</span></div>
+                <div><i class="fa-solid fa-id-card" style="width:16px; color:var(--color-brand);"></i> Roll No: <strong id="card-profile-roll" style="color:var(--text-primary);">CS2026-042</strong></div>
               </div>
             </div>
 
-            <a href="./profile.html" style="font-size:0.85rem; font-weight:700; display:inline-flex; align-items:center; gap:0.4rem; margin-top:0.75rem;">
+            <a href="./profile.html" style="font-size:0.82rem; font-weight:700; display:inline-flex; align-items:center; gap:0.35rem; margin-top:0.75rem; color:var(--color-brand);">
               Edit Profile & Settings <i class="fa-solid fa-arrow-right"></i>
             </a>
           </div>
@@ -195,7 +275,8 @@
           <div class="card stat-card">
             <div>
               <div class="stat-val" id="stat-total">0</div>
-              <div class="stat-label">Total Complaints</div>
+              <div class="stat-label">Total Requests</div>
+              <div class="stat-desc">All time entries</div>
             </div>
             <div class="stat-icon-wrapper"><i class="fa-solid fa-folder-open"></i></div>
           </div>
@@ -205,6 +286,7 @@
             <div>
               <div class="stat-val" id="stat-pending">0</div>
               <div class="stat-label">Pending Review</div>
+              <div class="stat-desc">Awaiting triage</div>
             </div>
             <div class="stat-icon-wrapper"><i class="fa-solid fa-clock"></i></div>
           </div>
@@ -214,8 +296,9 @@
             <div>
               <div class="stat-val" id="stat-inprogress">0</div>
               <div class="stat-label">In Progress</div>
+              <div class="stat-desc">Staff assigned</div>
             </div>
-            <div class="stat-icon-wrapper"><i class="fa-solid fa-spinner"></i></div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-gears"></i></div>
           </div>
 
           <!-- 4. Resolved -->
@@ -223,24 +306,25 @@
             <div>
               <div class="stat-val" id="stat-resolved">0</div>
               <div class="stat-label">Resolved</div>
+              <div class="stat-desc">Closed tickets</div>
             </div>
             <div class="stat-icon-wrapper"><i class="fa-solid fa-circle-check"></i></div>
           </div>
         </div>
 
-        <!-- Main Dashboard Split: Recent Complaints Table & Side Widgets -->
-        <div style="display:grid; grid-template-columns: 1fr 340px; gap:1.5rem;">
+        <!-- Split Grid layout -->
+        <div style="display:grid; grid-template-columns: 3fr 320px; gap:1.5rem;">
           
-          <!-- Left Column: Recent Complaints Table & Filters -->
+          <!-- Left Column: Active Incidents Table & Command Search Bar -->
           <div>
             <div class="filter-bar">
               <div class="filter-inputs">
                 <div class="search-box">
                   <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                  <input type="text" id="search-input" class="form-control" placeholder="Search by Ticket ID, Title..." />
+                  <input type="text" id="search-input" class="form-control" placeholder="Search by Ticket ID, title, keyword..." />
                 </div>
 
-                <select id="status-filter" class="form-select" style="max-width:160px;">
+                <select id="status-filter" class="form-select" style="max-width:140px;">
                   <option value="ALL">All Statuses</option>
                   <option value="Submitted">Submitted</option>
                   <option value="In Progress">In Progress</option>
@@ -248,12 +332,12 @@
                   <option value="Closed">Closed</option>
                 </select>
 
-                <select id="category-filter" class="form-select" style="max-width:160px;">
+                <select id="category-filter" class="form-select" style="max-width:150px;">
                   <option value="ALL">All Categories</option>
                   <option value="Hostel">Hostel</option>
                   <option value="Academics">Academics</option>
                   <option value="Infrastructure">Infrastructure</option>
-                  <option value="Mess/Catering">Mess / Catering</option>
+                  <option value="Mess/Catering">Mess / Dining</option>
                   <option value="Electrical">Electrical</option>
                   <option value="IT/Wifi">IT / Wifi</option>
                   <option value="General">General</option>
@@ -286,21 +370,21 @@
             
             <!-- Quick Actions Panel -->
             <div class="card">
-              <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:1rem;"><i class="fa-solid fa-bolt" style="color:var(--primary);"></i> Quick Actions</h3>
+              <h3 style="font-family:var(--font-family-display); font-size:1rem; font-weight:800; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;"><i class="fa-solid fa-bolt" style="color:var(--color-brand);"></i> Actions</h3>
               <div style="display:flex; flex-direction:column; gap:0.75rem;">
                 <a href="./raise-complaint.html" class="quick-action-btn">
                   <div class="quick-action-icon"><i class="fa-solid fa-plus"></i></div>
                   <div>
-                    <div>Lodge New Complaint</div>
-                    <div style="font-size:0.78rem; color:var(--text-muted); font-weight:normal;">Submit facility issue with photo</div>
+                    <div style="font-size:0.88rem; font-weight:700;">Lodge New Complaint</div>
+                    <div style="font-size:0.75rem; color:var(--text-secondary); font-weight:normal;">Submit facility issue with photo</div>
                   </div>
                 </a>
 
                 <a href="./profile.html" class="quick-action-btn">
                   <div class="quick-action-icon"><i class="fa-solid fa-user-gear"></i></div>
                   <div>
-                    <div>Account Settings</div>
-                    <div style="font-size:0.78rem; color:var(--text-muted); font-weight:normal;">Update phone or password</div>
+                    <div style="font-size:0.88rem; font-weight:700;">Account Settings</div>
+                    <div style="font-size:0.75rem; color:var(--text-secondary); font-weight:normal;">Update settings and password</div>
                   </div>
                 </a>
               </div>
@@ -309,8 +393,8 @@
             <!-- Notifications Panel -->
             <div class="card">
               <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
-                <h3 style="font-size:1.05rem; font-weight:700;"><i class="fa-solid fa-bell" style="color:var(--primary);"></i> Notifications</h3>
-                <span style="font-size:0.75rem; font-weight:700; color:var(--primary); background:var(--primary-light); padding:0.15rem 0.5rem; border-radius:var(--radius-full);" id="notif-count">3 New</span>
+                <h3 style="font-family:var(--font-family-display); font-size:1rem; font-weight:800; display:flex; align-items:center; gap:0.5rem;"><i class="fa-solid fa-bell" style="color:var(--color-brand);"></i> Activity</h3>
+                <span style="font-size:0.72rem; font-weight:700; color:var(--color-brand); background:var(--primary-light); padding:0.15rem 0.5rem; border-radius:var(--radius-full);" id="notif-count">0 New</span>
               </div>
 
               <div id="notifications-feed">

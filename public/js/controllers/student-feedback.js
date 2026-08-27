@@ -3,7 +3,7 @@
    ========================================================================== */
 
 import { requireAuth } from '../utils/guards.js';
-import { getStudentFeedbackComplaints, submitComplaintFeedback } from '../services/complaint.service.js';
+import { getStudentFeedbackComplaints, submitComplaintFeedback, listenToStudentComplaints } from '../services/complaint.service.js';
 import { formatDate } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
@@ -13,28 +13,32 @@ let activeRatings = {};
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     const { user, profile } = await requireAuth();
-    await loadFeedbackData(user.uid);
+    initRealtimeStudentFeedback(user.uid);
+
+    const { initNotificationDropdown } = await import('../utils/notification-dropdown.js');
+    initNotificationDropdown(user.uid);
   } catch (err) {
     console.error('Student feedback controller init error:', err);
   }
 });
 
-async function loadFeedbackData(uid) {
-  showLoader('Loading feedback items...');
-  const complaints = await getStudentFeedbackComplaints(uid);
-  hideLoader();
+function initRealtimeStudentFeedback(uid) {
+  showLoader('Connecting to real-time feedback...');
+  listenToStudentComplaints(uid, (complaints) => {
+    hideLoader();
+    const eligible = complaints.filter(c => c.status === 'Resolved' || c.status === 'Closed' || c.feedback != null);
+    const pendingList = eligible.filter(c => c.status === 'Resolved' && !c.feedback);
+    const submittedList = eligible.filter(c => c.feedback && c.feedback.rating);
 
-  const pendingList = complaints.filter(c => c.status === 'Resolved' && !c.feedback);
-  const submittedList = complaints.filter(c => c.feedback && c.feedback.rating);
+    // Update counters
+    const pendingEl = document.getElementById('count-pending');
+    const submittedEl = document.getElementById('count-submitted');
+    if (pendingEl) pendingEl.textContent = pendingList.length;
+    if (submittedEl) submittedEl.textContent = submittedList.length;
 
-  // Update counters
-  const pendingEl = document.getElementById('count-pending');
-  const submittedEl = document.getElementById('count-submitted');
-  if (pendingEl) pendingEl.textContent = pendingList.length;
-  if (submittedEl) submittedEl.textContent = submittedList.length;
-
-  renderPendingList(pendingList);
-  renderHistoryList(submittedList);
+    renderPendingList(pendingList);
+    renderHistoryList(submittedList);
+  });
 }
 
 /**

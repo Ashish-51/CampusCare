@@ -3,7 +3,7 @@
    ========================================================================== */
 
 import { requireAuth, resolveUrl } from '../utils/guards.js';
-import { getAllFeedbacks } from '../services/complaint.service.js';
+import { getAllFeedbacks, listenToAllComplaints } from '../services/complaint.service.js';
 import { formatDate } from '../utils/formatters.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
 
@@ -12,23 +12,39 @@ let allReviewsList = [];
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     const { profile } = await requireAuth();
-    await loadAdminFeedbackData();
+    initRealtimeFeedback();
     initFilters();
   } catch (err) {
     console.error('Admin feedback controller init error:', err);
   }
 });
 
-async function loadAdminFeedbackData() {
+function initRealtimeFeedback() {
   showLoader('Loading student ratings & reviews...');
-  const { feedbacks, stats } = await getAllFeedbacks();
-  hideLoader();
+  
+  listenToAllComplaints((complaints) => {
+    hideLoader();
+    const feedbacks = complaints.filter(c => c.feedback && c.feedback.rating);
+    const total = feedbacks.length;
+    let totalRating = 0;
+    const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
-  allReviewsList = feedbacks;
+    feedbacks.forEach(f => {
+      const r = Math.min(5, Math.max(1, Math.round(f.feedback.rating)));
+      distribution[r] = (distribution[r] || 0) + 1;
+      totalRating += r;
+    });
 
-  renderSummaryStats(stats);
-  renderDistributionBars(stats);
-  renderReviewsFeed(allReviewsList);
+    const avgRating = total > 0 ? (totalRating / total).toFixed(1) : '0.0';
+    const satisfactionRate = total > 0 ? Math.round(((distribution[5] + distribution[4]) / total) * 100) : 0;
+
+    const stats = { total, avgRating, distribution, satisfactionRate };
+    allReviewsList = feedbacks.sort((a, b) => new Date(b.feedback.submittedAt || b.updatedAt) - new Date(a.feedback.submittedAt || a.updatedAt));
+
+    renderSummaryStats(stats);
+    renderDistributionBars(stats);
+    renderReviewsFeed(allReviewsList);
+  });
 }
 
 /**

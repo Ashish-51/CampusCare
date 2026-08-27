@@ -11,9 +11,12 @@ let selectedImageFile = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const { profile } = await requireAuth('student');
+    const { user, profile } = await requireAuth('student');
     initDropzone();
     initFormValidation(profile);
+
+    const { initNotificationDropdown } = await import('../utils/notification-dropdown.js');
+    initNotificationDropdown(user.uid);
   } catch (err) {
     console.error('Raise complaint controller init error:', err);
   }

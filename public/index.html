@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusCare - Digital Complaint Management System</title>
-  <meta name="description" content="A modern digital complaint management portal for students and administrators. Fast, transparent, and responsive facility management.">
+  <title>CampusCare - Premium Campus Operations Command Center</title>
+  <meta name="description" content="A premium digital complaint management portal and campus operations command center for students and administrators.">
   
   <!-- Font Awesome 6 CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -24,20 +24,27 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--bg-surface);
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-color);
-      padding: 0.85rem 2rem;
+      padding: 0.75rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: var(--shadow-xs);
     }
 
+    [data-theme="dark"] .landing-nav {
+      background: rgba(9, 13, 24, 0.8);
+    }
+
     .landing-logo {
       display: flex;
       align-items: center;
       gap: 0.65rem;
-      font-size: 1.25rem;
+      font-family: var(--font-family-display);
+      font-size: 1.15rem;
       font-weight: 800;
       color: var(--text-primary);
       text-decoration: none;
@@ -53,22 +60,34 @@
     .landing-nav-links a {
       color: var(--text-secondary);
       font-weight: 600;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       transition: color var(--transition-fast);
     }
 
     .landing-nav-links a:hover {
-      color: var(--primary);
+      color: var(--color-brand);
     }
 
-    /* 1. Hero Section */
+    /* 1. Hero Section with Atmosphere */
     .hero-section {
-      padding: 5rem 1.5rem 4rem;
+      padding: 6rem 1.5rem 5rem;
       text-align: center;
-      background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 60%),
+      background: radial-gradient(circle at 50% 0%, rgba(91, 92, 235, 0.06) 0%, transparent 65%),
                   var(--bg-app);
       position: relative;
       overflow: hidden;
+    }
+
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(91, 92, 235, 0.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(91, 92, 235, 0.02) 1px, transparent 1px);
+      background-size: 32px 32px;
+      background-position: center top;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .hero-badge {
@@ -76,35 +95,43 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.4rem 1rem;
-      background: var(--primary-light);
-      color: var(--primary);
-      border: 1px solid var(--primary-border);
+      background: var(--color-brand-soft);
+      color: var(--color-brand);
+      border: 1px solid var(--border-color);
       border-radius: var(--radius-full);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
       margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-xs);
+      position: relative;
+      z-index: 2;
     }
 
     .hero-title {
-      font-size: 3.4rem;
+      font-family: var(--font-family-display);
+      font-size: 3.6rem;
       font-weight: 800;
-      letter-spacing: -1.2px;
-      line-height: 1.15;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
       color: var(--text-primary);
-      max-width: 850px;
+      max-width: 800px;
       margin: 0 auto 1.25rem;
+      position: relative;
+      z-index: 2;
     }
 
     .hero-title span {
-      color: var(--primary);
+      color: var(--color-brand);
     }
 
     .hero-subtitle {
-      font-size: 1.2rem;
-      color: var(--text-muted);
-      max-width: 660px;
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 620px;
       margin: 0 auto 2.5rem;
       line-height: 1.6;
+      position: relative;
+      z-index: 2;
     }
 
     .hero-cta {
@@ -112,20 +139,165 @@
       gap: 1rem;
       justify-content: center;
       flex-wrap: wrap;
-      margin-bottom: 3.5rem;
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 2;
     }
 
+    /* Floating Layered UI Dashboard Panels Demo */
+    .hero-preview-container {
+      max-width: 1000px;
+      margin: 0 auto 1.5rem;
+      position: relative;
+      z-index: 2;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(8px);
+      padding: 0.75rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    [data-theme="dark"] .hero-preview-container {
+      background: rgba(17, 24, 39, 0.4);
+    }
+
+    .mock-dashboard {
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      text-align: left;
+      height: 380px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mock-sidebar {
+      background: #0B1020;
+      color: #94A3B8;
+      padding: 1.25rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .mock-logo {
+      color: #ffffff;
+      font-family: var(--font-family-display);
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mock-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+    }
+
+    .mock-nav-item.active {
+      color: #ffffff;
+      background: rgba(91, 92, 235, 0.15);
+    }
+
+    .mock-main {
+      padding: 1.5rem;
+      background: var(--bg-app);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      overflow-y: auto;
+    }
+
+    .mock-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.75rem;
+    }
+
+    .mock-header h3 {
+      font-family: var(--font-family-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .mock-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .mock-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .mock-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .mock-ticket {
+      font-family: var(--font-family-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-brand);
+    }
+
+    .mock-status-pill {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.15rem 0.4rem;
+      border-radius: var(--radius-xs);
+      text-transform: uppercase;
+    }
+
+    .mock-status-pill.inprogress { background: var(--status-inprogress-bg); color: var(--status-inprogress); }
+    .mock-status-pill.resolved { background: var(--status-resolved-bg); color: var(--status-resolved); }
+
+    .mock-card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: var(--text-primary);
+    }
+
+    .mock-card-meta {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* Live statistics strip */
     .hero-stats-strip {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1.5rem;
       max-width: 900px;
-      margin: 0 auto;
-      padding: 1.75rem;
+      margin: 3.5rem auto 0;
+      padding: 1.25rem 1.75rem;
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
+      position: relative;
+      z-index: 2;
     }
 
     .stat-box {
@@ -133,15 +305,16 @@
     }
 
     .stat-number {
+      font-family: var(--font-family-display);
       font-size: 2.2rem;
       font-weight: 800;
-      color: var(--primary);
+      color: var(--color-brand);
       line-height: 1.1;
     }
 
     .stat-text {
       font-size: 0.85rem;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       font-weight: 600;
       margin-top: 0.25rem;
     }
@@ -159,16 +332,17 @@
     }
 
     .section-tag {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--primary);
+      letter-spacing: 1.2px;
+      color: var(--color-brand);
       margin-bottom: 0.5rem;
       display: block;
     }
 
     .section-title {
+      font-family: var(--font-family-display);
       font-size: 2.2rem;
       font-weight: 800;
       letter-spacing: -0.5px;
@@ -177,9 +351,10 @@
 
     .section-desc {
       font-size: 1.05rem;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       max-width: 580px;
       margin: 0.5rem auto 0;
+      line-height: 1.6;
     }
 
     /* 2. Features Section */
@@ -194,46 +369,45 @@
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
       padding: 2rem;
-      transition: all var(--transition-fast);
     }
 
     .feature-card:hover {
-      transform: translateY(-4px);
       box-shadow: var(--shadow-md);
-      border-color: var(--primary-border);
+      border-color: var(--color-brand);
     }
 
     .feature-icon-box {
-      width: 52px;
-      height: 52px;
+      width: 44px;
+      height: 44px;
       border-radius: var(--radius-md);
       background: var(--primary-light);
-      color: var(--primary);
+      color: var(--color-brand);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       margin-bottom: 1.25rem;
     }
 
     .feature-card h3 {
-      font-size: 1.2rem;
+      font-family: var(--font-family-display);
+      font-size: 1.15rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
       color: var(--text-primary);
     }
 
     .feature-card p {
-      color: var(--text-muted);
-      font-size: 0.92rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
       line-height: 1.6;
     }
 
-    /* 3. How It Works Section */
+    /* 3. Lifecycle Operational Steps (01 Report ... 05 Feedback) */
     .steps-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.25rem;
       position: relative;
     }
 
@@ -241,35 +415,33 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
-      padding: 2rem 1.5rem;
-      text-align: center;
+      padding: 1.75rem 1.25rem;
+      text-align: left;
       position: relative;
     }
 
-    .step-number {
-      width: 42px;
-      height: 42px;
-      border-radius: var(--radius-full);
-      background: var(--primary);
-      color: white;
+    .step-index {
+      font-family: var(--font-family-mono);
+      font-size: 1.5rem;
       font-weight: 800;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1.25rem;
-      box-shadow: var(--shadow-blue);
+      color: var(--color-brand-soft);
+      line-height: 1;
+      margin-bottom: 0.75rem;
+      display: block;
+      color: rgba(91, 92, 235, 0.2);
     }
 
     .step-card h4 {
-      font-size: 1.1rem;
+      font-family: var(--font-family-display);
+      font-size: 1rem;
       font-weight: 700;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
+      color: var(--text-primary);
     }
 
     .step-card p {
-      color: var(--text-muted);
-      font-size: 0.88rem;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
       line-height: 1.5;
     }
 
@@ -284,45 +456,45 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
-      padding: 1.5rem;
+      padding: 1.25rem;
       display: flex;
       align-items: center;
-      gap: 1.25rem;
-      transition: all var(--transition-fast);
+      gap: 1.1rem;
     }
 
     .category-card:hover {
-      border-color: var(--primary);
+      border-color: var(--color-brand);
       background: var(--primary-light);
     }
 
     .category-icon {
-      width: 48px;
-      height: 48px;
+      width: 42px;
+      height: 42px;
       border-radius: var(--radius-md);
       background: var(--primary-light);
-      color: var(--primary);
+      color: var(--color-brand);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       flex-shrink: 0;
     }
 
     .category-card:hover .category-icon {
-      background: var(--primary);
+      background: var(--color-brand);
       color: white;
     }
 
     /* 5. Why CampusCare Section */
     .why-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 3rem;
       align-items: center;
     }
 
     .why-content h3 {
+      font-family: var(--font-family-display);
       font-size: 1.8rem;
       font-weight: 800;
       margin-bottom: 1rem;
@@ -342,25 +514,25 @@
     }
 
     .why-icon {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       border-radius: var(--radius-full);
       background: var(--status-resolved-bg);
       color: var(--status-resolved);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       flex-shrink: 0;
-      margin-top: 0.2rem;
+      margin-top: 0.15rem;
     }
 
     /* 6. Footer Section */
     .landing-footer {
-      background: #0f172a;
-      color: #94a3b8;
+      background: #0B1020;
+      color: #94A3B8;
       padding: 4rem 1.5rem 2rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .footer-grid {
@@ -373,14 +545,16 @@
 
     .footer-brand h2 {
       color: #ffffff;
-      font-size: 1.3rem;
+      font-family: var(--font-family-display);
+      font-size: 1.25rem;
       font-weight: 800;
       margin-bottom: 0.75rem;
     }
 
     .footer-col h4 {
       color: #ffffff;
-      font-size: 0.95rem;
+      font-family: var(--font-family-display);
+      font-size: 0.9rem;
       font-weight: 700;
       margin-bottom: 1rem;
     }
@@ -393,8 +567,8 @@
     }
 
     .footer-links a {
-      color: #94a3b8;
-      font-size: 0.88rem;
+      color: #94A3B8;
+      font-size: 0.85rem;
     }
 
     .footer-links a:hover {
@@ -405,38 +579,50 @@
       max-width: 1200px;
       margin: 0 auto;
       padding-top: 2rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 1100px) {
+      .steps-grid { grid-template-columns: repeat(3, 1fr); }
     }
 
     @media (max-width: 992px) {
-      .hero-title { font-size: 2.4rem; }
+      .hero-title { font-size: 2.6rem; }
       .why-grid { grid-template-columns: 1fr; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
       .landing-nav-links { display: none; }
+      .mock-dashboard { grid-template-columns: 1fr; height: auto; }
+      .mock-sidebar { display: none; }
+      .mock-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .steps-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
 
   <!-- Landing Header Navigation -->
   <header class="landing-nav">
     <a href="./index.html" class="landing-logo">
-      <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+      <div class="brand-icon"><i class="fa-solid fa-building-shield"></i></div>
       <span>CampusCare</span>
     </a>
 
     <ul class="landing-nav-links">
       <li><a href="#features">Features</a></li>
-      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#lifecycle">Operations</a></li>
       <li><a href="#categories">Categories</a></li>
       <li><a href="#why-us">Why Us</a></li>
     </ul>
 
-    <div style="display:flex; align-items:center; gap:0.75rem;">
+    <div style="display:flex; align-items:center; gap:0.65rem;">
       <a href="./login.html" class="btn btn-outline btn-sm"><i class="fa-solid fa-lock"></i> Sign In</a>
       <a href="./register.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Register</a>
       <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
@@ -446,38 +632,75 @@
   <!-- 1. Hero Section -->
   <section class="hero-section">
     <div class="hero-badge">
-      <i class="fa-solid fa-bolt"></i> Next-Gen Campus Complaint Management System
+      <i class="fa-solid fa-building-circle-check"></i> Campus Operations Command Center
     </div>
 
     <h1 class="hero-title">
-      Digital Facility Care & Resolution for <span>Modern Campuses</span>
+      Make campus problems <span>visible</span>.<br>Make campus care <span>accountable</span>.
     </h1>
     
     <p class="hero-subtitle">
-      Lodge campus maintenance issues in seconds, upload photo evidence, track real-time resolution timelines, and empower administration with analytics.
+      CampusCare gives students a transparent way to report issues, track progress, and see facility problems move swiftly toward resolution.
     </p>
 
     <div class="hero-cta">
-      <a href="./register.html" class="btn btn-primary btn-lg">
-        <i class="fa-solid fa-rocket"></i> Register Student Account
+      <a href="#lifecycle" class="btn btn-outline btn-lg">
+        Explore How It Works <i class="fa-solid fa-arrow-down"></i>
       </a>
-      <a href="./login.html" class="btn btn-outline btn-lg">
-        <i class="fa-solid fa-right-to-bracket"></i> Sign In to Dashboard
+      <a href="./CampusCare_User_Manual.docx" download="CampusCare_User_Manual.docx" class="btn btn-outline btn-lg" style="border-color: var(--color-brand); color: var(--color-brand);">
+        <i class="fa-solid fa-book-open"></i> User Manual (.docx)
       </a>
     </div>
 
+    <!-- Software Mock Panels Section -->
+    <div class="hero-preview-container">
+      <div class="mock-dashboard">
+        <div class="mock-sidebar">
+          <div class="mock-logo"><i class="fa-solid fa-building-shield"></i> CampusCare</div>
+          <div class="mock-nav-item active"><i class="fa-solid fa-chart-pie"></i> Command Center</div>
+          <div class="mock-nav-item"><i class="fa-solid fa-ticket"></i> Active Incidents</div>
+          <div class="mock-nav-item"><i class="fa-solid fa-star"></i> Feedback Analytics</div>
+        </div>
+        <div class="mock-main">
+          <div class="mock-header">
+            <h3><i class="fa-solid fa-tower-broadcast" style="color:var(--color-brand);"></i> Live Facility Operations Feed</h3>
+            <span class="badge badge-resolved" style="text-transform:none;"><i class="fa-solid fa-circle"></i> Services Online</span>
+          </div>
+          <div class="mock-grid" id="live-mock-grid">
+            <div class="mock-card">
+              <div class="mock-card-header">
+                <span class="mock-ticket">CC-2026-0814</span>
+                <span class="mock-status-pill inprogress">In Progress</span>
+              </div>
+              <div class="mock-card-title">Main Library Central Wi-Fi Outage</div>
+              <div class="mock-card-meta"><i class="fa-solid fa-location-dot"></i> Library • Floor 2</div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-header">
+                <span class="mock-ticket">CC-2026-0815</span>
+                <span class="mock-status-pill resolved">Resolved</span>
+              </div>
+              <div class="mock-card-title">Hostel Block C Plumbing & Water Supply</div>
+              <div class="mock-card-meta"><i class="fa-solid fa-location-dot"></i> Hostel Block C • Washroom 3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live turnarounds updated by app.js -->
     <div class="hero-stats-strip">
       <div class="stat-box">
         <div class="stat-number">100%</div>
         <div class="stat-text">Digital Ticket Tracking</div>
       </div>
       <div class="stat-box">
-        <div class="stat-number">&lt; 24h</div>
-        <div class="stat-text">Average Response SLA</div>
+        <div class="stat-number" id="live-stat-sla">&lt; 24h</div>
+        <div class="stat-text">Average Resolution SLA</div>
       </div>
       <div class="stat-box">
-        <div class="stat-number">4.9 / 5</div>
-        <div class="stat-text">Student Satisfaction</div>
+        <div class="stat-number" id="live-stat-satisfaction">4.9 / 5</div>
+        <div class="stat-text" id="live-stat-satisfaction-label">Live Student Satisfaction</div>
       </div>
     </div>
   </section>
@@ -485,82 +708,70 @@
   <!-- 2. Features Section -->
   <section class="section-container" id="features">
     <div class="section-header">
-      <span class="section-tag">Powerful Features</span>
-      <h2 class="section-title">Everything You Need for Campus Maintenance</h2>
-      <p class="section-desc">Streamlining communication between students, hostel wardens, IT leads, and maintenance engineers.</p>
+      <span class="section-tag">Aesthetic UI / Operational Flow</span>
+      <h2 class="section-title">Institutional Service Operations & Triage</h2>
+      <p class="section-desc">Streamlining communication between students, hostel wardens, and maintenance engineers.</p>
     </div>
 
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon-box"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-        <h3>Drag & Drop Photo Attachment</h3>
-        <p>Upload clear photo evidence of broken fixtures, plumbing leaks, or IT hardware issues directly from mobile or desktop.</p>
+        <h3>Evidence Photo Management</h3>
+        <p>Lodge facility issues with drag-and-drop attachment, supporting instant image reviews for active staff engineers.</p>
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
-        <h3>Step-by-Step Interactive Timeline</h3>
-        <p>Monitor real-time resolution stages: Submitted $\rightarrow$ In Progress $\rightarrow$ Resolved with transparent admin audit notes.</p>
+        <div class="feature-icon-box"><i class="fa-solid fa-timeline"></i></div>
+        <h3>Incident Timeline History</h3>
+        <p>Follow chronological updates: Submitted $\rightarrow$ Under Review $\rightarrow$ Team Dispatched $\rightarrow$ Resolved with official triage logs.</p>
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon-box"><i class="fa-solid fa-chart-pie"></i></div>
-        <h3>Admin Analytics & Chart.js</h3>
-        <p>Interactive metric counters, category distribution doughnut charts, and departmental workload graphs for management leads.</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon-box"><i class="fa-solid fa-star"></i></div>
-        <h3>Post-Resolution Star Ratings</h3>
-        <p>Students can rate the quality of resolution (1-5 stars) and provide feedback to ensure service standards.</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon-box"><i class="fa-solid fa-shield-halved"></i></div>
-        <h3>Role-Based Security & Protection</h3>
-        <p>Built with Firebase Auth and Cloud Firestore RBAC security rules ensuring data privacy between students and admins.</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon-box"><i class="fa-solid fa-filter"></i></div>
-        <h3>Instant Search & Multi-Filters</h3>
-        <p>Filter complaints by Status, Category, and Urgency levels with search indexing across Ticket IDs and keywords.</p>
+        <div class="feature-icon-box"><i class="fa-solid fa-chart-line"></i></div>
+        <h3>Command Analytics</h3>
+        <p>Dense administrator tables, performance stats, category doughnut charts, and monthly ticket graphs.</p>
       </div>
     </div>
   </section>
 
-  <!-- 3. How It Works Section -->
-  <section style="background: var(--border-light);" id="how-it-works">
+  <!-- 3. Lifecycle Section (01 Report ... 05 Feedback) -->
+  <section style="background: var(--bg-surface-raised); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);" id="lifecycle">
     <div class="section-container">
       <div class="section-header">
-        <span class="section-tag">Simple Workflow</span>
-        <h2 class="section-title">How CampusCare Works in 4 Steps</h2>
-        <p class="section-desc">From lodging a complaint to ticket resolution in four seamless steps.</p>
+        <span class="section-tag">Incident Lifecycle</span>
+        <h2 class="section-title">Transparent Operational Progression</h2>
+        <p class="section-desc">CampusCare enforces a strict lifecycle path to ensure no ticket is ever lost or ignored.</p>
       </div>
 
       <div class="steps-grid">
         <div class="step-card">
-          <div class="step-number">1</div>
-          <h4>Register Account</h4>
-          <p>Sign up using your institutional student email and select your department.</p>
+          <span class="step-index">01</span>
+          <h4>Report</h4>
+          <p>Student raises a complaint with descriptive details and photo attachments.</p>
         </div>
 
         <div class="step-card">
-          <div class="step-number">2</div>
-          <h4>Lodge Complaint</h4>
-          <p>Fill out issue category, urgency level, room location, and attach photo evidence.</p>
+          <span class="step-index">02</span>
+          <h4>Review</h4>
+          <p>Administration triages the incident and evaluates priority levels.</p>
         </div>
 
         <div class="step-card">
-          <div class="step-number">3</div>
-          <h4>Track Progress</h4>
-          <p>Follow live status updates and admin remarks on your interactive timeline.</p>
+          <span class="step-index">03</span>
+          <h4>Assign</h4>
+          <p>Official maintenance team or service lead is dispatched to investigate.</p>
         </div>
 
         <div class="step-card">
-          <div class="step-number">4</div>
-          <h4>Rate & Close</h4>
-          <p>Rate the service resolution quality with 5-star ratings and submit review comments.</p>
+          <span class="step-index">04</span>
+          <h4>Resolve</h4>
+          <p>Service lead completes work, updating the audit trail log with remarks.</p>
+        </div>
+
+        <div class="step-card">
+          <span class="step-index">05</span>
+          <h4>Feedback</h4>
+          <p>Student rates resolution satisfaction, formally closing the lifecycle loop.</p>
         </div>
       </div>
     </div>
@@ -570,56 +781,56 @@
   <section class="section-container" id="categories">
     <div class="section-header">
       <span class="section-tag">Coverage</span>
-      <h2 class="section-title">Supported Complaint Categories</h2>
-      <p class="section-desc">Covers all essential campus infrastructure, hostel, academic, and dining facilities.</p>
+      <h2 class="section-title">Supported Operational Fields</h2>
+      <p class="section-desc">Fully configured to cover college infrastructure, residential halls, and dining facilities.</p>
     </div>
 
     <div class="categories-grid">
       <div class="category-card">
         <div class="category-icon"><i class="fa-solid fa-building-user"></i></div>
         <div>
-          <h4 style="font-size:1.05rem; font-weight:700;">Hostel Maintenance</h4>
-          <p style="font-size:0.85rem; color:var(--text-muted);">Bed, furniture, locks & room fixtures</p>
+          <h4 style="font-size:0.95rem; font-weight:700;">Hostel Maintenance</h4>
+          <p style="font-size:0.82rem; color:var(--text-secondary);">Room locks, furniture & residential fixtures</p>
         </div>
       </div>
 
       <div class="category-card">
         <div class="category-icon"><i class="fa-solid fa-laptop-code"></i></div>
         <div>
-          <h4 style="font-size:1.05rem; font-weight:700;">Academics & Labs</h4>
-          <p style="font-size:0.85rem; color:var(--text-muted);">Lab equipment, projector & desk issues</p>
+          <h4 style="font-size:0.95rem; font-weight:700;">Academics & Labs</h4>
+          <p style="font-size:0.82rem; color:var(--text-secondary);">Lab workstations, projector issues & desks</p>
         </div>
       </div>
 
       <div class="category-card">
         <div class="category-icon"><i class="fa-solid fa-bolt"></i></div>
         <div>
-          <h4 style="font-size:1.05rem; font-weight:700;">Electrical & Plumbing</h4>
-          <p style="font-size:0.85rem; color:var(--text-muted);">Lighting, fan motor & water supply</p>
+          <h4 style="font-size:0.95rem; font-weight:700;">Electrical & Plumbing</h4>
+          <p style="font-size:0.82rem; color:var(--text-secondary);">Lighting grid, water supply & plumbing</p>
         </div>
       </div>
 
       <div class="category-card">
         <div class="category-icon"><i class="fa-solid fa-wifi"></i></div>
         <div>
-          <h4 style="font-size:1.05rem; font-weight:700;">IT & Wi-Fi Network</h4>
-          <p style="font-size:0.85rem; color:var(--text-muted);">Internet connectivity & router coverage</p>
+          <h4 style="font-size:0.95rem; font-weight:700;">IT & Wi-Fi Network</h4>
+          <p style="font-size:0.82rem; color:var(--text-secondary);">Access points, router coverage & speeds</p>
         </div>
       </div>
 
       <div class="category-card">
         <div class="category-icon"><i class="fa-solid fa-utensils"></i></div>
         <div>
-          <h4 style="font-size:1.05rem; font-weight:700;">Mess & Dining</h4>
-          <p style="font-size:0.85rem; color:var(--text-muted);">Catering quality, hygiene & water coolers</p>
+          <h4 style="font-size:0.95rem; font-weight:700;">Mess & Dining</h4>
+          <p style="font-size:0.82rem; color:var(--text-secondary);">Catering health standards, menus & hygiene</p>
         </div>
       </div>
 
       <div class="category-card">
         <div class="category-icon"><i class="fa-solid fa-city"></i></div>
         <div>
-          <h4 style="font-size:1.05rem; font-weight:700;">Infrastructure</h4>
-          <p style="font-size:0.85rem; color:var(--text-muted);">Elevators, sports grounds & pathways</p>
+          <h4 style="font-size:0.95rem; font-weight:700;">General Infrastructure</h4>
+          <p style="font-size:0.82rem; color:var(--text-secondary);">Elevators, common areas & sports grounds</p>
         </div>
       </div>
     </div>
@@ -630,44 +841,36 @@
     <div class="section-container">
       <div class="why-grid">
         <div class="why-content">
-          <span class="section-tag">Why CampusCare</span>
-          <h3>Modernizing Campus Life with Efficiency & Transparency</h3>
-          <p style="color:var(--text-muted); line-height:1.6;">
-            Traditional paper registers or verbal complaints lead to lost tickets, unassigned tasks, and frustrated students. CampusCare replaces outdated workflows with an automated digital system.
+          <span class="section-tag">Audit Trail</span>
+          <h3>Calm Operational Control for Campus Administrators</h3>
+          <p style="color:var(--text-secondary); line-height:1.6; font-size: 0.95rem;">
+            Traditional verbal complaints lead to lost tickets and staff confusion. CampusCare logs and tracks every event automatically, enabling administrators to view status breakdowns in real-time.
           </p>
 
           <div class="why-list">
             <div class="why-item">
               <div class="why-icon"><i class="fa-solid fa-check"></i></div>
               <div>
-                <strong style="color:var(--text-primary);">Zero Lost Complaints</strong>
-                <p style="font-size:0.88rem; color:var(--text-muted);">Every issue is assigned a permanent Ticket ID stored safely in Cloud Firestore.</p>
+                <strong style="color:var(--text-primary); font-size: 0.95rem;">Zero Lost Records</strong>
+                <p style="font-size:0.85rem; color:var(--text-secondary);">Every lodge generates a permanent ticket ID logged cleanly in Cloud Firestore.</p>
               </div>
             </div>
 
             <div class="why-item">
               <div class="why-icon"><i class="fa-solid fa-check"></i></div>
               <div>
-                <strong style="color:var(--text-primary);">Faster Resolution Times</strong>
-                <p style="font-size:0.88rem; color:var(--text-muted);">Direct triage assignment speeds up maintenance dispatch by up to 60%.</p>
-              </div>
-            </div>
-
-            <div class="why-item">
-              <div class="why-icon"><i class="fa-solid fa-check"></i></div>
-              <div>
-                <strong style="color:var(--text-primary);">Accountability & Analytics</strong>
-                <p style="font-size:0.88rem; color:var(--text-muted);">Admin chart dashboards highlight resolution performance and high-frequency problem areas.</p>
+                <strong style="color:var(--text-primary); font-size: 0.95rem;">Actionable KPI Logs</strong>
+                <p style="font-size:0.85rem; color:var(--text-secondary);">Track average response timelines and resolution rates per department.</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="card" style="padding:2.5rem; text-align:center; background:var(--primary-light); border-color:var(--primary-border);">
-          <div class="brand-icon" style="width:64px; height:64px; font-size:2rem; margin:0 auto 1.5rem;"><i class="fa-solid fa-graduation-cap"></i></div>
-          <h3 style="font-size:1.5rem; font-weight:800; margin-bottom:0.75rem;">Ready to Experience CampusCare?</h3>
-          <p style="color:var(--text-secondary); font-size:0.95rem; margin-bottom:1.75rem;">Get started in less than 2 minutes. Lodge your first complaint today.</p>
-          <a href="./register.html" class="btn btn-primary btn-lg" style="width:100%;"><i class="fa-solid fa-arrow-right"></i> Register Student Account</a>
+        <div class="card" style="padding:2.5rem; text-align:center; background:var(--primary-light); border-color:var(--border-color);">
+          <div class="brand-icon" style="width:52px; height:52px; font-size:1.5rem; margin:0 auto 1rem;"><i class="fa-solid fa-building-shield"></i></div>
+          <h3 style="font-size:1.35rem; font-weight:800; margin-bottom:0.75rem;">Get CampusCare Started</h3>
+          <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:1.5rem;">Access the operations dashboards or register your student account today.</p>
+          <a href="./register.html" class="btn btn-primary btn-lg" style="width:100%;"><i class="fa-solid fa-user-plus"></i> Register Student Account</a>
         </div>
       </div>
     </div>
@@ -677,19 +880,19 @@
   <footer class="landing-footer">
     <div class="footer-grid">
       <div class="footer-brand">
-        <h2><i class="fa-solid fa-graduation-cap" style="color:var(--primary);"></i> CampusCare</h2>
-        <p style="font-size:0.88rem; line-height:1.6; margin-bottom:0;">
-          Production-quality Digital Complaint Management Platform for Educational Institutions, Colleges & Hostels.
+        <h2><i class="fa-solid fa-building-shield" style="color:var(--color-brand);"></i> CampusCare</h2>
+        <p style="font-size:0.85rem; line-height:1.6; margin-bottom:0;">
+          Premium Digital Incident and Operations Command Center for Educational Facilities.
         </p>
       </div>
 
       <div class="footer-col">
-        <h4>Quick Navigation</h4>
+        <h4>Key Links</h4>
         <ul class="footer-links">
-          <li><a href="#features">Key Features</a></li>
-          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#lifecycle">Operations Flow</a></li>
           <li><a href="#categories">Complaint Categories</a></li>
-          <li><a href="#why-us">Why CampusCare</a></li>
+          <li><a href="#why-us">Command Overview</a></li>
         </ul>
       </div>
 
@@ -697,8 +900,8 @@
         <h4>Portals</h4>
         <ul class="footer-links">
           <li><a href="./login.html">Student Sign In</a></li>
-          <li><a href="./register.html">Student Register</a></li>
-          <li><a href="./login.html">Admin Portal Login</a></li>
+          <li><a href="./register.html">Student Registration</a></li>
+          <li><a href="./login.html">Admin Workspace</a></li>
           <li><a href="./admin/register.html">Admin Staff Register</a></li>
         </ul>
       </div>
@@ -706,16 +909,15 @@
       <div class="footer-col">
         <h4>Support & Contact</h4>
         <ul class="footer-links">
-          <li><span style="font-size:0.88rem;"><i class="fa-solid fa-envelope"></i> support@campuscare.edu</span></li>
-          <li><span style="font-size:0.88rem;"><i class="fa-solid fa-phone"></i> +1 800-CAMPUS-CARE</span></li>
-          <li><span style="font-size:0.88rem;"><i class="fa-solid fa-location-dot"></i> Central Admin Block</span></li>
+          <li><span style="font-size:0.85rem;"><i class="fa-solid fa-envelope"></i> support@campuscare.edu</span></li>
+          <li><span style="font-size:0.85rem;"><i class="fa-solid fa-phone"></i> +1 800-CAMPUS-CARE</span></li>
         </ul>
       </div>
     </div>
 
     <div class="footer-bottom">
       <div>&copy; 2026 CampusCare Digital System. All rights reserved.</div>
-      <div style="display:flex; align-items:center; gap:1rem;">
+      <div>
         <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
       </div>
     </div>

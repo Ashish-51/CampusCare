@@ -1,9 +1,18 @@
-import { registerStudent, loginUser, sendResetPassword } from '../services/auth.service.js';
+import { registerStudent, loginUser, sendResetPassword, logoutUser } from '../services/auth.service.js';
 import { resolveUrl } from '../utils/guards.js';
 import { showToast } from '../utils/toast.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
+import { auth, onAuthStateChanged } from '../config/firebase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Clear any existing session to prevent auto-login on public terminals
+  localStorage.removeItem('campuscare_demo_session');
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    unsubscribe();
+    if (user) {
+      logoutUser();
+    }
+  });
   initTabs();
   initForms();
   initForgotPasswordModal();

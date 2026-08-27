@@ -10,7 +10,7 @@ export function showLoader(message = 'Loading...') {
     overlay.innerHTML = `
       <div style="text-align:center;">
         <div class="spinner"></div>
-        <p style="margin-top:1rem; font-weight:600; color:var(--text-main);">${message}</p>
+        <p style="margin-top:1rem; font-weight:600; color:var(--text-primary);">${message}</p>
       </div>
     `;
     document.body.appendChild(overlay);

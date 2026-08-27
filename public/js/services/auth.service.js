@@ -34,6 +34,7 @@ export async function registerStudent(userData) {
     };
 
     await createUserProfile(uid, profileData);
+    localStorage.setItem('campuscare_demo_session', JSON.stringify(profileData));
     return { user: credential.user, profile: profileData };
   } catch (err) {
     if (isDemoOrApiKeyError(err)) {
@@ -48,6 +49,16 @@ export async function registerStudent(userData) {
         phone: phone || '+1 555-0192',
         createdAt: new Date().toISOString()
       };
+      
+      // Persist the registered user locally in demo mode
+      try {
+        const existingUsers = JSON.parse(localStorage.getItem('campuscare_demo_users') || '[]');
+        existingUsers.push(demoProfile);
+        localStorage.setItem('campuscare_demo_users', JSON.stringify(existingUsers));
+      } catch (e) {
+        console.error('Error saving user to demo database:', e);
+      }
+
       localStorage.setItem('campuscare_demo_session', JSON.stringify(demoProfile));
       return { user: { uid: demoProfile.uid, email: demoProfile.email }, profile: demoProfile };
     }
@@ -83,6 +94,7 @@ export async function registerAdmin(adminData) {
     };
 
     await createUserProfile(uid, profileData);
+    localStorage.setItem('campuscare_demo_session', JSON.stringify(profileData));
     return { user: credential.user, profile: profileData };
   } catch (err) {
     if (isDemoOrApiKeyError(err)) {
@@ -97,6 +109,16 @@ export async function registerAdmin(adminData) {
         phone: phone || '+91 9876543210',
         createdAt: new Date().toISOString()
       };
+      
+      // Persist the registered user locally in demo mode
+      try {
+        const existingUsers = JSON.parse(localStorage.getItem('campuscare_demo_users') || '[]');
+        existingUsers.push(demoProfile);
+        localStorage.setItem('campuscare_demo_users', JSON.stringify(existingUsers));
+      } catch (e) {
+        console.error('Error saving user to demo database:', e);
+      }
+
       localStorage.setItem('campuscare_demo_session', JSON.stringify(demoProfile));
       return { user: { uid: demoProfile.uid, email: demoProfile.email }, profile: demoProfile };
     }
@@ -129,7 +151,17 @@ export async function loginUser(email, password) {
     if (isDemoOrApiKeyError(err)) {
       console.warn('Firebase Auth API Key invalid or demo environment detected. Granting demo login.');
       const isAdmin = email.toLowerCase().includes('admin');
-      const demoProfile = {
+      
+      // Try to find the user in our demo users list
+      let foundProfile = null;
+      try {
+        const existingUsers = JSON.parse(localStorage.getItem('campuscare_demo_users') || '[]');
+        foundProfile = existingUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+      } catch (e) {
+        console.error('Error searching demo users list:', e);
+      }
+
+      const demoProfile = foundProfile || {
         uid: isAdmin ? 'demo-admin-id' : 'demo-student-id',
         email: email,
         fullName: isAdmin ? 'System Administrator' : 'Demo Student',

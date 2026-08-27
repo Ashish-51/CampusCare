@@ -23,6 +23,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     initAvatarUpload(user.uid);
     initEditProfileForm(user.uid);
     initChangePasswordForm();
+
+    if (profile.role === 'student') {
+      const { initNotificationDropdown } = await import('../utils/notification-dropdown.js');
+      initNotificationDropdown(user.uid);
+    }
   } catch (err) {
     console.error('Profile controller init error:', err);
   }
@@ -67,9 +72,11 @@ function renderProfileData(profile) {
   if (infoRoll) infoRoll.textContent = profile.rollNumber || (profile.role === 'admin' ? 'ADM-2026-001' : 'CS2026-042');
   if (infoPhone) infoPhone.textContent = profile.phone || '+91 9876543210';
 
+  const editRoll = document.getElementById('edit-roll');
   if (editName) editName.value = profile.fullName || profile.name || '';
   if (editEmail) editEmail.value = profile.email || '';
   if (editDept) editDept.value = profile.department || (profile.role === 'admin' ? 'Central Administration' : 'Computer Science & Engineering');
+  if (editRoll) editRoll.value = profile.rollNumber || '';
   if (editPhone) editPhone.value = profile.phone || '';
 }
 
@@ -167,25 +174,32 @@ function initEditProfileForm(uid) {
       return;
     }
 
+    const updatePayload = { fullName, department, phone };
+    if (form.rollNumber) {
+      updatePayload.rollNumber = form.rollNumber.value.trim();
+    }
+
     try {
       showLoader('Updating profile details...');
-      await updateUserProfile(uid, { fullName, department, phone });
+      await updateUserProfile(uid, updatePayload);
       hideLoader();
 
       // Update local DOM displays
       const nameDisplay = document.getElementById('profile-name-display');
       const infoDept = document.getElementById('info-dept');
+      const infoRoll = document.getElementById('info-roll');
       const infoPhone = document.getElementById('info-phone');
 
       if (nameDisplay) nameDisplay.textContent = fullName;
       if (infoDept) infoDept.textContent = department;
+      if (infoRoll && updatePayload.rollNumber !== undefined) infoRoll.textContent = updatePayload.rollNumber;
       if (infoPhone) infoPhone.textContent = phone;
 
       showToast('Profile information saved successfully!', 'success');
     } catch (err) {
       hideLoader();
       console.error('Save profile error:', err);
-      showToast('Failed to update profile.', 'error');
+      showToast('Failed to update profile: ' + err.message, 'error');
     }
   });
 }

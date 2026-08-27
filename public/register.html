@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Registration - CampusCare</title>
   <meta name="description" content="Register for CampusCare Digital Complaint Management Portal.">
+  
   <!-- Font Awesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="./css/variables.css">
   <link rel="stylesheet" href="./css/base.css">
   <link rel="stylesheet" href="./css/components.css">
+  
   <style>
     .auth-wrapper {
       min-height: 100vh;
@@ -17,14 +19,31 @@
       align-items: center;
       justify-content: center;
       padding: 2rem 1rem;
-      background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.06) 0%, transparent 50%),
+      background: radial-gradient(circle at 50% 0%, rgba(91, 92, 235, 0.06) 0%, transparent 60%),
                   var(--bg-app);
+      position: relative;
     }
+
+    .auth-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(91, 92, 235, 0.015) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(91, 92, 235, 0.015) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
     .auth-card {
       width: 100%;
-      max-width: 460px;
+      max-width: 440px;
+      position: relative;
+      z-index: 1;
+      box-shadow: var(--shadow-floating);
     }
   </style>
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
 
@@ -32,14 +51,14 @@
     <div class="card auth-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
         <div style="display:flex; align-items:center; gap:0.6rem;">
-          <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-          <span style="font-weight:800; font-size:1.25rem; color:var(--text-primary);">CampusCare</span>
+          <div class="brand-icon"><i class="fa-solid fa-building-shield"></i></div>
+          <span style="font-family:var(--font-family-display); font-weight:800; font-size:1.15rem; color:var(--text-primary);">CampusCare</span>
         </div>
         <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
       </div>
 
-      <h2 style="font-size:1.3rem; font-weight:800; margin-bottom:0.3rem;">Student Registration</h2>
-      <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:1.5rem;">Create your student account to lodge facility issues.</p>
+      <h2 style="font-family:var(--font-family-display); font-size:1.3rem; font-weight:800; margin-bottom:0.25rem;">Student Onboarding</h2>
+      <p style="color:var(--text-secondary); font-size:0.88rem; margin-bottom:1.5rem;">Create a student account to lodge facility issues.</p>
 
       <!-- Student Registration Form -->
       <form id="register-form">
@@ -81,10 +100,10 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Create Account <i class="fa-solid fa-arrow-right"></i></button>
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.75rem; padding: 0.7rem 1.25rem;">Create Account <i class="fa-solid fa-arrow-right"></i></button>
 
-        <div style="text-align:center; margin-top:1.25rem; font-size:0.88rem; color:var(--text-muted);">
-          Already have an account? <a href="./login.html" style="font-weight:700;">Sign In</a>
+        <div style="text-align:center; margin-top:1.25rem; font-size:0.88rem; color:var(--text-secondary);">
+          Already have an account? <a href="./login.html" style="font-weight:700; color:var(--color-brand);">Sign In</a>
         </div>
       </form>
     </div>

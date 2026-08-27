@@ -1,0 +1,462 @@
+/* ==========================================================================
+   CampusCare - Responsive / Mobile-First Stylesheet
+   Breakpoints:
+     xs  : <480px  (phones portrait)
+     sm  : <640px  (phones landscape / small phones)
+     md  : <768px  (large phones / small tablets)
+     lg  : <992px  (tablets / landscape tablets)
+   ========================================================================== */
+
+/* ============================================================
+   Sidebar Overlay Backdrop (shown when sidebar is open mobile)
+   ============================================================ */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ============================================================
+   Tablet & Mobile (≤992px): Slide-out Sidebar Drawer
+   ============================================================ */
+@media (max-width: 992px) {
+  /* Sidebar becomes a drawer */
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.3);
+    z-index: 200;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+
+  .mobile-toggle {
+    display: flex !important;
+    align-items: center;
+  }
+
+  /* Page body wider padding */
+  .page-body {
+    padding: 1.25rem;
+  }
+}
+
+/* ============================================================
+   Medium Screens (≤768px): Grids & Stats
+   ============================================================ */
+@media (max-width: 768px) {
+  /* KPI stat row: 2-column grid */
+  .stats-grid,
+  .dashboard-top-grid,
+  .stat-row,
+  [class*="stats-row"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.85rem !important;
+  }
+
+  /* Reduce font for stat numbers */
+  .stat-val {
+    font-size: 1.6rem;
+  }
+
+  /* Student hero banner */
+  .student-hero {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .student-hero h2 {
+    font-size: 1.25rem;
+  }
+
+  /* Complaints grid: single column */
+  .complaints-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Charts grid: single column */
+  .charts-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Navbar title font size */
+  .navbar-title h1 {
+    font-size: 0.95rem;
+  }
+
+  /* Top navbar — shrink actions gap */
+  .navbar-actions {
+    gap: 0.5rem;
+  }
+
+  /* Filter bar goes full column */
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+
+  .filter-inputs {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .search-box {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .filter-bar select,
+  .filter-bar .form-select {
+    width: 100%;
+  }
+
+  /* Page body side padding */
+  .page-body {
+    padding: 1rem;
+  }
+
+  /* Card padding reduced */
+  .card,
+  .card-glass {
+    padding: 1rem;
+  }
+
+  /* Admin detail sidebar panel: stack vertically */
+  .detail-layout,
+  .complaint-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Profile page: stack columns */
+  .profile-layout,
+  .profile-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Modal size */
+  .modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  /* Toast full width */
+  .toast-container {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+  }
+
+  .toast {
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Notification dropdown full-width on mobile */
+  .notif-dropdown {
+    width: calc(100vw - 2rem);
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    top: calc(100% + 0.5rem);
+  }
+}
+
+/* ============================================================
+   Small Phones (≤640px): Deep Mobile Overrides
+   ============================================================ */
+@media (max-width: 640px) {
+  html {
+    font-size: 13px;
+  }
+
+  /* KPI stats: full-width single column */
+  .stats-grid,
+  .dashboard-top-grid,
+  .stat-row,
+  [class*="stats-row"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Stat card: horizontal layout (icon + value side by side) */
+  .stat-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  /* Page body: minimal padding */
+  .page-body {
+    padding: 0.75rem;
+  }
+
+  /* Hero banner */
+  .student-hero {
+    padding: 1.25rem 1rem;
+    border-radius: 10px;
+  }
+
+  /* Button groups: full width on mobile */
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Top navbar title truncation */
+  .navbar-title h1 {
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+  }
+
+  /* Table: horizontal scroll + compact cells */
+  .data-table th,
+  .data-table td {
+    padding: 0.6rem 0.7rem;
+    font-size: 0.78rem;
+  }
+
+  /* Raise Complaint form dropzone: compact */
+  .file-dropzone {
+    padding: 1.25rem 1rem;
+  }
+
+  /* Section headings */
+  .section-title {
+    font-size: 1rem;
+  }
+}
+
+/* ============================================================
+   Very Small Phones (≤480px)
+   ============================================================ */
+@media (max-width: 480px) {
+  /* Hide action button labels, keep icons only */
+  .btn-action-label {
+    display: none;
+  }
+
+  /* Make CTA buttons full-width */
+  .student-hero .btn,
+  .empty-state .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Star rating larger touch targets */
+  .star-rating {
+    font-size: 1.85rem;
+    gap: 0.4rem;
+  }
+
+  /* Sidebar footer user badge: show only avatar */
+  .user-badge-nav .user-info {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Landing Page (index.html) Responsive
+   ============================================================ */
+@media (max-width: 992px) {
+  /* Hero section stacks */
+  .hero-section,
+  .landing-hero,
+  [class*="hero-content"] {
+    flex-direction: column !important;
+    text-align: center;
+    gap: 2rem;
+  }
+
+  .hero-visual,
+  .hero-mockup,
+  [class*="hero-img"] {
+    max-width: 80%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Landing nav: compress */
+  .landing-nav,
+  .landing-header nav {
+    padding: 0.85rem 1rem;
+  }
+
+  .nav-links,
+  .landing-nav-links {
+    display: none;
+  }
+
+  /* Landing features grid: 2 columns */
+  .features-grid,
+  .landing-features {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+
+  /* Stats row: 2 columns */
+  .landing-stats,
+  .stats-row-landing {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Portal cards: 1 column */
+  .portals-grid,
+  .portal-cards {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Steps: stack vertically */
+  .steps-grid,
+  .how-it-works-steps {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Landing section padding reduced */
+  section {
+    padding: 2.5rem 1rem !important;
+  }
+
+  /* Landing hero title */
+  .hero-title,
+  [class*="hero-heading"] {
+    font-size: clamp(1.75rem, 6vw, 2.5rem) !important;
+  }
+
+  /* Features grid: single column */
+  .features-grid,
+  .landing-features {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Testimonials: single column */
+  .testimonials-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* CTA buttons: full width */
+  .cta-buttons,
+  .hero-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cta-buttons .btn,
+  .hero-cta .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ============================================================
+   Login & Register Page Responsive
+   ============================================================ */
+@media (max-width: 640px) {
+  .auth-card,
+  .login-card,
+  .register-card {
+    padding: 1.5rem 1.25rem !important;
+    margin: 1rem;
+    border-radius: 12px;
+  }
+
+  .auth-tabs,
+  .login-tabs {
+    font-size: 0.85rem;
+  }
+
+  .auth-container,
+  .login-container {
+    padding: 1rem;
+    min-height: 100vh;
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+}
+
+/* ============================================================
+   Admin Complaints & Detail Page Responsive
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Hide non-essential table columns */
+  .data-table .col-hide-md {
+    display: none;
+  }
+
+  /* Triage action buttons: stack */
+  .triage-actions,
+  .action-btn-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .triage-actions .btn,
+  .action-btn-group .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Hide more columns on very small screens */
+  .data-table .col-hide-sm {
+    display: none;
+  }
+
+  /* Detail page: smaller meta grid */
+  .meta-grid,
+  .complaint-meta {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* ============================================================
+   Utility: Overflow touch scroll for tables
+   ============================================================ */
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================================
+   Safe area insets (iPhone notch / Dynamic Island)
+   ============================================================ */
+@supports (padding: max(0px)) {
+  .sidebar {
+    padding-bottom: max(0.85rem, env(safe-area-inset-bottom));
+  }
+
+  .toast-container {
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+    right: max(1.5rem, env(safe-area-inset-right));
+  }
+}

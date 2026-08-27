@@ -2,12 +2,21 @@
    CampusCare - Admin Registration Controller
    ========================================================================== */
 
-import { registerAdmin, DEFAULT_ADMIN_SECRET_KEY } from '../services/auth.service.js';
+import { registerAdmin, DEFAULT_ADMIN_SECRET_KEY, logoutUser } from '../services/auth.service.js';
 import { resolveUrl } from '../utils/guards.js';
 import { showToast } from '../utils/toast.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
+import { auth, onAuthStateChanged } from '../config/firebase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Clear any existing session to prevent auto-login on public terminals
+  localStorage.removeItem('campuscare_demo_session');
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    unsubscribe();
+    if (user) {
+      logoutUser();
+    }
+  });
   const adminRegisterForm = document.getElementById('admin-register-form');
   if (adminRegisterForm) {
     adminRegisterForm.addEventListener('submit', async (e) => {

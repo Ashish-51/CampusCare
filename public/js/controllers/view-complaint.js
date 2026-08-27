@@ -14,7 +14,13 @@ let loadedComplaintData = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const { profile } = await requireAuth();
+    const { user, profile } = await requireAuth();
+    
+    if (profile.role === 'student') {
+      const { initNotificationDropdown } = await import('../utils/notification-dropdown.js');
+      initNotificationDropdown(user.uid);
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     currentComplaintId = urlParams.get('id');
 
@@ -81,12 +87,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const ticketId = loadedComplaintData.ticketId || loadedComplaintData.id || 'CC-2026-0000';
         const docElem = buildPrintableDocumentElement(loadedComplaintData);
 
-        // Append offscreen for rendering
-        docElem.style.position = 'fixed';
-        docElem.style.left = '-9999px';
-        docElem.style.top = '0';
+        // Append inside an invisible container within viewport for correct html2canvas layout rendering
+        const renderContainer = document.createElement('div');
+        renderContainer.style.cssText = 'position: absolute; left: 0; top: 0; width: 790px; height: 0; overflow: hidden;';
         docElem.style.width = '790px';
-        document.body.appendChild(docElem);
+        renderContainer.appendChild(docElem);
+        document.body.appendChild(renderContainer);
 
         if (window.html2pdf) {
           showToast('Generating official 1-page PDF document download...', 'info');
@@ -104,10 +110,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('PDF export error:', err);
             showToast('Failed to export PDF file.', 'error');
           } finally {
-            if (docElem.parentNode) docElem.parentNode.removeChild(docElem);
+            if (renderContainer.parentNode) renderContainer.parentNode.removeChild(renderContainer);
           }
         } else {
-          if (docElem.parentNode) docElem.parentNode.removeChild(docElem);
+          if (renderContainer.parentNode) renderContainer.parentNode.removeChild(renderContainer);
           showToast('PDF library fallback: Triggering print dialog.', 'warning');
           window.print();
         }

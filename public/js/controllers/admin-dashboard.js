@@ -92,7 +92,7 @@ function renderCategoryDoughnutChart(categoriesMap) {
       labels: labels,
       datasets: [{
         data: data,
-        backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#64748b'],
+        backgroundColor: ['#5B5CEB', '#3B82F6', '#16A34A', '#F59E0B', '#DC2626', '#8B5CF6', '#64748B'],
         borderWidth: 2,
         borderColor: 'transparent'
       }]
@@ -127,11 +127,11 @@ function renderMonthlyTrendChart(monthlyMap) {
       datasets: [{
         label: 'Monthly Complaints',
         data: data,
-        borderColor: '#2563eb',
-        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+        borderColor: '#5B5CEB',
+        backgroundColor: 'rgba(91, 92, 235, 0.08)',
         fill: true,
         tension: 0.35,
-        pointBackgroundColor: '#2563eb',
+        pointBackgroundColor: '#5B5CEB',
         pointRadius: 4
       }]
     },
@@ -164,7 +164,7 @@ function renderStatusDistributionChart(statusMap) {
       labels: labels,
       datasets: [{
         data: data,
-        backgroundColor: ['#f59e0b', '#b45309', '#4338ca', '#2563eb', '#10b981', '#64748b', '#ef4444'],
+        backgroundColor: ['#F59E0B', '#B45309', '#5B5CEB', '#3B82F6', '#16A34A', '#64748B', '#DC2626'],
         borderWidth: 2,
         borderColor: 'transparent'
       }]
@@ -199,7 +199,7 @@ function renderPriorityDistributionChart(urgencyMap) {
       datasets: [{
         label: 'Tickets',
         data: data,
-        backgroundColor: ['#94a3b8', '#f59e0b', '#ea580c', '#dc2626'],
+        backgroundColor: ['#64748B', '#F59E0B', '#EA580C', '#DC2626'],
         borderRadius: 6
       }]
     },

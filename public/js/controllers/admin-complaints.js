@@ -52,14 +52,14 @@ function renderComplaintsTable(list) {
     <tr>
       <td><span class="ticket-id">${c.ticketId}</span></td>
       <td>
-        <div style="font-weight:700; color:var(--text-main);">${escapeHtml(c.title)}</div>
+        <div style="font-weight:700; color:var(--text-primary);">${escapeHtml(c.title)}</div>
         <div style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(c.location || 'N/A')}</div>
       </td>
       <td>
         <div>${escapeHtml(c.studentName)}</div>
         <div style="font-size:0.78rem; color:var(--text-muted);">${escapeHtml(c.department || 'Student')}</div>
       </td>
-      <td><span class="badge" style="background:var(--border-light); color:var(--text-main);">${escapeHtml(c.category)}</span></td>
+      <td><span class="badge" style="background:var(--border-light); color:var(--text-primary);">${escapeHtml(c.category)}</span></td>
       <td>${renderUrgencyBadge(c.urgency)}</td>
       <td>${renderStatusBadge(c.status)}</td>
       <td>
@@ -167,7 +167,6 @@ function initModalEvents() {
         hideLoader();
         showToast('Complaint status updated successfully!', 'success');
         closeTriageModal();
-        await loadComplaints();
       } catch (err) {
         hideLoader();
         console.error('Triage update error:', err);

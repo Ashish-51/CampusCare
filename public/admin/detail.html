@@ -4,13 +4,59 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Triage Complaint - CampusCare Admin</title>
+  
   <!-- Font Awesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheets -->
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/components.css">
   <link rel="stylesheet" href="../css/admin.css">
+  
   <style>
+    .meta-box-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      padding: 1.25rem;
+      background: var(--bg-surface-raised);
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .meta-item label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .meta-item strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .evidence-image-preview {
+      width: 100%;
+      max-height: 380px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-fast);
+    }
+
+    .evidence-image-preview:hover {
+      transform: scale(1.01);
+    }
+
     @media print {
       body * {
         visibility: hidden !important;
@@ -26,9 +72,11 @@
         margin: 0 !important;
         padding: 0 !important;
         background: #ffffff !important;
+        color: #000000 !important;
       }
     }
   </style>
+  <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
 
@@ -36,25 +84,30 @@
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div class="brand-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <div class="brand-icon"><i class="fa-solid fa-building-shield"></i></div>
         <span class="sidebar-brand">CampusCare Admin</span>
       </div>
       <nav class="sidebar-nav">
+        <div class="nav-group-title">Workspace</div>
         <a href="./dashboard.html" class="nav-item">
           <i class="fa-solid fa-chart-line"></i> Analytics Dashboard
         </a>
         <a href="./complaints.html" class="nav-item active">
           <i class="fa-solid fa-folder-closed"></i> Manage Complaints
         </a>
+        
+        <div class="nav-group-title">Feedback</div>
         <a href="./feedback.html" class="nav-item">
           <i class="fa-solid fa-star-half-stroke"></i> Student Ratings
         </a>
+        
+        <div class="nav-group-title">Account</div>
         <a href="./profile.html" class="nav-item">
           <i class="fa-solid fa-user-gear"></i> Admin Profile
         </a>
       </nav>
       <div class="sidebar-footer">
-        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.1);"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.08);"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
       </div>
     </aside>
 
@@ -74,7 +127,7 @@
 
       <div class="page-body">
         <div style="margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
-          <a href="./complaints.html" style="color:var(--text-muted); font-size:0.9rem; font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Back to Complaints Database</a>
+          <a href="./complaints.html" style="color:var(--text-secondary); font-size:0.9rem; font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Back to Complaints Database</a>
           <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
             <button class="btn btn-outline btn-sm" id="print-ticket-btn">
               <i class="fa-solid fa-print"></i> Print Ticket
@@ -86,10 +139,11 @@
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 380px; gap:1.5rem;">
-          <!-- Left Column -->
+          
+          <!-- Left Column: Details remarks, evidence photo, rating feedback -->
           <div>
-            <div class="card" style="margin-bottom:1.5rem;">
-              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+            <div class="card" style="margin-bottom:1.5rem; background:var(--bg-surface);">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
                 <span class="ticket-id" id="complaint-ticket-id">CC-2026-0000</span>
                 <div style="display:flex; gap:0.5rem;" id="badge-wrapper">
                   <span id="complaint-status-badge"></span>
@@ -97,39 +151,43 @@
                 </div>
               </div>
 
-              <h2 style="font-size:1.35rem; font-weight:800; margin-bottom:0.75rem;" id="complaint-title">Loading...</h2>
+              <h2 style="font-family:var(--font-family-display); font-size:1.45rem; font-weight:800; margin-bottom:1.25rem; color:var(--text-primary);" id="complaint-title">Loading...</h2>
 
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1rem; background:var(--border-light); border-radius:var(--radius-md); font-size:0.88rem; margin-bottom:1.25rem;">
-                <div>
-                  <span style="color:var(--text-muted); display:block;"><i class="fa-solid fa-tag"></i> Category:</span>
+              <div class="meta-box-grid">
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-tag"></i> Category</label>
                   <strong id="meta-category">--</strong>
                 </div>
-                <div>
-                  <span style="color:var(--text-muted); display:block;"><i class="fa-solid fa-location-dot"></i> Location:</span>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-location-dot"></i> Location</label>
                   <strong id="meta-location">--</strong>
                 </div>
-                <div>
-                  <span style="color:var(--text-muted); display:block;"><i class="fa-solid fa-user"></i> Student Name:</span>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-user"></i> Student</label>
                   <strong id="meta-student-name">--</strong>
                 </div>
-                <div>
-                  <span style="color:var(--text-muted); display:block;"><i class="fa-solid fa-calendar"></i> Lodged Date:</span>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-calendar"></i> Lodged Date</label>
                   <strong id="meta-created-date">--</strong>
                 </div>
               </div>
 
               <div style="margin-bottom:1.5rem;">
-                <h4 style="font-size:0.92rem; font-weight:700; margin-bottom:0.4rem;">Description:</h4>
-                <p id="complaint-desc" style="color:var(--text-primary); line-height:1.6; white-space:pre-line;"></p>
+                <h4 style="font-family:var(--font-family-display); font-size:0.85rem; font-weight:800; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:0.5rem;">Description:</h4>
+                <p id="complaint-desc" style="color:var(--text-primary); line-height:1.65; white-space:pre-line; font-size:0.95rem;"></p>
               </div>
 
-              <div id="admin-remarks-box"></div>
-              <div id="complaint-image-container" style="margin-top:1.5rem;"></div>
+              <!-- Admin action notes remarks box -->
+              <div id="admin-remarks-box" style="margin-bottom:1.5rem;"></div>
+              
+              <!-- Evidence Image -->
+              <div id="complaint-image-container"></div>
             </div>
 
+            <!-- Student Feedback Card -->
             <div class="card" id="feedback-section" style="display:none;">
-              <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.4rem;"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Student Feedback</h3>
-              <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:1rem;">Rating and review submitted by the student upon ticket resolution.</p>
+              <h3 style="font-family:var(--font-family-display); font-size:1.1rem; font-weight:800; margin-bottom:0.4rem;"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Student Feedback</h3>
+              <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:1.25rem;">Rating and review submitted by the student upon ticket resolution.</p>
               <div id="feedback-content"></div>
             </div>
           </div>
@@ -137,9 +195,9 @@
           <!-- Right Column: Timeline -->
           <div>
             <div class="card">
-              <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:1.25rem;"><i class="fa-solid fa-timeline"></i> Audit & Progress Log</h3>
+              <h3 style="font-family:var(--font-family-display); font-size:1rem; font-weight:800; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.5rem;"><i class="fa-solid fa-timeline" style="color:var(--color-brand);"></i> Audit Log</h3>
               <div id="timeline-container">
-                <!-- Dynamically populated -->
+                <!-- Dynamically populated timeline entries -->
               </div>
             </div>
           </div>
@@ -149,6 +207,9 @@
     </main>
   </div>
 
+  <div id="print-document-wrapper"></div>
+
+  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script type="module" src="../js/app.js"></script>
   <script type="module" src="../js/controllers/view-complaint.js"></script>

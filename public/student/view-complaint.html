@@ -26,16 +26,16 @@
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
       padding: 1.25rem;
-      background: var(--border-light);
+      background: var(--bg-surface-raised);
       border-radius: var(--radius-md);
       font-size: 0.88rem;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
       border: 1px solid var(--border-color);
     }
 
     .meta-item label {
-      font-size: 0.78rem;
-      color: var(--text-muted);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -82,9 +82,11 @@
         margin: 0 !important;
         padding: 0 !important;
         background: #ffffff !important;
+        color: #000000 !important;
       }
     }
   </style>
+  <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
 
@@ -92,25 +94,30 @@
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-icon"><i class="fa-solid fa-building-shield"></i></div>
         <span class="sidebar-brand">CampusCare</span>
       </div>
       <nav class="sidebar-nav">
+        <div class="nav-group-title">Workspace</div>
         <a href="./dashboard.html" class="nav-item active">
           <i class="fa-solid fa-chart-pie"></i> Dashboard
         </a>
         <a href="./raise-complaint.html" class="nav-item">
           <i class="fa-solid fa-circle-plus"></i> Raise Complaint
         </a>
+        
+        <div class="nav-group-title">Feedback</div>
         <a href="./feedback.html" class="nav-item">
           <i class="fa-solid fa-star"></i> Resolution Feedback
         </a>
+        
+        <div class="nav-group-title">Account</div>
         <a href="./profile.html" class="nav-item">
           <i class="fa-solid fa-user-gear"></i> My Profile
         </a>
       </nav>
       <div class="sidebar-footer">
-        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.1);">
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.08);">
           <i class="fa-solid fa-right-from-bracket"></i> Log Out
         </button>
       </div>
@@ -132,7 +139,7 @@
 
       <div class="page-body">
         <div style="margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
-          <a href="./dashboard.html" style="color:var(--text-muted); font-size:0.9rem; font-weight:600;">
+          <a href="./dashboard.html" style="color:var(--text-secondary); font-size:0.9rem; font-weight:600;">
             <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
           </a>
           <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
@@ -150,23 +157,23 @@
 
         <div class="details-grid">
           
-          <!-- Left Main Column: Complaint Info, Image, Admin Remarks & Feedback -->
+          <!-- Left Main Column: Details, remarks, evidence photo, rating feedback -->
           <div>
             
             <!-- Main Details Card -->
-            <div class="card" style="margin-bottom:1.5rem;">
+            <div class="card" style="margin-bottom:1.5rem; background: var(--bg-surface);">
               
-              <!-- Header Bar: Ticket ID, Status Badge & Priority Badge -->
-              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+              <!-- Ticket Header bar -->
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.5rem;">
                 <div style="display:flex; align-items:center; gap:0.75rem;">
-                  <span class="ticket-id" style="font-size:0.95rem; padding:0.25rem 0.75rem;" id="complaint-ticket-id">CC-2026-0000</span>
+                  <span class="ticket-id" style="font-size:0.9rem; padding:0.25rem 0.65rem;" id="complaint-ticket-id">CC-2026-0000</span>
                   <span id="complaint-status-badge"></span>
                 </div>
                 <div id="complaint-priority-badge"></div>
               </div>
 
               <!-- Title -->
-              <h2 style="font-size:1.45rem; font-weight:800; margin-bottom:1rem; color:var(--text-primary);" id="complaint-title">Loading complaint title...</h2>
+              <h2 style="font-family:var(--font-family-display); font-size:1.5rem; font-weight:800; margin-bottom:1.25rem; color:var(--text-primary);" id="complaint-title">Loading complaint title...</h2>
 
               <!-- Metadata Grid Bar -->
               <div class="meta-box-grid">
@@ -183,18 +190,18 @@
                   <strong id="meta-location">--</strong>
                 </div>
                 <div class="meta-item">
-                  <label><i class="fa-solid fa-calendar-plus"></i> Created Date</label>
+                  <label><i class="fa-solid fa-calendar-plus"></i> Lodged</label>
                   <strong id="meta-created-date">--</strong>
                 </div>
                 <div class="meta-item">
-                  <label><i class="fa-solid fa-calendar-check"></i> Updated Date</label>
+                  <label><i class="fa-solid fa-calendar-check"></i> Updated</label>
                   <strong id="meta-updated-date">--</strong>
                 </div>
               </div>
 
               <!-- Description -->
               <div style="margin-bottom:1.5rem;">
-                <h4 style="font-size:0.92rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;">
+                <h4 style="font-family:var(--font-family-display); font-size:0.85rem; font-weight:800; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:0.5rem;">
                   Issue Description:
                 </h4>
                 <p id="complaint-desc" style="color:var(--text-primary); line-height:1.65; white-space:pre-line; font-size:0.95rem;"></p>
@@ -210,11 +217,11 @@
 
             <!-- Post-Resolution Feedback Card -->
             <div class="card" id="feedback-section" style="display:none;">
-              <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.4rem;"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Resolution Feedback</h3>
-              <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:1rem;">Rate the resolution quality and service performance provided by maintenance staff.</p>
+              <h3 style="font-family:var(--font-family-display); font-size:1.1rem; font-weight:800; margin-bottom:0.4rem;"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Resolution Feedback</h3>
+              <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:1.25rem;">Rate the resolution quality and service performance provided by maintenance staff.</p>
 
               <div id="feedback-content">
-                <!-- Dynamically rendered (Form if active rating, or Review Card if submitted) -->
+                <!-- Dynamically rendered by view-complaint.js -->
               </div>
             </div>
 
@@ -223,7 +230,7 @@
           <!-- Right Column: Step-by-Step Interactive Timeline -->
           <div>
             <div class="card">
-              <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:1.25rem;"><i class="fa-solid fa-timeline" style="color:var(--primary);"></i> Lifecycle Timeline</h3>
+              <h3 style="font-family:var(--font-family-display); font-size:1rem; font-weight:800; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.5rem;"><i class="fa-solid fa-timeline" style="color:var(--color-brand);"></i> Audit History</h3>
               <div id="timeline-container">
                 <!-- Dynamically populated timeline entries -->
               </div>
@@ -235,6 +242,8 @@
       </div>
     </main>
   </div>
+
+  <div id="print-document-wrapper"></div>
 
   <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>

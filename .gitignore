@@ -10,3 +10,5 @@ Thumbs.db
 # Miscellaneous / Documents
 *.docx
 *.tmp
+scratch/
+towncenter.schematic

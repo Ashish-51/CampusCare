@@ -565,20 +565,48 @@ export function listenToAllComplaints(callback) {
 export function listenToComplaintDetails(complaintId, callback) {
   try {
     const docRef = doc(db, 'complaints', complaintId);
-    return onSnapshot(docRef, (docSnap) => {
+    const timelineRef = collection(db, `complaints/${complaintId}/timeline`);
+
+    let parentData = null;
+    let timelineData = [];
+
+    const triggerCallback = () => {
+      if (parentData) {
+        callback({
+          ...parentData,
+          timeline: [...timelineData].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        });
+      }
+    };
+
+    const unsubParent = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
-        callback({ id: docSnap.id, ...docSnap.data() });
+        parentData = { id: docSnap.id, ...docSnap.data() };
+        triggerCallback();
       } else {
         const demoList = getDemoComplaints();
         const found = demoList.find(c => c.id === complaintId || c.ticketId === complaintId);
         callback(found || null);
       }
     }, (err) => {
-      console.warn('Single complaint real-time listener warning (using fallback):', err.message);
+      console.warn('Single complaint parent document listener warning:', err.message);
       const demoList = getDemoComplaints();
       const found = demoList.find(c => c.id === complaintId || c.ticketId === complaintId);
       callback(found || null);
     });
+
+    const unsubTimeline = onSnapshot(timelineRef, (timelineSnap) => {
+      timelineData = timelineSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      triggerCallback();
+    }, (err) => {
+      console.warn('Single complaint timeline subcollection listener warning:', err.message);
+    });
+
+    return () => {
+      unsubParent();
+      unsubTimeline();
+    };
+
   } catch (err) {
     console.warn('Real-time single complaint listener error (using fallback):', err.message);
     const demoList = getDemoComplaints();
