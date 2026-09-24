@@ -120,52 +120,94 @@
         <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.75rem; padding: 0.7rem 1.25rem;">Sign In <i class="fa-solid fa-arrow-right"></i></button>
       </form>
 
-      <!-- Student Registration Form -->
+      <!-- Unified Registration Form -->
       <form id="register-form" class="auth-form" style="display:none;">
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label">Account Type</label>
+          <div style="display: flex; gap: 1rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-primary);">
+              <input type="radio" name="accountRole" value="student" checked> Student
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-primary);">
+              <input type="radio" name="accountRole" value="admin"> Administrator
+            </label>
+          </div>
+        </div>
+
         <div class="form-group">
-          <label class="form-label" for="reg-name">Full Name</label>
+          <label class="form-label" for="reg-name">Full Name *</label>
           <input type="text" id="reg-name" name="fullName" class="form-control" placeholder="Alex Morgan" required />
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="reg-email">Institutional Email</label>
+          <label class="form-label" id="label-reg-email" for="reg-email">Institutional Email *</label>
           <input type="email" id="reg-email" name="email" class="form-control" placeholder="alex@campus.edu" required />
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="reg-password">Password</label>
+          <label class="form-label" for="reg-password">Password *</label>
           <input type="password" id="reg-password" name="password" class="form-control" placeholder="At least 6 characters" required />
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="reg-dept">Department</label>
-          <select id="reg-dept" name="department" class="form-select" required>
-            <option value="Computer Science & Engineering">Computer Science & Engineering</option>
-            <option value="Electrical & Electronics">Electrical & Electronics</option>
-            <option value="Mechanical Engineering">Mechanical Engineering</option>
-            <option value="Civil Engineering">Civil Engineering</option>
-            <option value="Business Administration">Business Administration</option>
-            <option value="General Science">General Science</option>
-          </select>
+        <!-- Student Fields -->
+        <div id="student-fields">
+          <div class="form-group">
+            <label class="form-label" for="reg-dept-student">Department</label>
+            <select id="reg-dept-student" name="departmentStudent" class="form-select">
+              <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+              <option value="Electrical & Electronics">Electrical & Electronics</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+              <option value="Business Administration">Business Administration</option>
+              <option value="General Science">General Science</option>
+            </select>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div class="form-group">
+              <label class="form-label" for="reg-roll">Roll / ID No.</label>
+              <input type="text" id="reg-roll" name="rollNumber" class="form-control" placeholder="CS2026-042" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-phone-student">Phone No.</label>
+              <input type="tel" id="reg-phone-student" name="phoneStudent" class="form-control" placeholder="+1 555-0192" />
+            </div>
+          </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
-          <div class="form-group">
-            <label class="form-label" for="reg-roll">Roll / ID No.</label>
-            <input type="text" id="reg-roll" name="rollNumber" class="form-control" placeholder="CS2026-042" />
+        <!-- Admin Fields -->
+        <div id="admin-fields" style="display: none;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div class="form-group">
+              <label class="form-label" for="reg-dept-admin">Department Lead</label>
+              <select id="reg-dept-admin" name="departmentAdmin" class="form-select">
+                <option value="Central Administration">Central Administration</option>
+                <option value="Hostel & Estate Management">Hostel & Estate</option>
+                <option value="IT Infrastructure & Network">IT Infrastructure</option>
+                <option value="Electrical & Maintenance">Electrical & Maintenance</option>
+                <option value="Academic Affairs">Academic Affairs</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-phone-admin">Contact Phone</label>
+              <input type="tel" id="reg-phone-admin" name="phoneAdmin" class="form-control" placeholder="+91 9876543210" />
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="reg-phone">Phone No.</label>
-            <input type="tel" id="reg-phone" name="phone" class="form-control" placeholder="+1 555-0192" />
+
+          <div class="form-group" style="background:var(--bg-surface-raised); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-top:0.5rem;">
+            <label class="form-label" for="admin-key" style="color:var(--color-brand); font-weight:700;">
+              <i class="fa-solid fa-key"></i> Secret Admin Security Passcode *
+            </label>
+            <input type="password" id="admin-key" name="adminKey" class="form-control" placeholder="Enter Secret Admin Key" />
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.4rem;">
+              <i class="fa-solid fa-lock"></i> Requires authorized key (Default: <code style="color:var(--color-brand);">CAMPUS_26</code>)
+            </div>
           </div>
         </div>
 
         <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.75rem; padding: 0.7rem 1.25rem;">Create Account <i class="fa-solid fa-arrow-right"></i></button>
       </form>
-
-      <div style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border-color); text-align:center; font-size:0.85rem; color:var(--text-secondary);">
-        Are you a staff member? <a href="./admin/register.html" style="color:var(--color-brand); font-weight:700;"><i class="fa-solid fa-shield-halved"></i> Register Admin Account</a>
-      </div>
 
     </div>
   </div>

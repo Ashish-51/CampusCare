@@ -1,4 +1,4 @@
-import { registerStudent, loginUser, sendResetPassword, logoutUser } from '../services/auth.service.js';
+import { registerStudent, registerAdmin, loginUser, sendResetPassword, logoutUser } from '../services/auth.service.js';
 import { resolveUrl } from '../utils/guards.js';
 import { showToast } from '../utils/toast.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
@@ -62,17 +62,34 @@ function initForms() {
     });
   }
 
-  // Student Registration Form
+  // Unified Registration Form
   const registerForm = document.getElementById('register-form');
   if (registerForm) {
+    const roleRadios = registerForm.querySelectorAll('input[name="accountRole"]');
+    const studentFields = document.getElementById('student-fields');
+    const adminFields = document.getElementById('admin-fields');
+    const emailLabel = document.getElementById('label-reg-email');
+
+    roleRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.value === 'admin') {
+          studentFields.style.display = 'none';
+          adminFields.style.display = 'block';
+          emailLabel.textContent = 'Institutional Admin Email *';
+        } else {
+          studentFields.style.display = 'block';
+          adminFields.style.display = 'none';
+          emailLabel.textContent = 'Institutional Email *';
+        }
+      });
+    });
+
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const role = registerForm.accountRole.value;
       const fullName = registerForm.fullName.value.trim();
       const email = registerForm.email.value.trim();
       const password = registerForm.password.value;
-      const department = registerForm.department.value;
-      const rollNumber = registerForm.rollNumber.value.trim();
-      const phone = registerForm.phone.value.trim();
 
       if (password.length < 6) {
         showToast('Password must be at least 6 characters.', 'warning');
@@ -80,15 +97,36 @@ function initForms() {
       }
 
       try {
-        showLoader('Creating your account...');
-        await registerStudent({ fullName, email, password, department, rollNumber, phone });
-        hideLoader();
-        showToast('Registration successful! Welcome to CampusCare.', 'success');
-        window.location.href = resolveUrl('/student/dashboard.html');
+        if (role === 'admin') {
+          const department = registerForm.departmentAdmin.value;
+          const phone = registerForm.phoneAdmin.value.trim();
+          const adminKey = registerForm.adminKey.value.trim();
+
+          if (!adminKey) {
+            showToast('Admin Security Passcode is required.', 'warning');
+            return;
+          }
+
+          showLoader('Creating admin account...');
+          await registerAdmin({ fullName, email, password, department, phone, adminKey });
+          hideLoader();
+          showToast('Admin registration successful!', 'success');
+          window.location.href = resolveUrl('/admin/dashboard.html');
+        } else {
+          const department = registerForm.departmentStudent.value;
+          const rollNumber = registerForm.rollNumber.value.trim();
+          const phone = registerForm.phoneStudent.value.trim();
+
+          showLoader('Creating your account...');
+          await registerStudent({ fullName, email, password, department, rollNumber, phone });
+          hideLoader();
+          showToast('Registration successful! Welcome to CampusCare.', 'success');
+          window.location.href = resolveUrl('/student/dashboard.html');
+        }
       } catch (err) {
         hideLoader();
         console.error('Registration error:', err);
-        showToast(err.message || 'Registration failed. Email may already be in use.', 'error');
+        showToast(err.message || 'Registration failed. Check your details or email may already be in use.', 'error');
       }
     });
   }
