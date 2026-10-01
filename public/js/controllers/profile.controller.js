@@ -58,8 +58,16 @@ function renderProfileData(profile) {
   if (emailDisplay) emailDisplay.textContent = profile.email || 'user@campuscare.edu';
 
   if (roleBadge) {
-    roleBadge.textContent = profile.role === 'admin' ? 'Administrator' : 'Student Account';
-    roleBadge.className = `badge ${profile.role === 'admin' ? 'badge-inprogress' : 'badge-submitted'}`;
+    if (profile.role === 'admin') {
+      roleBadge.textContent = 'Administrator';
+      roleBadge.className = 'badge badge-inprogress';
+    } else if (profile.role === 'faculty') {
+      roleBadge.textContent = 'Faculty Member';
+      roleBadge.className = 'badge badge-assigned';
+    } else {
+      roleBadge.textContent = 'Student Account';
+      roleBadge.className = 'badge badge-submitted';
+    }
   }
 
   if (profile.photoURL && avatarDisplay) {
@@ -68,15 +76,18 @@ function renderProfileData(profile) {
     initialDisplay.textContent = initial;
   }
 
-  if (infoDept) infoDept.textContent = profile.department || (profile.role === 'admin' ? 'Central Administration' : 'Computer Science & Engineering');
-  if (infoRoll) infoRoll.textContent = profile.rollNumber || (profile.role === 'admin' ? 'ADM-2026-001' : 'CS2026-042');
-  if (infoPhone) infoPhone.textContent = profile.phone || '+91 9876543210';
+  const defaultDept = profile.role === 'admin' ? 'Central Administration' : (profile.role === 'faculty' ? 'Computer Science & Engineering' : 'Computer Science & Engineering');
+  const defaultId = profile.facultyId || profile.rollNumber || (profile.role === 'admin' ? 'ADM-101' : (profile.role === 'faculty' ? 'FAC-2026-408' : 'CS2026-042'));
+
+  if (infoDept) infoDept.textContent = profile.department || defaultDept;
+  if (infoRoll) infoRoll.textContent = defaultId;
+  if (infoPhone) infoPhone.textContent = profile.phone || '+1 555-0192';
 
   const editRoll = document.getElementById('edit-roll');
   if (editName) editName.value = profile.fullName || profile.name || '';
   if (editEmail) editEmail.value = profile.email || '';
-  if (editDept) editDept.value = profile.department || (profile.role === 'admin' ? 'Central Administration' : 'Computer Science & Engineering');
-  if (editRoll) editRoll.value = profile.rollNumber || '';
+  if (editDept) editDept.value = profile.department || defaultDept;
+  if (editRoll) editRoll.value = defaultId;
   if (editPhone) editPhone.value = profile.phone || '';
 }
 
@@ -91,13 +102,17 @@ async function loadComplaintMetrics(uid, role) {
     if (role === 'admin') {
       const list = await getAllComplaints();
       countEl.textContent = `${list.length} Total Managed`;
+    } else if (role === 'faculty') {
+      const { getAssignedComplaints } = await import('../services/complaint.service.js');
+      const list = await getAssignedComplaints(uid);
+      countEl.textContent = `${list.length} Assigned`;
     } else {
       const list = await getStudentComplaints(uid);
       countEl.textContent = `${list.length} Lodged`;
     }
   } catch (e) {
     console.warn('Failed to load complaint metrics count:', e);
-    countEl.textContent = '0 Lodged';
+    countEl.textContent = '0 Recorded';
   }
 }
 

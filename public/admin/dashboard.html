@@ -66,18 +66,27 @@
         <div style="display:flex; align-items:center; gap:1rem;">
           <button class="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
           <div class="navbar-title">
-            <h1>Realtime Analytics & Command Dashboard</h1>
+            <h1>Central Complaints Analytics & Triage</h1>
           </div>
         </div>
         <div class="navbar-actions">
+          <button type="button" class="btn btn-outline btn-sm" id="export-csv-btn" title="Export full database as CSV">
+            <i class="fa-solid fa-file-arrow-down"></i> Export Report
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" id="manage-categories-btn" title="Manage Complaint Categories">
+            <i class="fa-solid fa-tags"></i> Categories
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" id="manage-faculty-btn" title="Manage Faculty Members">
+            <i class="fa-solid fa-chalkboard-user"></i> Manage Faculty
+          </button>
           <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
         </div>
       </header>
 
       <div class="page-body">
         
-        <!-- 1. Metric Cards -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1.25rem; margin-bottom:1.75rem;">
+        <!-- 1. Metric Cards Grid (8 Core KPI Counters) -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1.15rem; margin-bottom:1.75rem;">
           <div class="card stat-card">
             <div>
               <div class="stat-val" id="stat-total">0</div>
@@ -91,32 +100,68 @@
             <div>
               <div class="stat-val" id="stat-submitted">0</div>
               <div class="stat-label">New Submitted</div>
-              <div class="stat-desc">Awaiting assignment</div>
+              <div class="stat-desc">Awaiting faculty assign</div>
             </div>
             <div class="stat-icon-wrapper"><i class="fa-solid fa-inbox"></i></div>
+          </div>
+
+          <div class="card stat-card" style="border-left:4px solid #8b5cf6;">
+            <div>
+              <div class="stat-val" id="stat-pending-faculty" style="color:#8b5cf6;">0</div>
+              <div class="stat-label">Pending Faculty</div>
+              <div class="stat-desc">Assigned & active</div>
+            </div>
+            <div class="stat-icon-wrapper" style="background:rgba(139,92,246,0.15); color:#8b5cf6;"><i class="fa-solid fa-user-clock"></i></div>
           </div>
 
           <div class="card stat-card inprogress">
             <div>
               <div class="stat-val" id="stat-inprogress">0</div>
               <div class="stat-label">In Progress</div>
-              <div class="stat-desc">Active repair dispatches</div>
+              <div class="stat-desc">Active repair work</div>
             </div>
             <div class="stat-icon-wrapper"><i class="fa-solid fa-gears"></i></div>
+          </div>
+
+          <div class="card stat-card" style="border-left:4px solid #ef4444;">
+            <div>
+              <div class="stat-val" id="stat-high-critical" style="color:#ef4444;">0</div>
+              <div class="stat-label">High / Critical</div>
+              <div class="stat-desc">Requires urgent SLA</div>
+            </div>
+            <div class="stat-icon-wrapper" style="background:rgba(239,68,68,0.15); color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i></div>
           </div>
 
           <div class="card stat-card resolved">
             <div>
               <div class="stat-val" id="stat-resolved">0</div>
               <div class="stat-label">Resolved / Closed</div>
-              <div class="stat-desc">Fixed & student closed</div>
+              <div class="stat-desc">Successfully completed</div>
             </div>
             <div class="stat-icon-wrapper"><i class="fa-solid fa-circle-check"></i></div>
           </div>
+
+          <div class="card stat-card" style="border-left:4px solid #f97316;">
+            <div>
+              <div class="stat-val" id="stat-reopened" style="color:#f97316;">0</div>
+              <div class="stat-label">Reopened Cases</div>
+              <div class="stat-desc">Reported by student</div>
+            </div>
+            <div class="stat-icon-wrapper" style="background:rgba(249,115,22,0.15); color:#f97316;"><i class="fa-solid fa-rotate-left"></i></div>
+          </div>
+
+          <div class="card stat-card" style="border-left:4px solid #64748b;">
+            <div>
+              <div class="stat-val" id="stat-rejected" style="color:#64748b;">0</div>
+              <div class="stat-label">Rejected</div>
+              <div class="stat-desc">Invalid or duplicates</div>
+            </div>
+            <div class="stat-icon-wrapper" style="background:rgba(100,116,139,0.15); color:#64748b;"><i class="fa-solid fa-ban"></i></div>
+          </div>
         </div>
 
-        <!-- 2. Chart.js Analytics Grid (4 Realtime Charts) -->
-        <div class="charts-grid" style="grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.75rem;">
+        <!-- 2. Chart.js Analytics Grid -->
+        <div class="charts-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.75rem;">
           
           <!-- Chart 1: Complaints by Category -->
           <div class="card chart-card">
@@ -128,33 +173,43 @@
             </div>
           </div>
 
-          <!-- Chart 2: Monthly Complaints Trend -->
+          <!-- Chart 2: Department Distribution -->
           <div class="card chart-card">
             <div class="chart-header">
-              <h3><i class="fa-solid fa-chart-line" style="color:var(--color-brand);"></i> Monthly Complaints Trend</h3>
+              <h3><i class="fa-solid fa-building-columns" style="color:var(--color-brand);"></i> Department Distribution</h3>
             </div>
             <div class="chart-container">
-              <canvas id="monthly-chart"></canvas>
+              <canvas id="department-chart"></canvas>
             </div>
           </div>
 
           <!-- Chart 3: Status Distribution -->
           <div class="card chart-card">
             <div class="chart-header">
-              <h3><i class="fa-solid fa-chart-simple" style="color:var(--color-brand);"></i> Status Distribution</h3>
+              <h3><i class="fa-solid fa-chart-simple" style="color:var(--color-brand);"></i> Status Lifecycle Breakdown</h3>
             </div>
             <div class="chart-container">
               <canvas id="status-chart"></canvas>
             </div>
           </div>
 
-          <!-- Chart 4: Priority / Urgency Distribution -->
+          <!-- Chart 4: Priority Distribution -->
           <div class="card chart-card">
             <div class="chart-header">
-              <h3><i class="fa-solid fa-chart-column" style="color:var(--color-brand);"></i> Priority Breakdown</h3>
+              <h3><i class="fa-solid fa-chart-column" style="color:var(--color-brand);"></i> Priority Class Distribution</h3>
             </div>
             <div class="chart-container">
               <canvas id="priority-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 5: Faculty Workload (Full Width) -->
+          <div class="card chart-card" style="grid-column: 1 / -1;">
+            <div class="chart-header">
+              <h3><i class="fa-solid fa-user-check" style="color:var(--color-brand);"></i> Faculty Assigned Workload</h3>
+            </div>
+            <div class="chart-container" style="height:250px;">
+              <canvas id="faculty-chart"></canvas>
             </div>
           </div>
 
@@ -165,18 +220,19 @@
           <div class="filter-inputs">
             <div class="search-box">
               <i class="fa-solid fa-magnifying-glass search-icon"></i>
-              <input type="text" id="search-input" class="form-control" placeholder="Search by Ticket ID, Title, Student Name, Dept..." />
+              <input type="text" id="search-input" class="form-control" placeholder="Search by Ticket ID, Title, Student Name, Student ID, Dept..." />
             </div>
 
             <select id="status-filter" class="form-select" style="max-width:150px;">
               <option value="ALL">All Statuses</option>
               <option value="Submitted">Submitted</option>
-              <option value="Under Review">Under Review</option>
               <option value="Assigned">Assigned</option>
+              <option value="Accepted">Accepted</option>
               <option value="In Progress">In Progress</option>
               <option value="Resolved">Resolved</option>
-              <option value="Rejected">Rejected</option>
               <option value="Closed">Closed</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Reopened">Reopened</option>
             </select>
 
             <select id="category-filter" class="form-select" style="max-width:150px;">
@@ -192,10 +248,14 @@
 
             <select id="urgency-filter" class="form-select" style="max-width:140px;">
               <option value="ALL">All Priorities</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
+              <option value="Critical">Critical</option>
               <option value="High">High</option>
-              <option value="Urgent">Urgent</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+
+            <select id="faculty-filter" class="form-select" style="max-width:170px;">
+              <option value="ALL">All Faculty</option>
             </select>
           </div>
           <span style="font-size:0.85rem; font-weight:700; color:var(--text-secondary);" id="results-count">0 records</span>
@@ -208,11 +268,12 @@
               <tr>
                 <th>Ticket ID</th>
                 <th>Title / Location</th>
-                <th>Student / Dept</th>
+                <th>Student Details</th>
                 <th>Category</th>
                 <th>Priority</th>
+                <th>Assigned Faculty</th>
                 <th>Status</th>
-                <th>Admin Actions</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="admin-complaints-tbody">
@@ -225,11 +286,11 @@
     </main>
   </div>
 
-  <!-- Status Triage & Assign Department Modal Overlay -->
+  <!-- Status Triage & Assign Faculty Modal -->
   <div class="modal-overlay" id="triage-modal-overlay">
-    <div class="modal" style="max-width:460px;">
+    <div class="modal" style="max-width:480px; border-radius:var(--radius-lg);">
       <div class="modal-header">
-        <h3 style="font-family:var(--font-family-display); font-size:1.05rem; font-weight:800;"><i class="fa-solid fa-list-check" style="color:var(--color-brand);"></i> Triage & Dispatch Ticket</h3>
+        <h3 style="font-family:var(--font-family-display); font-size:1.05rem; font-weight:800;"><i class="fa-solid fa-list-check" style="color:var(--color-brand);"></i> Triage & Assign Complaint</h3>
         <button class="close-modal-btn close-modal-trigger">✕</button>
       </div>
 
@@ -238,32 +299,127 @@
           <div class="form-group">
             <label class="form-label" for="modal-status-select">Lifecycle Status State *</label>
             <select id="modal-status-select" name="status" class="form-select" required>
-              <option value="Submitted">Submitted (Lodge Received)</option>
-              <option value="Under Review">Under Review (Initial Triage)</option>
-              <option value="Assigned">Assigned (Team Dispatched)</option>
+              <option value="Submitted">Submitted (Awaiting Assignment)</option>
+              <option value="Assigned">Assigned (Dispatched to Faculty)</option>
+              <option value="Accepted">Accepted by Faculty</option>
               <option value="In Progress">In Progress (Maintenance Active)</option>
-              <option value="Resolved">Resolved (Issue Fixed)</option>
+              <option value="Resolved">Resolved (Pending Closure)</option>
+              <option value="Closed">Closed (Verified Resolution)</option>
               <option value="Rejected">Rejected (Invalid / Duplicate)</option>
-              <option value="Closed">Closed (Archived)</option>
+              <option value="Reopened">Reopened (Follow-up Required)</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="modal-assigned-input">Assign Department / Team Lead</label>
-            <input type="text" id="modal-assigned-input" name="assignedTo" class="form-control" placeholder="e.g. Electrical Maintenance Team 2" />
+            <label class="form-label" for="modal-faculty-select">Assign to Faculty Member</label>
+            <select id="modal-faculty-select" name="facultyId" class="form-select">
+              <option value="">Unassigned</option>
+              <!-- Dynamically populated from registered faculty -->
+            </select>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="modal-remarks-input">Admin Remarks & Action Log *</label>
-            <textarea id="modal-remarks-input" name="remarks" class="form-control" placeholder="Add official notes for the student timeline audit log..." required></textarea>
+            <textarea id="modal-remarks-input" name="remarks" class="form-control" placeholder="Add official directives or reason for status update..." required style="min-height:85px;"></textarea>
           </div>
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-outline btn-sm close-modal-trigger">Cancel</button>
-          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-floppy-disk"></i> Save & Log Timeline</button>
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-floppy-disk"></i> Update & Log Timeline</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Manage Faculty Modal -->
+  <div class="modal-overlay" id="faculty-management-modal" style="display:none;">
+    <div class="modal" style="max-width:680px; border-radius:var(--radius-lg);">
+      <div class="modal-header">
+        <h3 style="font-family:var(--font-family-display); font-size:1.1rem; font-weight:800;">
+          <i class="fa-solid fa-chalkboard-user" style="color:var(--color-brand);"></i> Manage Faculty Registry
+        </h3>
+        <button class="close-modal-btn" id="close-faculty-modal-btn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <h4 style="font-size:0.9rem; font-weight:700; margin:0;">Active Faculty Roster</h4>
+          <button type="button" class="btn btn-outline btn-sm" id="toggle-add-faculty-btn">
+            <i class="fa-solid fa-user-plus"></i> Add New Faculty
+          </button>
+        </div>
+
+        <!-- Add Faculty Inline Form -->
+        <div id="add-faculty-form-container" style="display:none; background:var(--bg-surface-raised); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:1rem;">
+          <h5 style="font-size:0.85rem; font-weight:800; margin-top:0; margin-bottom:0.75rem;">Create New Faculty User</h5>
+          <form id="add-faculty-form">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+              <div class="form-group">
+                <label class="form-label" for="new-faculty-name">Full Name *</label>
+                <input type="text" id="new-faculty-name" class="form-control" placeholder="Prof. Alan Turing" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="new-faculty-email">Email Address *</label>
+                <input type="email" id="new-faculty-email" class="form-control" placeholder="turing@campuscare.edu" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="new-faculty-dept">Department *</label>
+                <input type="text" id="new-faculty-dept" class="form-control" placeholder="Computer Science & Engineering" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="new-faculty-id">Faculty ID *</label>
+                <input type="text" id="new-faculty-id" class="form-control" placeholder="FAC-2026-101" required />
+              </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.75rem;">
+              <button type="button" class="btn btn-outline btn-sm" id="cancel-add-faculty-btn">Cancel</button>
+              <button type="submit" class="btn btn-primary btn-sm">Save Faculty Member</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Faculty List Table -->
+        <div class="table-responsive" style="max-height:280px; overflow-y:auto;">
+          <table class="table" style="font-size:0.85rem;">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Faculty ID</th>
+                <th>Department</th>
+                <th>Email</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="admin-faculty-list-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage Categories Modal -->
+  <div class="modal-overlay" id="categories-modal" style="display:none;">
+    <div class="modal" style="max-width:480px; border-radius:var(--radius-lg);">
+      <div class="modal-header">
+        <h3 style="font-family:var(--font-family-display); font-size:1.1rem; font-weight:800;">
+          <i class="fa-solid fa-tags" style="color:var(--color-brand);"></i> Manage Complaint Categories
+        </h3>
+        <button class="close-modal-btn" id="close-categories-modal-btn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <form id="add-category-form" style="display:flex; gap:0.5rem; margin-bottom:1.25rem;">
+          <input type="text" id="new-category-input" class="form-control" placeholder="New category name (e.g. Sports Complex)..." required />
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add</button>
+        </form>
+
+        <div id="categories-list-container" style="display:flex; flex-direction:column; gap:0.5rem; max-height:280px; overflow-y:auto;">
+          <!-- Dynamically populated categories -->
+        </div>
+      </div>
     </div>
   </div>
 

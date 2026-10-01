@@ -60,6 +60,9 @@
           </div>
         </div>
         <div class="navbar-actions">
+          <button type="button" class="btn btn-outline btn-sm" id="export-csv-btn" title="Export to CSV">
+            <i class="fa-solid fa-file-arrow-down"></i> Export Report
+          </button>
           <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
         </div>
       </header>
@@ -71,19 +74,22 @@
           <div class="filter-inputs">
             <div class="search-box">
               <i class="fa-solid fa-magnifying-glass search-icon"></i>
-              <input type="text" id="search-input" class="form-control" placeholder="Search by Ticket ID, Title, Student Name, Dept..." />
+              <input type="text" id="search-input" class="form-control" placeholder="Search by Ticket ID, Title, Student Name, Student ID, Dept..." />
             </div>
 
-            <select id="status-filter" class="form-select" style="max-width:150px;">
+            <select id="status-filter" class="form-select" style="max-width:145px;">
               <option value="ALL">All Statuses</option>
               <option value="Submitted">Submitted</option>
+              <option value="Assigned">Assigned</option>
+              <option value="Accepted">Accepted</option>
               <option value="In Progress">In Progress</option>
               <option value="Resolved">Resolved</option>
-              <option value="Rejected">Rejected</option>
               <option value="Closed">Closed</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Reopened">Reopened</option>
             </select>
 
-            <select id="category-filter" class="form-select" style="max-width:150px;">
+            <select id="category-filter" class="form-select" style="max-width:145px;">
               <option value="ALL">All Categories</option>
               <option value="Hostel">Hostel</option>
               <option value="Academics">Academics</option>
@@ -94,12 +100,16 @@
               <option value="General">General</option>
             </select>
 
-            <select id="urgency-filter" class="form-select" style="max-width:140px;">
+            <select id="urgency-filter" class="form-select" style="max-width:135px;">
               <option value="ALL">All Priorities</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
+              <option value="Critical">Critical</option>
               <option value="High">High</option>
-              <option value="Urgent">Urgent</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+
+            <select id="faculty-filter" class="form-select" style="max-width:160px;">
+              <option value="ALL">All Faculty</option>
             </select>
           </div>
           <span style="font-size:0.85rem; font-weight:700; color:var(--text-secondary);" id="results-count">0 records</span>
@@ -115,6 +125,7 @@
                 <th>Student / Dept</th>
                 <th>Category</th>
                 <th>Priority</th>
+                <th>Assigned Faculty</th>
                 <th>Status</th>
                 <th>Triage Action</th>
               </tr>
@@ -130,9 +141,9 @@
 
   <!-- Status Triage & Action Modal Overlay -->
   <div class="modal-overlay" id="triage-modal-overlay">
-    <div class="modal" style="max-width:460px;">
+    <div class="modal" style="max-width:480px; border-radius:var(--radius-lg);">
       <div class="modal-header">
-        <h3 style="font-family:var(--font-family-display); font-size:1.05rem; font-weight:800;"><i class="fa-solid fa-list-check" style="color:var(--color-brand);"></i> Update Complaint Status</h3>
+        <h3 style="font-family:var(--font-family-display); font-size:1.05rem; font-weight:800;"><i class="fa-solid fa-list-check" style="color:var(--color-brand);"></i> Triage & Assign Complaint</h3>
         <button class="close-modal-btn close-modal-trigger">✕</button>
       </div>
 
@@ -141,33 +152,39 @@
           <div class="form-group">
             <label class="form-label" for="modal-status-select">Status Lifecycle State *</label>
             <select id="modal-status-select" name="status" class="form-select" required>
-              <option value="Submitted">Submitted (Under Review)</option>
-              <option value="In Progress">In Progress (Assigned & Dispatched)</option>
-              <option value="Resolved">Resolved (Issue Fixed)</option>
+              <option value="Submitted">Submitted (Awaiting Assignment)</option>
+              <option value="Assigned">Assigned (Assigned to Faculty)</option>
+              <option value="Accepted">Accepted by Faculty</option>
+              <option value="In Progress">In Progress (Maintenance Active)</option>
+              <option value="Resolved">Resolved (Pending Student Review)</option>
+              <option value="Closed">Closed (Verified Resolution)</option>
               <option value="Rejected">Rejected (Invalid / Duplicate)</option>
+              <option value="Reopened">Reopened (Follow-up Required)</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="modal-assigned-input">Assigned Lead / Team Name</label>
-            <input type="text" id="modal-assigned-input" name="assignedTo" class="form-control" placeholder="e.g. Electrical Maintenance Team 2" />
+            <label class="form-label" for="modal-faculty-select">Assigned Faculty Member</label>
+            <select id="modal-faculty-select" name="facultyId" class="form-select">
+              <option value="">Unassigned</option>
+              <!-- Dynamically populated -->
+            </select>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="modal-remarks-input">Admin Remarks & Action Log *</label>
-            <textarea id="modal-remarks-input" name="remarks" class="form-control" placeholder="Add specific details for the student and timeline audit trail..." required></textarea>
+            <textarea id="modal-remarks-input" name="remarks" class="form-control" placeholder="Add specific details for the student and timeline audit trail..." required style="min-height:85px;"></textarea>
           </div>
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-outline btn-sm close-modal-trigger">Cancel</button>
-          <button type="submit" class="btn btn-primary btn-sm">Update Status & Log Timeline</button>
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-floppy-disk"></i> Save & Log Timeline</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Scripts -->
   <script type="module" src="../js/app.js"></script>
   <script type="module" src="../js/controllers/admin-complaints.js"></script>
 </body>

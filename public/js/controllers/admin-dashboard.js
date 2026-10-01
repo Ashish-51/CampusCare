@@ -2,31 +2,50 @@
    CampusCare - Admin Dashboard & Realtime Analytics Controller
    ========================================================================== */
 
-import { requireAuth, resolveUrl } from '../utils/guards.js';
+import { requireRole, resolveUrl } from '../utils/guards.js';
 import { subscribeToAnalytics } from '../services/analytics.service.js';
-import { getAllComplaints, updateComplaintStatus, deleteComplaint } from '../services/complaint.service.js';
+import { 
+  getAllComplaints, 
+  updateComplaintStatus, 
+  assignComplaintToFaculty, 
+  deleteComplaint,
+  exportComplaintsReport,
+  getCategories,
+  createCategory,
+  deleteCategory
+} from '../services/complaint.service.js';
+import { getAllFaculty, createFaculty } from '../services/user.service.js';
 import { renderStatusBadge, renderUrgencyBadge } from '../utils/formatters.js';
 import { showToast } from '../utils/toast.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
 
 let adminUserObj = null;
 let currentComplaintsList = [];
+let allFacultyList = [];
 let activeSelectedComplaintId = null;
 
 // Chart.js Instances
 let categoryChartInstance = null;
-let monthlyChartInstance = null;
+let departmentChartInstance = null;
 let statusChartInstance = null;
 let priorityChartInstance = null;
+let facultyChartInstance = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const { profile } = await requireAuth('admin');
+    const { profile } = await requireRole('admin');
     adminUserObj = profile;
     updateAdminNav(profile);
+
+    // Preload faculty members
+    await loadFacultyOptions();
+
     initRealtimeAnalytics();
     initFilterEvents();
     initModalEvents();
+    initExportButton();
+    initFacultyManagementModal();
+    initCategoriesModal();
   } catch (err) {
     console.error('Admin dashboard controller error:', err);
   }
@@ -35,6 +54,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 function updateAdminNav(profile) {
   const adminNameEl = document.getElementById('admin-display-name');
   if (adminNameEl) adminNameEl.textContent = profile.fullName || 'Administrator';
+}
+
+async function loadFacultyOptions() {
+  allFacultyList = await getAllFaculty();
+  
+  // Populate faculty filter dropdown
+  const filterSelect = document.getElementById('faculty-filter');
+  if (filterSelect) {
+    filterSelect.innerHTML = '<option value="ALL">All Faculty</option>' +
+      allFacultyList.map(f => `<option value="${f.uid}">${escapeHtml(f.fullName || f.name)}</option>`).join('');
+  }
+
+  // Populate triage modal faculty select
+  const modalSelect = document.getElementById('modal-faculty-select');
+  if (modalSelect) {
+    modalSelect.innerHTML = '<option value="">Unassigned</option>' +
+      allFacultyList.map(f => `<option value="${f.uid}">${escapeHtml(f.fullName || f.name)} (${f.facultyId || f.department || 'Faculty'})</option>`).join('');
+  }
 }
 
 /**
@@ -49,23 +86,32 @@ function initRealtimeAnalytics() {
     // 1. Metric Stat Cards
     const totalEl = document.getElementById('stat-total');
     const submittedEl = document.getElementById('stat-submitted');
+    const pendingFacultyEl = document.getElementById('stat-pending-faculty');
     const inProgressEl = document.getElementById('stat-inprogress');
+    const highCriticalEl = document.getElementById('stat-high-critical');
     const resolvedEl = document.getElementById('stat-resolved');
+    const reopenedEl = document.getElementById('stat-reopened');
+    const rejectedEl = document.getElementById('stat-rejected');
 
     if (totalEl) totalEl.textContent = metrics.total;
     if (submittedEl) submittedEl.textContent = metrics.submitted;
+    if (pendingFacultyEl) pendingFacultyEl.textContent = metrics.pendingFacultyAction;
     if (inProgressEl) inProgressEl.textContent = metrics.inProgress;
-    if (resolvedEl) resolvedEl.textContent = metrics.resolved;
+    if (highCriticalEl) highCriticalEl.textContent = metrics.highCritical;
+    if (resolvedEl) resolvedEl.textContent = metrics.resolved + metrics.closed;
+    if (reopenedEl) reopenedEl.textContent = metrics.reopened;
+    if (rejectedEl) rejectedEl.textContent = metrics.rejected;
 
-    // 2. Render 4 Realtime Chart.js Visualizations
+    // 2. Render 5 Realtime Chart.js Visualizations
     renderCategoryDoughnutChart(metrics.categoriesMap);
-    renderMonthlyTrendChart(metrics.monthlyMap);
+    renderDepartmentBarChart(metrics.departmentMap);
     renderStatusDistributionChart(metrics.statusMap);
-    renderPriorityDistributionChart(metrics.urgencyMap);
+    renderPriorityDistributionChart(metrics.priorityMap);
+    renderFacultyWorkloadChart(metrics.facultyWorkloadMap);
 
     // 3. Render Master Complaints Database Table
     currentComplaintsList = await getAllComplaints();
-    renderComplaintsTable(currentComplaintsList);
+    applyFiltersAndRenderTable();
   });
 }
 
@@ -101,38 +147,38 @@ function renderCategoryDoughnutChart(categoriesMap) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12 }, padding: 12 } }
-      },
-      cutout: '65%'
+        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } }
+      }
     }
   });
 }
 
 /**
- * Chart 2: Monthly Complaints (Line / Area Trend Chart)
+ * Chart 2: Department Distribution (Bar Chart)
  */
-function renderMonthlyTrendChart(monthlyMap) {
-  const ctx = document.getElementById('monthly-chart');
+function renderDepartmentBarChart(departmentMap) {
+  const ctx = document.getElementById('department-chart');
   if (!ctx) return;
 
-  const labels = Object.keys(monthlyMap);
-  const data = Object.values(monthlyMap);
+  const labels = Object.keys(departmentMap);
+  const data = Object.values(departmentMap);
 
-  if (monthlyChartInstance) monthlyChartInstance.destroy();
+  if (labels.length === 0) {
+    labels.push('General');
+    data.push(0);
+  }
 
-  monthlyChartInstance = new Chart(ctx, {
-    type: 'line',
+  if (departmentChartInstance) departmentChartInstance.destroy();
+
+  departmentChartInstance = new Chart(ctx, {
+    type: 'bar',
     data: {
       labels: labels,
       datasets: [{
-        label: 'Monthly Complaints',
+        label: 'Complaints',
         data: data,
-        borderColor: '#5B5CEB',
-        backgroundColor: 'rgba(91, 92, 235, 0.08)',
-        fill: true,
-        tension: 0.35,
-        pointBackgroundColor: '#5B5CEB',
-        pointRadius: 4
+        backgroundColor: '#3B82F6',
+        borderRadius: 6
       }]
     },
     options: {
@@ -140,14 +186,15 @@ function renderMonthlyTrendChart(monthlyMap) {
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+        y: { beginAtZero: true, ticks: { stepSize: 1 } },
+        x: { ticks: { maxRotation: 25, minRotation: 0 } }
       }
     }
   });
 }
 
 /**
- * Chart 3: Status Distribution (Doughnut Chart)
+ * Chart 3: Status Distribution
  */
 function renderStatusDistributionChart(statusMap) {
   const ctx = document.getElementById('status-chart');
@@ -164,7 +211,16 @@ function renderStatusDistributionChart(statusMap) {
       labels: labels,
       datasets: [{
         data: data,
-        backgroundColor: ['#F59E0B', '#B45309', '#5B5CEB', '#3B82F6', '#16A34A', '#64748B', '#DC2626'],
+        backgroundColor: [
+          '#6366F1', // Submitted
+          '#8B5CF6', // Assigned
+          '#10B981', // Accepted
+          '#3B82F6', // In Progress
+          '#059669', // Resolved
+          '#475569', // Closed
+          '#EF4444', // Rejected
+          '#F97316'  // Reopened
+        ],
         borderWidth: 2,
         borderColor: 'transparent'
       }]
@@ -173,22 +229,21 @@ function renderStatusDistributionChart(statusMap) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 11 }, padding: 10 } }
-      },
-      cutout: '65%'
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 8 } }
+      }
     }
   });
 }
 
 /**
- * Chart 4: Priority / Urgency Distribution (Bar Chart)
+ * Chart 4: Priority / Urgency Distribution
  */
 function renderPriorityDistributionChart(urgencyMap) {
   const ctx = document.getElementById('priority-chart');
   if (!ctx) return;
 
-  const labels = Object.keys(urgencyMap);
-  const data = Object.values(urgencyMap);
+  const labels = ['Low', 'Medium', 'High', 'Critical'];
+  const data = labels.map(l => urgencyMap[l] || 0);
 
   if (priorityChartInstance) priorityChartInstance.destroy();
 
@@ -215,8 +270,93 @@ function renderPriorityDistributionChart(urgencyMap) {
 }
 
 /**
- * Render Master Complaints Database Table
+ * Chart 5: Faculty Workload
  */
+function renderFacultyWorkloadChart(workloadMap) {
+  const ctx = document.getElementById('faculty-chart');
+  if (!ctx) return;
+
+  let labels = Object.keys(workloadMap);
+  let data = Object.values(workloadMap);
+
+  if (labels.length === 0) {
+    labels = ['Prof. Sarah Jenkins'];
+    data = [0];
+  }
+
+  if (facultyChartInstance) facultyChartInstance.destroy();
+
+  facultyChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Assigned Complaints',
+        data: data,
+        backgroundColor: '#8B5CF6',
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { beginAtZero: true, ticks: { stepSize: 1 } }
+      }
+    }
+  });
+}
+
+/**
+ * Render Master Complaints Table with filters
+ */
+function applyFiltersAndRenderTable() {
+  const searchInput = document.getElementById('search-input');
+  const statusFilter = document.getElementById('status-filter');
+  const categoryFilter = document.getElementById('category-filter');
+  const urgencyFilter = document.getElementById('urgency-filter');
+  const facultyFilter = document.getElementById('faculty-filter');
+
+  const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+  const statusVal = statusFilter ? statusFilter.value : 'ALL';
+  const categoryVal = categoryFilter ? categoryFilter.value : 'ALL';
+  const priorityVal = urgencyFilter ? urgencyFilter.value : 'ALL';
+  const facultyVal = facultyFilter ? facultyFilter.value : 'ALL';
+
+  let filtered = [...currentComplaintsList];
+
+  if (statusVal !== 'ALL') {
+    filtered = filtered.filter(c => c.status === statusVal);
+  }
+  if (categoryVal !== 'ALL') {
+    filtered = filtered.filter(c => c.category === categoryVal);
+  }
+  if (priorityVal !== 'ALL') {
+    filtered = filtered.filter(c => {
+      const p = c.priority || c.urgency || '';
+      return p.toLowerCase() === priorityVal.toLowerCase();
+    });
+  }
+  if (facultyVal !== 'ALL') {
+    filtered = filtered.filter(c => c.assignedFacultyId === facultyVal);
+  }
+  if (searchQuery) {
+    filtered = filtered.filter(c => 
+      (c.ticketId && c.ticketId.toLowerCase().includes(searchQuery)) ||
+      (c.title && c.title.toLowerCase().includes(searchQuery)) ||
+      (c.studentName && c.studentName.toLowerCase().includes(searchQuery)) ||
+      (c.studentId && c.studentId.toLowerCase().includes(searchQuery)) ||
+      (c.department && c.department.toLowerCase().includes(searchQuery)) ||
+      (c.assignedFacultyName && c.assignedFacultyName.toLowerCase().includes(searchQuery)) ||
+      (c.location && c.location.toLowerCase().includes(searchQuery))
+    );
+  }
+
+  renderComplaintsTable(filtered);
+}
+
 function renderComplaintsTable(list) {
   const tbody = document.getElementById('admin-complaints-tbody');
   const countEl = document.getElementById('results-count');
@@ -227,7 +367,7 @@ function renderComplaintsTable(list) {
   if (list.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" style="text-align:center; padding:3rem; color:var(--text-muted);">
+        <td colspan="8" style="text-align:center; padding:3rem; color:var(--text-muted);">
           No complaints found matching current search and filter criteria.
         </td>
       </tr>
@@ -243,27 +383,29 @@ function renderComplaintsTable(list) {
         <div style="font-size:0.78rem; color:var(--text-muted);"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(c.location || 'N/A')}</div>
       </td>
       <td>
-        <div style="display:flex; align-items:center; gap:0.35rem;">
-          <span>${escapeHtml(c.studentName)}</span>
-          ${c.studentRole === 'faculty' ? '<span class="badge" style="background:rgba(139,92,246,0.15); color:#8b5cf6; font-size:0.68rem; padding:0.15rem 0.4rem;">Faculty</span>' : ''}
-        </div>
+        <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(c.studentName)}</div>
         <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(c.department || 'Student')}</div>
       </td>
       <td><span class="badge" style="background:var(--border-light); color:var(--text-primary);">${escapeHtml(c.category)}</span></td>
-      <td>${renderUrgencyBadge(c.urgency)}</td>
+      <td>${renderUrgencyBadge(c.priority || c.urgency)}</td>
+      <td>
+        <div style="display:flex; align-items:center; gap:0.35rem;">
+          <span style="font-size:0.85rem; font-weight:600; color:var(--text-primary);">${escapeHtml(c.assignedFacultyName || 'Unassigned')}</span>
+        </div>
+      </td>
       <td>${renderStatusBadge(c.status)}</td>
       <td>
         <div style="display:flex; gap:0.35rem;">
-          <a href="${resolveUrl('/admin/detail.html?id=' + c.id)}" data-id="${c.id}" class="btn btn-outline btn-sm view-detail-link" title="View Details">
+          <a href="${resolveUrl('/admin/detail.html?id=' + c.id)}" class="btn btn-outline btn-sm" title="View Details">
             <i class="fa-solid fa-eye"></i> View
           </a>
           <button 
             class="btn btn-primary btn-sm triage-btn" 
             data-id="${c.id}" 
             data-status="${c.status}" 
-            data-assigned="${escapeHtml(c.assignedTo || '')}" 
+            data-faculty="${c.assignedFacultyId || ''}"
             data-remarks="${escapeHtml(c.adminRemarks || '')}"
-            title="Change Status & Assign Department"
+            title="Triage & Assign"
           >
             <i class="fa-solid fa-list-check"></i> Triage
           </button>
@@ -280,28 +422,20 @@ function renderComplaintsTable(list) {
     </tr>
   `).join('');
 
-  tbody.querySelectorAll('.view-detail-link').forEach(link => {
-    link.addEventListener('click', () => {
-      if (link.dataset.id) {
-        sessionStorage.setItem('cc_active_complaint_id', link.dataset.id);
-      }
-    });
-  });
-
-  // Triage buttons
-  document.querySelectorAll('.triage-btn').forEach(btn => {
+  // Triage button handlers
+  tbody.querySelectorAll('.triage-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       activeSelectedComplaintId = btn.dataset.id;
       openTriageModal({
         status: btn.dataset.status,
-        assignedTo: btn.dataset.assigned,
+        facultyId: btn.dataset.faculty,
         remarks: btn.dataset.remarks
       });
     });
   });
 
-  // Delete buttons
-  document.querySelectorAll('.delete-btn').forEach(btn => {
+  // Delete button handlers
+  tbody.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const id = btn.dataset.id;
       const ticket = btn.dataset.ticket;
@@ -321,106 +455,232 @@ function renderComplaintsTable(list) {
   });
 }
 
-/**
- * Filter & Search Listeners
- */
 function initFilterEvents() {
   const searchInput = document.getElementById('search-input');
   const statusFilter = document.getElementById('status-filter');
   const categoryFilter = document.getElementById('category-filter');
   const urgencyFilter = document.getElementById('urgency-filter');
+  const facultyFilter = document.getElementById('faculty-filter');
 
-  const handleFilterChange = () => {
-    const filters = {
-      searchQuery: searchInput ? searchInput.value : '',
-      status: statusFilter ? statusFilter.value : 'ALL',
-      category: categoryFilter ? categoryFilter.value : 'ALL',
-      urgency: urgencyFilter ? urgencyFilter.value : 'ALL'
-    };
-
-    let filtered = [...currentComplaintsList];
-
-    if (filters.status !== 'ALL') {
-      filtered = filtered.filter(c => c.status === filters.status);
-    }
-    if (filters.category !== 'ALL') {
-      filtered = filtered.filter(c => c.category === filters.category);
-    }
-    if (filters.urgency !== 'ALL') {
-      filtered = filtered.filter(c => c.urgency === filters.urgency);
-    }
-    if (filters.searchQuery) {
-      const q = filters.searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(c => 
-        (c.ticketId && c.ticketId.toLowerCase().includes(q)) ||
-        (c.title && c.title.toLowerCase().includes(q)) ||
-        (c.studentName && c.studentName.toLowerCase().includes(q)) ||
-        (c.department && c.department.toLowerCase().includes(q))
-      );
-    }
-
-    renderComplaintsTable(filtered);
-  };
-
-  if (searchInput) searchInput.addEventListener('input', handleFilterChange);
-  if (statusFilter) statusFilter.addEventListener('change', handleFilterChange);
-  if (categoryFilter) categoryFilter.addEventListener('change', handleFilterChange);
-  if (urgencyFilter) urgencyFilter.addEventListener('change', handleFilterChange);
+  if (searchInput) searchInput.addEventListener('input', applyFiltersAndRenderTable);
+  if (statusFilter) statusFilter.addEventListener('change', applyFiltersAndRenderTable);
+  if (categoryFilter) categoryFilter.addEventListener('change', applyFiltersAndRenderTable);
+  if (urgencyFilter) urgencyFilter.addEventListener('change', applyFiltersAndRenderTable);
+  if (facultyFilter) facultyFilter.addEventListener('change', applyFiltersAndRenderTable);
 }
 
-/**
- * Modal Handlers
- */
 function openTriageModal(data) {
-  const modalOverlay = document.getElementById('triage-modal-overlay');
+  const modal = document.getElementById('triage-modal-overlay');
   const statusSelect = document.getElementById('modal-status-select');
-  const assignedInput = document.getElementById('modal-assigned-input');
+  const facultySelect = document.getElementById('modal-faculty-select');
   const remarksInput = document.getElementById('modal-remarks-input');
 
-  if (statusSelect) statusSelect.value = data.status || 'In Progress';
-  if (assignedInput) assignedInput.value = data.assignedTo || '';
+  if (statusSelect) statusSelect.value = data.status || 'Submitted';
+  if (facultySelect) facultySelect.value = data.facultyId || '';
   if (remarksInput) remarksInput.value = data.remarks || '';
 
-  if (modalOverlay) modalOverlay.classList.add('active');
-}
-
-function closeTriageModal() {
-  const modalOverlay = document.getElementById('triage-modal-overlay');
-  if (modalOverlay) modalOverlay.classList.remove('active');
+  if (modal) modal.style.display = 'flex';
 }
 
 function initModalEvents() {
-  const closeBtns = document.querySelectorAll('.close-modal-trigger');
-  closeBtns.forEach(b => b.addEventListener('click', closeTriageModal));
+  const modal = document.getElementById('triage-modal-overlay');
+  const form = document.getElementById('triage-form');
 
-  const triageForm = document.getElementById('triage-form');
-  if (triageForm) {
-    triageForm.addEventListener('submit', async (e) => {
+  document.querySelectorAll('.close-modal-trigger').forEach(el => {
+    el.addEventListener('click', () => {
+      if (modal) modal.style.display = 'none';
+      activeSelectedComplaintId = null;
+    });
+  });
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!activeSelectedComplaintId) return;
 
-      const status = triageForm.status.value;
-      const assignedTo = triageForm.assignedTo.value.trim();
-      const remarks = triageForm.remarks.value.trim();
+      const status = form.status.value;
+      const facultyId = form.facultyId.value;
+      const remarks = form.remarks.value.trim();
+
+      let facultyName = 'Unassigned';
+      if (facultyId) {
+        const found = allFacultyList.find(f => f.uid === facultyId);
+        facultyName = found ? (found.fullName || found.name) : 'Faculty';
+      }
 
       try {
-        showLoader('Updating status and logging timeline event...');
-        await updateComplaintStatus(activeSelectedComplaintId, adminUserObj, status, remarks, assignedTo);
+        showLoader('Updating complaint status and assignment...');
+        
+        if (facultyId && status === 'Assigned') {
+          await assignComplaintToFaculty(activeSelectedComplaintId, adminUserObj, facultyId, facultyName, remarks);
+        } else {
+          await updateComplaintStatus(activeSelectedComplaintId, adminUserObj, status, remarks, facultyName);
+        }
+
         hideLoader();
-        showToast('Complaint triage updated successfully!', 'success');
-        closeTriageModal();
+        if (modal) modal.style.display = 'none';
+        showToast('Complaint status updated successfully!', 'success');
       } catch (err) {
         hideLoader();
         console.error('Triage update error:', err);
-        showToast('Failed to update triage status.', 'error');
+        showToast('Failed to update complaint.', 'error');
       }
     });
   }
 }
 
+function initExportButton() {
+  const exportBtn = document.getElementById('export-csv-btn');
+  if (!exportBtn) return;
+
+  exportBtn.addEventListener('click', async () => {
+    try {
+      showLoader('Generating CSV export report...');
+      await exportComplaintsReport(currentComplaintsList);
+      hideLoader();
+      showToast('Complaints report exported successfully!', 'success');
+    } catch (err) {
+      hideLoader();
+      showToast(err.message || 'Export failed.', 'error');
+    }
+  });
+}
+
+function initFacultyManagementModal() {
+  const modal = document.getElementById('faculty-management-modal');
+  const openBtn = document.getElementById('manage-faculty-btn');
+  const closeBtn = document.getElementById('close-faculty-modal-btn');
+  const toggleAddBtn = document.getElementById('toggle-add-faculty-btn');
+  const addFormContainer = document.getElementById('add-faculty-form-container');
+  const cancelAddBtn = document.getElementById('cancel-add-faculty-btn');
+  const addForm = document.getElementById('add-faculty-form');
+
+  if (openBtn) {
+    openBtn.addEventListener('click', async () => {
+      await renderFacultyRoster();
+      if (modal) modal.style.display = 'flex';
+    });
+  }
+
+  if (closeBtn) closeBtn.addEventListener('click', () => { if (modal) modal.style.display = 'none'; });
+  if (cancelAddBtn) cancelAddBtn.addEventListener('click', () => { if (addFormContainer) addFormContainer.style.display = 'none'; });
+
+  if (toggleAddBtn) {
+    toggleAddBtn.addEventListener('click', () => {
+      if (addFormContainer) {
+        addFormContainer.style.display = addFormContainer.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+  }
+
+  if (addForm) {
+    addForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fullName = document.getElementById('new-faculty-name').value.trim();
+      const email = document.getElementById('new-faculty-email').value.trim();
+      const department = document.getElementById('new-faculty-dept').value.trim();
+      const facultyId = document.getElementById('new-faculty-id').value.trim();
+
+      try {
+        showLoader('Registering new faculty member...');
+        await createFaculty({ fullName, email, department, facultyId });
+        hideLoader();
+        showToast(`Faculty ${fullName} registered successfully!`, 'success');
+        addForm.reset();
+        if (addFormContainer) addFormContainer.style.display = 'none';
+        await loadFacultyOptions();
+        await renderFacultyRoster();
+      } catch (err) {
+        hideLoader();
+        showToast(err.message || 'Failed to add faculty.', 'error');
+      }
+    });
+  }
+}
+
+async function renderFacultyRoster() {
+  const tbody = document.getElementById('admin-faculty-list-tbody');
+  if (!tbody) return;
+
+  const list = await getAllFaculty();
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No faculty registered yet.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = list.map(f => `
+    <tr>
+      <td><strong>${escapeHtml(f.fullName || f.name)}</strong></td>
+      <td><span class="badge" style="background:var(--border-light); color:var(--text-primary);">${escapeHtml(f.facultyId || 'FAC-100')}</span></td>
+      <td>${escapeHtml(f.department || 'General')}</td>
+      <td>${escapeHtml(f.email)}</td>
+      <td><span class="badge badge-resolved">Active</span></td>
+    </tr>
+  `).join('');
+}
+
+function initCategoriesModal() {
+  const modal = document.getElementById('categories-modal');
+  const openBtn = document.getElementById('manage-categories-btn');
+  const closeBtn = document.getElementById('close-categories-modal-btn');
+  const addForm = document.getElementById('add-category-form');
+
+  if (openBtn) {
+    openBtn.addEventListener('click', () => {
+      renderCategoriesList();
+      if (modal) modal.style.display = 'flex';
+    });
+  }
+
+  if (closeBtn) closeBtn.addEventListener('click', () => { if (modal) modal.style.display = 'none'; });
+
+  if (addForm) {
+    addForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('new-category-input');
+      const val = input.value.trim();
+      if (val) {
+        createCategory(val);
+        input.value = '';
+        renderCategoriesList();
+        showToast(`Category "${val}" added.`, 'success');
+      }
+    });
+  }
+}
+
+function renderCategoriesList() {
+  const container = document.getElementById('categories-list-container');
+  if (!container) return;
+
+  const cats = getCategories();
+  container.innerHTML = cats.map(c => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.8rem; background:var(--bg-surface-raised); border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+      <span style="font-weight:600; color:var(--text-primary); font-size:0.88rem;"><i class="fa-solid fa-tag" style="color:var(--color-brand); margin-right:0.4rem;"></i> ${escapeHtml(c)}</span>
+      <button type="button" class="btn btn-outline btn-sm delete-cat-btn" data-cat="${escapeHtml(c)}" style="padding:0.2rem 0.5rem; font-size:0.75rem; color:var(--color-danger); border-color:var(--border-color);" title="Delete category">
+        <i class="fa-solid fa-trash-can"></i>
+      </button>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.delete-cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.cat;
+      if (confirm(`Delete category "${cat}"?`)) {
+        deleteCategory(cat);
+        renderCategoriesList();
+        showToast(`Category "${cat}" removed.`, 'info');
+      }
+    });
+  });
+}
+
 function escapeHtml(str) {
   if (!str) return '';
-  return str.replace(/[&<>"']/g, function(m) {
-    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-  });
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }

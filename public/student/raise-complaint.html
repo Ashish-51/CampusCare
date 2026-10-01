@@ -150,7 +150,8 @@
       box-shadow: 0 0 10px rgba(234, 88, 12, 0.12);
     }
 
-    .priority-card-btn.urgent:hover, .priority-card-btn.urgent.active {
+    .priority-card-btn.urgent:hover, .priority-card-btn.urgent.active,
+    .priority-card-btn.critical:hover, .priority-card-btn.critical.active {
       border-color: var(--color-danger);
       background: #FFF1F1;
       color: #B91C1C;
@@ -299,18 +300,61 @@
               </div>
             </div>
 
-            <div class="form-group">
-              <label class="form-label" for="comp-location">Location / Room Number *</label>
-              <input 
-                type="text" 
-                id="comp-location" 
-                name="location" 
-                class="form-control" 
-                placeholder="e.g. Hostel Block B, Room 204 OR Library 2nd Floor" 
-                required 
-              />
-              <span class="error-msg" id="location-error" style="color:var(--color-danger); font-size:0.78rem; display:none; margin-top:0.25rem;">Please specify the location or room number.</span>
+            <!-- Structured Location Grid -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-bottom:1rem;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="comp-building">Building / Block *</label>
+                <input 
+                  type="text" 
+                  id="comp-building" 
+                  name="building" 
+                  class="form-control" 
+                  placeholder="e.g. Hostel Block B, Main Academic Wing" 
+                  required 
+                />
+                <span class="error-msg" id="building-error" style="color:var(--color-danger); font-size:0.78rem; display:none; margin-top:0.25rem;">Please specify building or block.</span>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="comp-floor">Floor *</label>
+                <input 
+                  type="text" 
+                  id="comp-floor" 
+                  name="floor" 
+                  class="form-control" 
+                  placeholder="e.g. 2nd Floor, Ground Floor" 
+                  required 
+                />
+                <span class="error-msg" id="floor-error" style="color:var(--color-danger); font-size:0.78rem; display:none; margin-top:0.25rem;">Please specify floor.</span>
+              </div>
             </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-bottom:1rem;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="comp-room">Room Number / Lab *</label>
+                <input 
+                  type="text" 
+                  id="comp-room" 
+                  name="room" 
+                  class="form-control" 
+                  placeholder="e.g. Room 204, CSE Lab 3" 
+                  required 
+                />
+                <span class="error-msg" id="room-error" style="color:var(--color-danger); font-size:0.78rem; display:none; margin-top:0.25rem;">Please specify room number or area.</span>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="comp-loc-details">Additional Location Details (Optional)</label>
+                <input 
+                  type="text" 
+                  id="comp-loc-details" 
+                  name="locationDetails" 
+                  class="form-control" 
+                  placeholder="e.g. Near West Staircase, Access Point AP-3" 
+                />
+              </div>
+            </div>
+
+            <!-- Fallback hidden combined location input for backward compatibility -->
+            <input type="hidden" id="comp-location" name="location" />
 
             <div class="form-group">
               <label class="form-label" for="comp-desc">Detailed Issue Description *</label>
@@ -331,12 +375,12 @@
               <span class="section-number">03</span>
               <div>
                 <h3>How urgent is it?</h3>
-                <p>Select the priority class to dispatch teams under correct SLA urgency window.</p>
+                <p>Select the urgency class to dispatch teams under correct SLA response window.</p>
               </div>
             </div>
 
             <div class="form-group">
-              <label class="form-label">Priority Classification *</label>
+              <label class="form-label">Urgency Classification *</label>
               <div class="priority-selector-grid">
                 <div class="priority-card-btn low" data-value="Low">
                   <i class="fa-solid fa-circle-info"></i>
@@ -350,9 +394,9 @@
                   <i class="fa-solid fa-triangle-exclamation"></i>
                   <span>High</span>
                 </div>
-                <div class="priority-card-btn urgent" data-value="Urgent">
+                <div class="priority-card-btn critical" data-value="Critical">
                   <i class="fa-solid fa-radiation"></i>
-                  <span>Urgent</span>
+                  <span>Critical</span>
                 </div>
               </div>
 
@@ -361,7 +405,7 @@
                 <option value="Low">Low</option>
                 <option value="Medium" selected>Medium</option>
                 <option value="High">High</option>
-                <option value="Urgent">Urgent</option>
+                <option value="Critical">Critical</option>
               </select>
             </div>
           </div>

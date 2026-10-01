@@ -1,5 +1,6 @@
 /* ==========================================================================
    CampusCare - Student Dashboard Controller
+   Dedicated Student Operations View
    ========================================================================== */
 
 import { requireAuth, resolveUrl } from '../utils/guards.js';
@@ -11,7 +12,7 @@ let allComplaints = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const { user, profile } = await requireAuth(['student', 'faculty']);
+    const { user, profile } = await requireAuth(['student']);
     renderProfileSummary(profile);
     initNotificationDropdown(user.uid);
     
@@ -33,8 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Populate Profile Summary Widget
  */
 function renderProfileSummary(profile) {
-  const isFaculty = profile.role === 'faculty';
-  const initial = (profile.fullName || (isFaculty ? 'Faculty' : 'Student')).charAt(0).toUpperCase();
+  const initial = (profile.fullName || profile.name || 'Student').charAt(0).toUpperCase();
 
   const userDisplayNameEl = document.getElementById('user-display-name');
   const userDisplayDeptEl = document.getElementById('user-display-dept');
@@ -45,14 +45,9 @@ function renderProfileSummary(profile) {
   const cardProfileEmailEl = document.getElementById('card-profile-email');
   const cardProfileDeptEl = document.getElementById('card-profile-dept');
   const cardProfileRollEl = document.getElementById('card-profile-roll');
-  const headerTitleEl = document.querySelector('.navbar-title h1');
 
-  if (headerTitleEl && isFaculty) {
-    headerTitleEl.textContent = 'Faculty Operations Portal';
-  }
-
-  if (userDisplayNameEl) userDisplayNameEl.textContent = profile.fullName || (isFaculty ? 'Faculty Member' : 'Student');
-  if (userDisplayDeptEl) userDisplayDeptEl.textContent = isFaculty ? `${profile.department} (Faculty)` : (profile.department || 'Student Account');
+  if (userDisplayNameEl) userDisplayNameEl.textContent = profile.fullName || profile.name || 'Student';
+  if (userDisplayDeptEl) userDisplayDeptEl.textContent = profile.department ? `${profile.department} (Student)` : 'Student Account';
 
   if (profile.photoURL) {
     const avatarHtml = `<img src="${profile.photoURL}" alt="Avatar" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" onerror="this.onerror=null; this.parentElement.textContent='${initial}';" />`;
@@ -63,30 +58,15 @@ function renderProfileSummary(profile) {
     if (cardAvatarSmEl) cardAvatarSmEl.textContent = initial;
   }
 
-  if (welcomeNameEl) welcomeNameEl.textContent = profile.fullName || (isFaculty ? 'Faculty Member' : 'Student');
-  if (cardProfileNameEl) cardProfileNameEl.textContent = profile.fullName || (isFaculty ? 'Faculty Member' : 'Student Name');
-  if (cardProfileEmailEl) cardProfileEmailEl.textContent = profile.email || 'user@campuscare.edu';
+  if (welcomeNameEl) welcomeNameEl.textContent = profile.fullName || profile.name || 'Student';
+  if (cardProfileNameEl) cardProfileNameEl.textContent = profile.fullName || profile.name || 'Student Name';
+  if (cardProfileEmailEl) cardProfileEmailEl.textContent = profile.email || 'student@campuscare.edu';
   if (cardProfileDeptEl) cardProfileDeptEl.textContent = profile.department || 'General Science';
   
   if (cardProfileRollEl) {
-    const idVal = profile.facultyId || profile.rollNumber || (isFaculty ? 'FAC-408' : 'CS2026-042');
+    const idVal = profile.studentId || profile.rollNumber || 'CS2026-042';
     cardProfileRollEl.textContent = idVal;
-    
-    // Update label text if parent container has roll label
-    const parentDiv = cardProfileRollEl.parentElement;
-    if (parentDiv && isFaculty) {
-      parentDiv.innerHTML = `<i class="fa-solid fa-id-card" style="width:16px; color:var(--color-brand);"></i> Faculty ID: <strong id="card-profile-roll" style="color:var(--text-primary);">${idVal}</strong>`;
-    }
   }
-}
-
-/**
- * Load and render complaints data
- */
-async function loadComplaints(studentId) {
-  allComplaints = await getStudentComplaints(studentId);
-  renderMetrics(allComplaints);
-  renderComplaintsTable(allComplaints);
 }
 
 /**
@@ -100,13 +80,13 @@ function renderMetrics(complaints) {
 
   if (totalEl) totalEl.textContent = complaints.length;
   if (pendingEl) {
-    pendingEl.textContent = complaints.filter(c => c.status === 'Submitted').length;
+    pendingEl.textContent = complaints.filter(c => ['Submitted', 'Assigned', 'Reopened'].includes(c.status)).length;
   }
   if (inProgressEl) {
-    inProgressEl.textContent = complaints.filter(c => c.status === 'In Progress').length;
+    inProgressEl.textContent = complaints.filter(c => ['Accepted', 'In Progress'].includes(c.status)).length;
   }
   if (resolvedEl) {
-    resolvedEl.textContent = complaints.filter(c => c.status === 'Resolved' || c.status === 'Closed').length;
+    resolvedEl.textContent = complaints.filter(c => ['Resolved', 'Closed'].includes(c.status)).length;
   }
 }
 
@@ -133,16 +113,16 @@ function renderComplaintsTable(list) {
 
   tbody.innerHTML = list.map(c => `
     <tr>
-      <td><span class="ticket-id">${c.ticketId}</span></td>
+      <td><span class="ticket-id">${c.ticketId || c.id}</span></td>
       <td>
         <div style="font-weight:700; color:var(--text-primary);">${escapeHtml(c.title)}</div>
         <div style="font-size:0.78rem; color:var(--text-muted);"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(c.location || 'N/A')}</div>
       </td>
       <td><span class="badge" style="background:var(--border-light); color:var(--text-primary);">${escapeHtml(c.category)}</span></td>
-      <td>${renderUrgencyBadge(c.urgency)}</td>
+      <td>${renderUrgencyBadge(c.urgency || c.priority)}</td>
       <td>${renderStatusBadge(c.status)}</td>
       <td>
-        <a href="${resolveUrl('/student/view-complaint.html?id=' + c.id)}" data-id="${c.id}" class="btn btn-outline btn-sm track-link">
+        <a href="${resolveUrl('/student/view-complaint.html?id=' + (c.id || c.ticketId))}" data-id="${c.id || c.ticketId}" class="btn btn-outline btn-sm track-link">
           Track <i class="fa-solid fa-arrow-right"></i>
         </a>
       </td>
@@ -169,17 +149,29 @@ function renderNotificationsFeed(complaints) {
   const notifs = [];
 
   complaints.forEach(c => {
-    if (c.status === 'In Progress') {
+    if (c.status === 'Assigned') {
+      notifs.push({
+        icon: 'fa-chalkboard-user',
+        text: `Ticket <strong>${c.ticketId}</strong> assigned to <strong>${escapeHtml(c.assignedFacultyName || 'Faculty')}</strong>.`,
+        time: formatTimeAgo(c.updatedAt || c.createdAt)
+      });
+    } else if (c.status === 'In Progress') {
       notifs.push({
         icon: 'fa-spinner',
-        text: `Ticket <strong>${c.ticketId}</strong> was moved to <strong>In Progress</strong>.`,
+        text: `Ticket <strong>${c.ticketId}</strong> is currently <strong>In Progress</strong>.`,
         time: formatTimeAgo(c.updatedAt || c.createdAt)
       });
     } else if (c.status === 'Resolved') {
       notifs.push({
         icon: 'fa-circle-check',
-        text: `Ticket <strong>${c.ticketId}</strong> has been marked <strong>Resolved</strong>. Rate your feedback!`,
+        text: `Ticket <strong>${c.ticketId}</strong> was marked <strong>Resolved</strong>. Rate your feedback!`,
         time: formatTimeAgo(c.resolvedAt || c.updatedAt)
+      });
+    } else if (c.status === 'Closed') {
+      notifs.push({
+        icon: 'fa-check-double',
+        text: `Ticket <strong>${c.ticketId}</strong> has been officially <strong>Closed</strong>.`,
+        time: formatTimeAgo(c.closedAt || c.updatedAt)
       });
     }
   });
@@ -191,7 +183,7 @@ function renderNotificationsFeed(complaints) {
     time: 'System'
   });
 
-  if (countEl) countEl.textContent = `${notifs.length} New`;
+  if (countEl) countEl.textContent = `${notifs.length} Updates`;
 
   feedEl.innerHTML = notifs.slice(0, 4).map(n => `
     <div class="notification-item">

@@ -57,6 +57,15 @@ service firebase.storage {
       allow delete: if isSignedIn();
     }
 
+    // Resolution evidence photos uploaded by faculty / maintenance
+    match /resolution_images/{complaintId}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn()
+                   && isImageFile()
+                   && isUnder5MB();
+      allow delete: if isSignedIn();
+    }
+
 
     // =========================================================================
     //  PROFILE AVATARS  —  /avatars/{userId}/{fileName}

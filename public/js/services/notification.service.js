@@ -27,15 +27,17 @@ function saveLocalNotifications(list) {
 }
 
 /**
- * Send a notification to a recipient student or admin
+/**
+ * Send a notification to any recipient (student, faculty, or admin)
  */
-export async function sendNotification(recipientId, ticketId, complaintId, message, type = 'status_update') {
+export async function sendNotification(recipientId, ticketId, complaintId, message, type = 'status_update', recipientRole = null) {
   const notifObj = {
     recipientId,
     ticketId,
     complaintId,
     message,
     type,
+    recipientRole,
     read: false,
     createdAt: new Date().toISOString()
   };
@@ -45,38 +47,72 @@ export async function sendNotification(recipientId, ticketId, complaintId, messa
       ...notifObj,
       createdAt: serverTimestamp()
     });
-    // Firestore succeeded — no local fallback needed
     return;
   } catch (err) {
     console.warn('Firestore sendNotification fallback to local:', err.message);
   }
 
-  // Only reach here if Firestore failed — write to local demo storage
   const localList = getLocalNotifications();
   localList.unshift({ id: 'n-' + Date.now(), ...notifObj });
   saveLocalNotifications(localList);
 }
 
 /**
- * Realtime Firestore Snapshot Listener for Student Notifications
+ * Reusable createNotification helper
  */
-export function subscribeToStudentNotifications(studentId, callback) {
+export async function createNotification(data) {
+  return await sendNotification(
+    data.recipientId,
+    data.ticketId,
+    data.complaintId,
+    data.message,
+    data.type || 'status_update',
+    data.recipientRole || null
+  );
+}
+
+/**
+ * Get all notifications for a specific user ID
+ */
+export async function getUserNotifications(userId) {
   try {
-    const q = query(collection(db, 'notifications'), where('recipientId', '==', studentId));
+    const q = query(collection(db, 'notifications'), where('recipientId', '==', userId));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+  } catch (err) {
+    console.warn('Firestore getUserNotifications failed, using local list:', err.message);
+  }
+
+  const localList = getLocalNotifications();
+  return localList.filter(n => n.recipientId === userId);
+}
+
+/**
+ * Realtime Firestore Snapshot Listener for User Notifications
+ */
+export function subscribeToUserNotifications(userId, callback) {
+  try {
+    const q = query(collection(db, 'notifications'), where('recipientId', '==', userId));
     return onSnapshot(q, (snapshot) => {
       const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       callback(list);
     }, (err) => {
       console.warn('Notification snapshot failed (falling back to local):', err.message);
-      const localList = getLocalNotifications().filter(n => n.recipientId === studentId);
+      const localList = getLocalNotifications().filter(n => n.recipientId === userId);
       callback(localList);
     });
   } catch (e) {
-    const localList = getLocalNotifications().filter(n => n.recipientId === studentId);
+    const localList = getLocalNotifications().filter(n => n.recipientId === userId);
     callback(localList);
   }
 }
+
+// Backward-compatible alias
+export const subscribeToStudentNotifications = subscribeToUserNotifications;
 
 /**
  * Mark a single notification as read
@@ -100,24 +136,22 @@ export async function markNotificationAsRead(notifId) {
 /**
  * Mark all notifications for a recipient as read
  */
-export async function markAllNotificationsAsRead(studentId) {
+export async function markAllNotificationsAsRead(userId) {
   try {
     const q = query(
       collection(db, 'notifications'),
-      where('recipientId', '==', studentId),
+      where('recipientId', '==', userId),
       where('read', '==', false)
     );
     const snap = await getDocs(q);
-    // Use Promise.all + map so all awaits are properly tracked
     await Promise.all(
       snap.docs.map(d => updateDoc(doc(db, 'notifications', d.id), { read: true }))
     );
   } catch (err) {
     console.warn('Mark all read failed, updating local fallback:', err.message);
-    // Fallback: mark local demo notifications as read
     const localList = getLocalNotifications();
     localList.forEach(n => {
-      if (n.recipientId === studentId) n.read = true;
+      if (n.recipientId === userId) n.read = true;
     });
     saveLocalNotifications(localList);
   }

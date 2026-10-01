@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complaint Details & Resolution - CampusCare Faculty</title>
+  
+  <!-- Font Awesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/faculty.css">
+  
+  <style>
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #print-document-wrapper, #print-document-wrapper * {
+        visibility: visible !important;
+      }
+      #print-document-wrapper {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+        <span class="sidebar-brand">CampusCare Faculty</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-group-title">Operations</div>
+        <a href="./dashboard.html" class="nav-item">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard Overview
+        </a>
+        <a href="./complaints.html" class="nav-item active">
+          <i class="fa-solid fa-list-check"></i> Assigned Complaints
+        </a>
+        
+        <div class="nav-group-title">Account</div>
+        <a href="./profile.html" class="nav-item">
+          <i class="fa-solid fa-user-tie"></i> Faculty Profile
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm logout-btn" style="width:100%; color:#94a3b8; border-color:rgba(255,255,255,0.08);">
+          <i class="fa-solid fa-right-from-bracket"></i> Log Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-navbar">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button class="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
+          <div class="navbar-title">
+            <h1>Faculty Complaint Details & Resolution</h1>
+          </div>
+        </div>
+        <div class="navbar-actions">
+          <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
+        </div>
+      </header>
+
+      <div class="page-body">
+        
+        <div style="margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <a href="./complaints.html" style="color:var(--text-secondary); font-size:0.9rem; font-weight:600;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Assigned Complaints
+          </a>
+          <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" id="print-ticket-btn">
+              <i class="fa-solid fa-print"></i> Print Ticket
+            </button>
+            <button class="btn btn-primary btn-sm" id="download-pdf-btn">
+              <i class="fa-solid fa-file-pdf"></i> Download PDF
+            </button>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 380px; gap:1.5rem;">
+          
+          <!-- Left Column: Details, Evidence, Resolution Tools -->
+          <div>
+            <div class="card" style="margin-bottom:1.5rem; background:var(--bg-surface);">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
+                <span class="ticket-id" id="complaint-ticket-id">CC-2026-0000</span>
+                <div style="display:flex; gap:0.5rem;" id="badge-wrapper">
+                  <span id="complaint-status-badge"></span>
+                  <span id="complaint-priority-badge"></span>
+                </div>
+              </div>
+
+              <h2 style="font-family:var(--font-family-display); font-size:1.4rem; font-weight:800; margin-bottom:1.25rem; color:var(--text-primary);" id="complaint-title">Loading ticket...</h2>
+
+              <!-- Metadata Box -->
+              <div class="meta-box-grid">
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-tag"></i> Category</label>
+                  <strong id="meta-category">--</strong>
+                </div>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-location-dot"></i> Location</label>
+                  <strong id="meta-location">--</strong>
+                </div>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-user-graduate"></i> Student Name</label>
+                  <strong id="meta-student-name">--</strong>
+                </div>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-envelope"></i> Student Email</label>
+                  <strong id="meta-student-email">--</strong>
+                </div>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-building-columns"></i> Department</label>
+                  <strong id="meta-department">--</strong>
+                </div>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-calendar"></i> Lodged Date</label>
+                  <strong id="meta-created-date">--</strong>
+                </div>
+              </div>
+
+              <!-- Issue Description -->
+              <div style="margin-bottom:1.5rem;">
+                <h4 style="font-family:var(--font-family-display); font-size:0.85rem; font-weight:800; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:0.5rem;">Description:</h4>
+                <p id="complaint-desc" style="color:var(--text-primary); line-height:1.65; white-space:pre-line; font-size:0.95rem;"></p>
+              </div>
+
+              <!-- Admin Instructions Box -->
+              <div id="admin-remarks-box" style="margin-bottom:1.5rem;"></div>
+
+              <!-- Evidence Photos (Student Upload + Resolution Upload) -->
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.5rem;" id="evidence-photos-grid">
+                <div id="complaint-image-container"></div>
+                <div id="resolution-image-container"></div>
+              </div>
+
+              <!-- Faculty Actions Toolbar -->
+              <div style="background:var(--bg-surface-raised); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem;">
+                <h4 style="font-family:var(--font-family-display); font-size:0.95rem; font-weight:800; margin-bottom:0.85rem; display:flex; align-items:center; gap:0.5rem;">
+                  <i class="fa-solid fa-wrench" style="color:var(--color-brand);"></i> Faculty Resolution Actions
+                </h4>
+                <div style="display:flex; flex-wrap:wrap; gap:0.6rem;" id="action-buttons-container">
+                  <!-- Dynamically populated buttons -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Rating / Feedback View (if available) -->
+            <div class="card" id="feedback-section" style="display:none;">
+              <h3 style="font-family:var(--font-family-display); font-size:1.1rem; font-weight:800; margin-bottom:0.4rem;">
+                <i class="fa-solid fa-star" style="color:#f59e0b;"></i> Student Feedback & Rating
+              </h3>
+              <div id="feedback-content"></div>
+            </div>
+          </div>
+
+          <!-- Right Column: Audit Timeline -->
+          <div>
+            <div class="card">
+              <h3 style="font-family:var(--font-family-display); font-size:1rem; font-weight:800; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.5rem;">
+                <i class="fa-solid fa-timeline" style="color:var(--color-brand);"></i> Resolution Audit Log
+              </h3>
+              <div id="timeline-container">
+                <!-- Dynamically populated timeline entries -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="print-document-wrapper"></div>
+
+  <!-- Action Modal for Progress / Resolution / Reassignment -->
+  <div class="modal-overlay" id="faculty-action-modal" style="display:none;">
+    <div class="modal" style="max-width:520px; border-radius:var(--radius-lg);">
+      <div class="modal-header">
+        <h3 id="modal-ticket-title" style="font-family:var(--font-family-display); font-size:1.1rem; font-weight:800;">Perform Action</h3>
+        <button type="button" class="close-modal-btn" id="close-modal-btn">✕</button>
+      </div>
+      <form id="faculty-action-form">
+        <div class="modal-body">
+          <input type="hidden" id="action-type-hidden" value="note" />
+
+          <div class="form-group" id="evidence-group" style="display:none;">
+            <label class="form-label" for="resolution-file-input">Resolution Photo Evidence *</label>
+            <input type="file" id="resolution-file-input" class="form-control" accept="image/*" />
+            <span style="font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem; display:block;">Attach photo proving the issue is completely fixed.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="action-notes" id="action-notes-label">Remarks / Action Notes *</label>
+            <textarea id="action-notes" class="form-control" placeholder="Provide clear details on what was accomplished..." required style="min-height:100px;"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-sm" id="cancel-modal-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="submit-action-btn">Save & Update Ticket <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/controllers/faculty-detail.js"></script>
+</body>
+</html>

@@ -42,10 +42,12 @@ export function renderStatusBadge(status) {
     'Submitted': 'badge-submitted',
     'Under Review': 'badge-underreview',
     'Assigned': 'badge-assigned',
+    'Accepted': 'badge-accepted',
     'In Progress': 'badge-inprogress',
     'Resolved': 'badge-resolved',
     'Rejected': 'badge-rejected',
-    'Closed': 'badge-closed'
+    'Closed': 'badge-closed',
+    'Reopened': 'badge-reopened'
   };
 
   const cssClass = statusMap[status] || 'badge-submitted';
@@ -53,7 +55,9 @@ export function renderStatusBadge(status) {
 }
 
 export function renderUrgencyBadge(urgency) {
-  return `<span class="badge badge-urgency-${urgency}">${urgency || 'Medium'}</span>`;
+  const level = urgency === 'Urgent' ? 'Critical' : (urgency || 'Medium');
+  const cssClass = `badge-urgency-${level.toLowerCase()}`;
+  return `<span class="badge ${cssClass}">${level}</span>`;
 }
 
 export function generateTicketId() {

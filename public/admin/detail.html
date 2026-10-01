@@ -170,6 +170,10 @@
                   <label><i class="fa-solid fa-calendar"></i> Lodged Date</label>
                   <strong id="meta-created-date">--</strong>
                 </div>
+                <div class="meta-item">
+                  <label><i class="fa-solid fa-chalkboard-user"></i> Assigned Faculty</label>
+                  <strong id="meta-faculty">Unassigned</strong>
+                </div>
               </div>
 
               <div style="margin-bottom:1.5rem;">
@@ -179,9 +183,15 @@
 
               <!-- Admin action notes remarks box -->
               <div id="admin-remarks-box" style="margin-bottom:1.5rem;"></div>
+
+              <!-- Admin Action Buttons Toolbar -->
+              <div id="admin-actions-bar" style="margin-bottom:1.5rem;"></div>
               
-              <!-- Evidence Image -->
-              <div id="complaint-image-container"></div>
+              <!-- Evidence Images (Student & Resolution) -->
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
+                <div id="complaint-image-container"></div>
+                <div id="resolution-image-container"></div>
+              </div>
             </div>
 
             <!-- Student Feedback Card -->

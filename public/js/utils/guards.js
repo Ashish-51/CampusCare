@@ -19,8 +19,18 @@ export function getRoleDashboardUrl(role) {
   if (role === 'admin') {
     return '/admin/dashboard.html';
   }
-  // Both student and faculty use the user dashboard (with personalized role presentation)
+  if (role === 'faculty') {
+    return '/faculty/dashboard.html';
+  }
   return '/student/dashboard.html';
+}
+
+export function redirectByRole(role) {
+  window.location.href = resolveUrl(getRoleDashboardUrl(role));
+}
+
+export function requireRole(allowedRoles) {
+  return requireAuth(allowedRoles);
 }
 
 export function requireAuth(expectedRole = null) {

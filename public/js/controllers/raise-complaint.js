@@ -1,5 +1,6 @@
 /* ==========================================================================
    CampusCare - Raise Complaint Controller with Validation & Storage Upload
+   Student Only Portal: Validates structured location, urgency, and files
    ========================================================================== */
 
 import { requireAuth, resolveUrl } from '../utils/guards.js';
@@ -11,7 +12,8 @@ let selectedImageFile = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const { user, profile } = await requireAuth(['student', 'faculty']);
+    // Strictly Student-only action
+    const { user, profile } = await requireAuth(['student']);
     initDropzone();
     initFormValidation(profile);
 
@@ -113,19 +115,30 @@ function initFormValidation(studentProfile) {
   const titleInput = document.getElementById('comp-title');
   const categorySelect = document.getElementById('comp-cat');
   const urgencySelect = document.getElementById('comp-urgency');
-  const locationInput = document.getElementById('comp-location');
+  
+  // Structured Location Inputs
+  const buildingInput = document.getElementById('comp-building');
+  const floorInput = document.getElementById('comp-floor');
+  const roomInput = document.getElementById('comp-room');
+  const detailsInput = document.getElementById('comp-loc-details');
+  const fallbackLocInput = document.getElementById('comp-location');
+
   const descInput = document.getElementById('comp-desc');
 
+  // Error message elements
   const titleError = document.getElementById('title-error');
   const categoryError = document.getElementById('category-error');
+  const buildingError = document.getElementById('building-error');
+  const floorError = document.getElementById('floor-error');
+  const roomError = document.getElementById('room-error');
   const locationError = document.getElementById('location-error');
   const descError = document.getElementById('desc-error');
 
   function clearErrors() {
-    [titleError, categoryError, locationError, descError].forEach(el => {
+    [titleError, categoryError, buildingError, floorError, roomError, locationError, descError].forEach(el => {
       if (el) el.style.display = 'none';
     });
-    [titleInput, categorySelect, locationInput, descInput].forEach(el => {
+    [titleInput, categorySelect, buildingInput, floorInput, roomInput, detailsInput, fallbackLocInput, descInput].forEach(el => {
       if (el) el.style.borderColor = 'var(--border-color)';
     });
   }
@@ -134,55 +147,101 @@ function initFormValidation(studentProfile) {
     e.preventDefault();
     clearErrors();
 
-    const title = titleInput.value.trim();
-    const category = categorySelect.value;
-    const urgency = urgencySelect.value;
-    const location = locationInput.value.trim();
-    const description = descInput.value.trim();
+    const title = titleInput ? titleInput.value.trim() : '';
+    const category = categorySelect ? categorySelect.value : '';
+    const urgency = urgencySelect ? urgencySelect.value : 'Medium';
+    
+    // Read structured location
+    const building = buildingInput ? buildingInput.value.trim() : '';
+    const floor = floorInput ? floorInput.value.trim() : '';
+    const room = roomInput ? roomInput.value.trim() : '';
+    const locDetails = detailsInput ? detailsInput.value.trim() : '';
+
+    let location = '';
+    if (building || floor || room) {
+      const parts = [];
+      if (building) parts.push(building);
+      if (floor) parts.push(floor);
+      if (room) parts.push(room);
+      location = parts.join(', ') + (locDetails ? ` (${locDetails})` : '');
+    } else if (fallbackLocInput && fallbackLocInput.value.trim()) {
+      location = fallbackLocInput.value.trim();
+    }
+
+    const description = descInput ? descInput.value.trim() : '';
 
     let isValid = true;
 
     // 1. Title validation
     if (!title || title.length < 5) {
       if (titleError) titleError.style.display = 'block';
-      titleInput.style.borderColor = '#ef4444';
+      if (titleInput) titleInput.style.borderColor = '#ef4444';
       isValid = false;
     }
 
     // 2. Category validation
     if (!category) {
       if (categoryError) categoryError.style.display = 'block';
-      categorySelect.style.borderColor = '#ef4444';
+      if (categorySelect) categorySelect.style.borderColor = '#ef4444';
       isValid = false;
     }
 
-    // 3. Location validation
-    if (!location) {
+    // 3. Structured Location validation
+    if (buildingInput && !building) {
+      if (buildingError) buildingError.style.display = 'block';
+      buildingInput.style.borderColor = '#ef4444';
+      isValid = false;
+    }
+    if (floorInput && !floor) {
+      if (floorError) floorError.style.display = 'block';
+      floorInput.style.borderColor = '#ef4444';
+      isValid = false;
+    }
+    if (roomInput && !room) {
+      if (roomError) roomError.style.display = 'block';
+      roomInput.style.borderColor = '#ef4444';
+      isValid = false;
+    }
+
+    if (!buildingInput && !location) {
       if (locationError) locationError.style.display = 'block';
-      locationInput.style.borderColor = '#ef4444';
+      if (fallbackLocInput) fallbackLocInput.style.borderColor = '#ef4444';
       isValid = false;
     }
 
     // 4. Description validation
     if (!description || description.length < 10) {
       if (descError) descError.style.display = 'block';
-      descInput.style.borderColor = '#ef4444';
+      if (descInput) descInput.style.borderColor = '#ef4444';
       isValid = false;
     }
 
     if (!isValid) {
-      showToast('Please fix validation errors before submitting.', 'warning');
+      showToast('Please complete all required fields.', 'warning');
       return;
     }
 
     try {
-      // Show loading animation overlay
       showLoader('Lodging complaint and uploading evidence...');
 
-      // Call Firestore and Firebase Storage services (Auto-generates Complaint ID)
+      const complaintPayload = {
+        title,
+        category,
+        urgency,
+        priority: urgency,
+        location,
+        locationDetails: {
+          block: building,
+          floor: floor,
+          room: room,
+          details: locDetails
+        },
+        description
+      };
+
       const createdComplaint = await createComplaint(
         studentProfile,
-        { category, urgency, location, title, description },
+        complaintPayload,
         selectedImageFile
       );
 

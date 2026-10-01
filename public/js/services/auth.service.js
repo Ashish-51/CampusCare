@@ -245,6 +245,37 @@ export async function sendResetPassword(email) {
   }
 }
 
+export const changePassword = changeUserPassword;
+
+export async function loginStudent(email, password) {
+  const result = await loginUser(email, password);
+  if (result.profile.role !== 'student') {
+    throw new Error('Access denied: Account is not a student.');
+  }
+  return result;
+}
+
+export async function loginFaculty(email, password) {
+  const result = await loginUser(email, password);
+  if (result.profile.role !== 'faculty') {
+    throw new Error('Access denied: Account is not faculty.');
+  }
+  return result;
+}
+
+export async function loginAdmin(email, password) {
+  const result = await loginUser(email, password);
+  if (result.profile.role !== 'admin') {
+    throw new Error('Access denied: Account is not an administrator.');
+  }
+  return result;
+}
+
+export const getStudentProfile = getUserProfile;
+export const updateStudentProfile = updateUserProfile;
+export const getFacultyProfile = getUserProfile;
+export const updateFacultyProfile = updateUserProfile;
+
 // Backward compatibility stubs (registration is disabled via UI)
 export async function registerStudent(userData) {
   throw new Error('Public registration is disabled. Accounts are pre-assigned by administration.');

@@ -444,16 +444,18 @@ textarea.form-control {
 .badge-submitted { background: var(--status-submitted-bg); color: var(--status-submitted); border-color: var(--status-submitted-border); }
 .badge-underreview { background: #FFFBEB; color: #D97706; border-color: #FDE68A; }
 .badge-assigned { background: #EEF2FF; color: #4F46E5; border-color: #C7D2FE; }
+.badge-accepted { background: #ECFDF5; color: #059669; border-color: #A7F3D0; }
 .badge-inprogress { background: var(--status-inprogress-bg); color: var(--status-inprogress); border-color: var(--status-inprogress-border); }
 .badge-resolved { background: var(--status-resolved-bg); color: var(--status-resolved); border-color: var(--status-resolved-border); }
 .badge-rejected { background: var(--status-rejected-bg); color: var(--status-rejected); border-color: var(--status-rejected-border); }
 .badge-closed { background: var(--status-closed-bg); color: var(--status-closed); border-color: var(--status-closed-border); }
+.badge-reopened { background: #FEF2F2; color: #DC2626; border-color: #FECACA; }
 
 /* Urgency Badges */
-.badge-urgency-Low { background: var(--border-light); color: var(--text-secondary); border-color: var(--border-color); }
-.badge-urgency-Medium { background: #FFFBEB; color: #D97706; border-color: #FDE68A; }
-.badge-urgency-High { background: #FFF5F1; color: #EA580C; border-color: #FFD2C1; }
-.badge-urgency-Urgent { 
+.badge-urgency-Low, .badge-urgency-low { background: var(--border-light); color: var(--text-secondary); border-color: var(--border-color); }
+.badge-urgency-Medium, .badge-urgency-medium { background: #FFFBEB; color: #D97706; border-color: #FDE68A; }
+.badge-urgency-High, .badge-urgency-high { background: #FFF5F1; color: #EA580C; border-color: #FFD2C1; }
+.badge-urgency-Urgent, .badge-urgency-Critical, .badge-urgency-critical { 
   background: #FFF1F1; 
   color: var(--color-danger); 
   border-color: #FDC7C7;
@@ -465,9 +467,12 @@ textarea.form-control {
   50% { box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.05); }
 }
 
-[data-theme="dark"] .badge-urgency-Low { background: rgba(148, 163, 184, 0.1); color: #CBD5E1; border-color: rgba(148, 163, 184, 0.2); }
-[data-theme="dark"] .badge-urgency-Medium { background: rgba(245, 158, 11, 0.1); color: #FBBF24; border-color: rgba(245, 158, 11, 0.2); }
-[data-theme="dark"] .badge-urgency-High { background: rgba(234, 88, 12, 0.12); color: #FB923C; border-color: rgba(234, 88, 12, 0.25); }
+[data-theme="dark"] .badge-accepted { background: rgba(16, 185, 129, 0.15); color: #34D399; border-color: rgba(16, 185, 129, 0.3); }
+[data-theme="dark"] .badge-reopened { background: rgba(220, 38, 38, 0.15); color: #F87171; border-color: rgba(220, 38, 38, 0.3); }
+[data-theme="dark"] .badge-urgency-Low, [data-theme="dark"] .badge-urgency-low { background: rgba(148, 163, 184, 0.1); color: #CBD5E1; border-color: rgba(148, 163, 184, 0.2); }
+[data-theme="dark"] .badge-urgency-Medium, [data-theme="dark"] .badge-urgency-medium { background: rgba(245, 158, 11, 0.1); color: #FBBF24; border-color: rgba(245, 158, 11, 0.2); }
+[data-theme="dark"] .badge-urgency-High, [data-theme="dark"] .badge-urgency-high { background: rgba(234, 88, 12, 0.12); color: #FB923C; border-color: rgba(234, 88, 12, 0.25); }
+[data-theme="dark"] .badge-urgency-Urgent, [data-theme="dark"] .badge-urgency-Critical, [data-theme="dark"] .badge-urgency-critical { background: rgba(220, 38, 38, 0.15); color: #F87171; border-color: rgba(220, 38, 38, 0.3); }
 [data-theme="dark"] .badge-urgency-Urgent { background: rgba(220, 38, 38, 0.15); color: #F87171; border-color: rgba(220, 38, 38, 0.25); }
 
 /* ==========================================================================

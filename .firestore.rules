@@ -2,13 +2,7 @@ rules_version = '2';
 
 // =============================================================================
 //  CampusCare — Firestore Security Rules
-//  Last updated: 2026-08-07
-//
-//  Collections protected:
-//    /users/{userId}
-//    /complaints/{complaintId}
-//    /complaints/{complaintId}/timeline/{eventId}
-//    /notifications/{notificationId}
+//  Roles: student | faculty | admin
 // =============================================================================
 
 service cloud.firestore {
@@ -16,31 +10,20 @@ service cloud.firestore {
 
     // =========================================================================
     //  HELPER FUNCTIONS
-    //  Reusable logic blocks — keep rules DRY and readable.
     // =========================================================================
 
-    // Rule: Is any authenticated user making this request?
-    //   Rejects all anonymous / unauthenticated callers.
     function isSignedIn() {
       return request.auth != null;
     }
 
-    // Rule: Does the caller's UID match a specific userId?
-    //   Used to ensure a user can only touch their own documents.
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Rule: Fetch the caller's Firestore user profile.
-    //   Used to read the 'role' field stored in /users/{uid}.
-    //   NOTE: This triggers one extra Firestore read per rule evaluation.
     function callerProfile() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
-    // Rule: Is the authenticated caller an admin?
-    //   Checks BOTH the Firebase Auth custom claim AND the Firestore role field
-    //   so the app works even when custom claims haven't propagated yet.
     function isAdmin() {
       return isSignedIn() && (
         request.auth.token.role == 'admin' ||
@@ -48,38 +31,33 @@ service cloud.firestore {
       );
     }
 
-    // Rule: Is the authenticated caller a student?
-    //   A student is any signed-in user whose role is NOT 'admin'.
+    function isFaculty() {
+      return isSignedIn() && (
+        request.auth.token.role == 'faculty' ||
+        callerProfile().role == 'faculty'
+      );
+    }
+
     function isStudent() {
-      return isSignedIn() && callerProfile().role == 'student';
+      return isSignedIn() && (
+        request.auth.token.role == 'student' ||
+        callerProfile().role == 'student'
+      );
     }
 
-    // Rule: Is the complaint document in a terminal (non-editable) state?
-    //   'Resolved' and 'Closed' complaints may not be edited by students.
-    //   resource.data refers to the EXISTING document before the write.
-    function isResolved() {
-      return resource.data.status == 'Resolved' || resource.data.status == 'Closed';
-    }
-
-    // Rule: Does the incoming (new) document own the correct studentId?
-    //   Prevents a student from filing a complaint on behalf of another student.
-    function complaintBelongsToSelf() {
-      return request.resource.data.studentId == request.auth.uid;
-    }
-
-    // Rule: Is the caller the student who originally filed this complaint?
-    //   resource.data = the current saved document.
     function isComplaintOwner() {
       return isSignedIn() && resource.data.studentId == request.auth.uid;
     }
 
-    // Rule: Validate a new complaint document has the required fields.
-    //   Prevents malformed documents from being written to Firestore.
+    function isAssignedFaculty() {
+      return isSignedIn() && resource.data.assignedFacultyId == request.auth.uid;
+    }
+
     function isValidComplaint() {
       let d = request.resource.data;
       return d.keys().hasAll([
               'studentId', 'title', 'description',
-              'category', 'urgency', 'status', 'createdAt'
+              'category', 'status', 'createdAt'
              ])
           && d.studentId is string
           && d.title is string
@@ -87,195 +65,126 @@ service cloud.firestore {
           && d.title.size() <= 200
           && d.description is string
           && d.description.size() >= 10
-          && d.status == 'Submitted'                  // must always start as Submitted
-          && d.studentId == request.auth.uid;         // must match the caller
+          && d.status == 'Submitted'
+          && d.studentId == request.auth.uid;
     }
 
-    // Rule: Student update is ONLY allowed on the feedback/updatedAt fields.
-    //   Prevents students from overwriting status, adminRemarks, assignedTo, etc.
-    function isStudentFeedbackOnlyUpdate() {
-      let allowed = ['feedback', 'status', 'updatedAt'];
-      return request.resource.data.diff(resource.data)
-                                  .affectedKeys()
-                                  .hasOnly(allowed);
+    // Student updates: Feedback submission, cancellation, or reopening
+    function isStudentPermittedUpdate() {
+      let allowed = ['feedback', 'status', 'closedAt', 'updatedAt', 'resolvedAt'];
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowed);
     }
 
-    // Rule: Admin update is restricted to status-management fields only.
-    //   Prevents admins from tampering with core immutable fields like
-    //   studentId, ticketId, createdAt, or the original description.
+    // Faculty updates: Status, notes, resolution image, timestamps
+    function isFacultyPermittedUpdate() {
+      let allowed = ['status', 'facultyRemarks', 'acceptedAt', 'resolvedAt', 'resolutionImageUrl', 'updatedAt'];
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowed);
+    }
+
+    // Admin updates: Management & assignment fields
     function isAdminStatusUpdate() {
       let allowed = [
-        'status', 'adminRemarks', 'assignedTo',
-        'resolvedAt', 'updatedAt', 'feedback'
+        'status', 'adminRemarks', 'assignedTo', 'assignedFacultyId', 'assignedFacultyName',
+        'resolvedAt', 'closedAt', 'updatedAt', 'feedback', 'facultyRemarks', 'rejectionReason', 'priority', 'urgency'
       ];
-      return request.resource.data.diff(resource.data)
-                                  .affectedKeys()
-                                  .hasOnly(allowed);
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowed);
     }
-
 
     // =========================================================================
     //  USERS COLLECTION  —  /users/{userId}
-    //
-    //  Stores profile data: fullName, email, role, department, phone, photoURL.
     // =========================================================================
     match /users/{userId} {
-
-      // READ — any signed-in user can read ANY user profile.
-      //   Needed so admin can look up student names on complaints, and so
-      //   the role-guard helper (callerProfile()) works for all callers.
       allow read: if isSignedIn();
 
-      // CREATE — a user can only create their OWN profile document.
-      //   The document ID must equal the caller's Firebase Auth UID,
-      //   preventing one user from registering a fake profile for another.
       allow create: if isSignedIn()
-                    && request.auth.uid == userId
-                    && request.resource.data.role == 'student'; // new sign-ups are always 'student'
+                    && (request.auth.uid == userId || isAdmin());
 
-      // UPDATE — a user can update their own profile, OR an admin can update any profile.
-      //   Importantly, a student cannot escalate their own role field to 'admin'.
       allow update: if isOwner(userId)
-                       && request.resource.data.role == resource.data.role   // role is immutable by the user
+                    && request.resource.data.role == resource.data.role
                     || isAdmin();
 
-      // DELETE — only admins can remove user accounts from Firestore.
       allow delete: if isAdmin();
     }
 
-
     // =========================================================================
     //  COMPLAINTS COLLECTION  —  /complaints/{complaintId}
-    //
-    //  Core collection. Each document represents one student complaint ticket.
-    //  Fields: studentId, ticketId, title, description, status, feedback, etc.
     // =========================================================================
     match /complaints/{complaintId} {
 
-      // -----------------------------------------------------------------------
-      //  READ
-      //  Students may only read complaints where studentId == their own UID.
-      //  Admins may read ALL complaints (no restriction on studentId).
-      // -----------------------------------------------------------------------
+      // READ:
+      // - Students can read only their own complaints.
+      // - Faculty can read only complaints assigned to them.
+      // - Admins can read all complaints.
       allow read: if isSignedIn()
-                  && (isComplaintOwner() || isAdmin());
+                  && (isComplaintOwner() || isAssignedFaculty() || isAdmin());
 
-      // -----------------------------------------------------------------------
-      //  CREATE
-      //  Only authenticated students may file new complaints.
-      //  The document must pass full schema validation (isValidComplaint):
-      //    - Required fields must be present.
-      //    - studentId must equal the caller's UID (no impersonation).
-      //    - status must start as 'Submitted' (students can't self-resolve).
-      //    - title must be between 5 and 200 characters.
-      //    - description must be at least 10 characters.
-      // -----------------------------------------------------------------------
-      allow create: if isStudent()
-                    && isValidComplaint();
+      // CREATE:
+      // Only authenticated students may file new complaints.
+      allow create: if isStudent() && isValidComplaint();
 
-      // -----------------------------------------------------------------------
-      //  UPDATE
-      //  Two permitted paths:
-      //
-      //  PATH A — Admin updates (status management):
-      //    Admins may update only: status, adminRemarks, assignedTo,
-      //    resolvedAt, updatedAt, and feedback.
-      //    This prevents admins from rewriting the student's original
-      //    title/description or changing the studentId.
-      //
-      //  PATH B — Student feedback submission:
-      //    After a complaint is Resolved, the student who owns it may
-      //    write a feedback rating. They can ONLY touch: feedback, status
-      //    (to move to 'Closed'), and updatedAt.
-      //    Students CANNOT edit a complaint that is already 'Resolved' for
-      //    any other purpose — if isResolved() is true AND it's not a
-      //    feedback-only write, the update is denied.
-      // -----------------------------------------------------------------------
-      allow update: if isAdmin() && isAdminStatusUpdate()
+      // UPDATE:
+      // 1. Admin: full triage & assignment permissions
+      // 2. Assigned Faculty: accept, start work, add remarks, mark resolved
+      // 3. Complaint Student: submit feedback, cancel submitted, or reopen resolved
+      allow update: if (isAdmin() && isAdminStatusUpdate())
                     ||
-                    isComplaintOwner()
-                    && !isResolved()           // block edits on resolved complaints …
-                    && isStudentFeedbackOnlyUpdate()  // … unless it's a feedback submission
+                    (isAssignedFaculty() && isFacultyPermittedUpdate())
                     ||
-                    isComplaintOwner()
-                    && resource.data.status == 'Resolved'   // allow feedback write on resolved …
-                    && isStudentFeedbackOnlyUpdate();        // … but ONLY the feedback fields
+                    (isComplaintOwner() && isStudentPermittedUpdate());
 
-      // -----------------------------------------------------------------------
-      //  DELETE
-      //  Only admins can permanently delete complaint documents.
-      //  Students have no delete capability — even on their own complaints.
-      // -----------------------------------------------------------------------
+      // DELETE:
+      // Only admins may delete complaints.
       allow delete: if isAdmin();
-
 
       // =======================================================================
       //  TIMELINE SUB-COLLECTION  —  /complaints/{complaintId}/timeline/{eventId}
-      //
-      //  Audit trail: each status change or feedback event is logged here.
-      //  This is append-only — no one should be able to alter history.
       // =======================================================================
       match /timeline/{eventId} {
-
-        // READ — any party who can see the parent complaint may read its timeline.
         allow read: if isSignedIn()
                     && (
-                      get(/databases/$(database)/documents/complaints/$(complaintId))
-                        .data.studentId == request.auth.uid
+                      get(/databases/$(database)/documents/complaints/$(complaintId)).data.studentId == request.auth.uid
+                      || get(/databases/$(database)/documents/complaints/$(complaintId)).data.assignedFacultyId == request.auth.uid
                       || isAdmin()
                     );
 
-        // CREATE — any signed-in user may append a timeline event (student or admin).
-        //   Both student complaint submission and admin status updates write here.
-        allow create: if isSignedIn();
+        allow create: if isSignedIn()
+                      && (
+                        get(/databases/$(database)/documents/complaints/$(complaintId)).data.studentId == request.auth.uid
+                        || get(/databases/$(database)/documents/complaints/$(complaintId)).data.assignedFacultyId == request.auth.uid
+                        || isAdmin()
+                      );
 
-        // UPDATE / DELETE — nobody can mutate or erase timeline history.
-        //   Even admins cannot retroactively edit the audit log.
         allow update, delete: if false;
       }
     }
 
-
     // =========================================================================
     //  NOTIFICATIONS COLLECTION  —  /notifications/{notificationId}
-    //
-    //  In-app alert documents sent to students when their complaint status
-    //  changes. Each doc has a 'recipientId' field.
     // =========================================================================
     match /notifications/{notificationId} {
-
-      // READ — a user may only read notifications addressed to them.
-      //   Admins may read all notifications for support/debugging purposes.
       allow read: if isSignedIn()
-                  && (
-                    resource.data.recipientId == request.auth.uid
-                    || isAdmin()
-                  );
+                  && (resource.data.recipientId == request.auth.uid || isAdmin());
 
-      // CREATE — only the server / admin client may create notifications.
-      //   Students cannot fabricate fake notifications for themselves or others.
-      allow create: if isAdmin();
+      allow create: if isSignedIn();
 
-      // UPDATE — only the notification recipient may mark it as 'read'.
-      //   The update is restricted to the 'read' and 'readAt' fields only.
       allow update: if isSignedIn()
                     && resource.data.recipientId == request.auth.uid
-                    && request.resource.data.diff(resource.data)
-                                            .affectedKeys()
-                                            .hasOnly(['read', 'readAt']);
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'readAt']);
 
-      // DELETE — notifications are cleaned up by admins only.
       allow delete: if isAdmin();
     }
 
+    // =========================================================================
+    //  CATEGORIES COLLECTION  —  /categories/{categoryId}
+    // =========================================================================
+    match /categories/{categoryId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
 
-    // =========================================================================
-    //  CATCH-ALL — deny every other collection / document by default.
-    //  Firestore denies by default, but this makes the intent explicit.
-    // =========================================================================
+    // Default fallback
     match /{document=**} {
       allow read, write: if false;
     }
-
   }
 }

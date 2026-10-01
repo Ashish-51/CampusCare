@@ -194,6 +194,10 @@
                   <strong id="meta-created-date">--</strong>
                 </div>
                 <div class="meta-item">
+                  <label><i class="fa-solid fa-chalkboard-user"></i> Assigned Faculty</label>
+                  <strong id="meta-faculty">Unassigned</strong>
+                </div>
+                <div class="meta-item">
                   <label><i class="fa-solid fa-calendar-check"></i> Updated</label>
                   <strong id="meta-updated-date">--</strong>
                 </div>
@@ -210,8 +214,14 @@
               <!-- Admin Remarks Section -->
               <div id="admin-remarks-box" style="margin-bottom:1.5rem;"></div>
 
-              <!-- Image Attachment Section -->
-              <div id="complaint-image-container"></div>
+              <!-- Student Actions Bar (Cancel or Reopen Ticket) -->
+              <div id="student-actions-bar" style="margin-bottom:1.5rem;"></div>
+
+              <!-- Image Attachment Section (Student Evidence & Resolution Evidence) -->
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
+                <div id="complaint-image-container"></div>
+                <div id="resolution-image-container"></div>
+              </div>
 
             </div>
 
