@@ -549,7 +549,7 @@ textarea.form-control {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(11, 16, 32, 0.4);
+  background: rgba(11, 16, 32, 0.55);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex;
@@ -558,12 +558,22 @@ textarea.form-control {
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
-  transition: all var(--transition-normal);
+  transition: opacity var(--transition-fast), visibility var(--transition-fast);
 }
 
-.modal-overlay.active {
-  opacity: 1;
-  visibility: visible;
+.modal-overlay.active,
+.modal-overlay[style*="display: flex"],
+.modal-overlay[style*="display:flex"] {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.modal-overlay[style*="display: none"],
+.modal-overlay[style*="display:none"] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .modal {
@@ -576,9 +586,12 @@ textarea.form-control {
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
   transform: translateY(15px);
+  transition: transform var(--transition-fast);
 }
 
-.modal-overlay.active .modal {
+.modal-overlay.active .modal,
+.modal-overlay[style*="display: flex"] .modal,
+.modal-overlay[style*="display:flex"] .modal {
   transform: translateY(0);
 }
 

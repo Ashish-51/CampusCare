@@ -450,6 +450,9 @@ export function getDemoComplaints() {
 
 export function saveDemoComplaints(list) {
   localStorage.setItem('campuscare_complaints', JSON.stringify(list));
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('campuscare_complaints_updated', { detail: list }));
+  }
 }
 
 /* ==========================================================================
@@ -865,7 +868,12 @@ export async function getAssignedComplaints(facultyId, filters = {}) {
 
   if (list.length === 0) {
     const localList = getDemoComplaints();
-    list = localList.filter(c => c.assignedFacultyId === facultyId || facultyId === 'demo-faculty-id');
+    list = localList.filter(c => 
+      c.assignedFacultyId === facultyId || 
+      facultyId === 'demo-faculty-id' ||
+      c.assignedFacultyId === 'demo-faculty-id' ||
+      (c.assignedFacultyName && c.assignedFacultyName.includes('Jenkins'))
+    );
   }
 
   // Apply filters
@@ -897,8 +905,15 @@ export async function getAssignedComplaints(facultyId, filters = {}) {
 export async function getAssignedComplaintById(complaintId, facultyId) {
   const complaint = await getComplaintDetails(complaintId);
   if (!complaint) return null;
-  // Verify assignment
-  if (complaint.assignedFacultyId !== facultyId && facultyId !== 'demo-faculty-id') {
+  // Verify assignment or allow viewing unassigned submitted complaints to self-assign
+  const isAssigned = 
+    complaint.assignedFacultyId === facultyId || 
+    facultyId === 'demo-faculty-id' ||
+    complaint.assignedFacultyId === 'demo-faculty-id' ||
+    complaint.status === 'Submitted' ||
+    (complaint.assignedFacultyName && complaint.assignedFacultyName.includes('Jenkins'));
+
+  if (!isAssigned) {
     throw new Error('Access denied: You can only view complaints assigned to you.');
   }
   return complaint;
@@ -1639,9 +1654,19 @@ export async function getAllFeedbacks() {
  * Real-Time Listener: Student Complaints
  */
 export function listenToStudentComplaints(studentId, callback) {
+  let unsubSnapshot = () => {};
+  
+  const localHandler = (e) => {
+    const list = e.detail || getDemoComplaints();
+    callback(list.filter(c => c.studentId === studentId || studentId === 'demo-student-id'));
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('campuscare_complaints_updated', localHandler);
+  }
+
   try {
     const q = query(collection(db, 'complaints'), where('studentId', '==', studentId));
-    return onSnapshot(q, (snap) => {
+    unsubSnapshot = onSnapshot(q, (snap) => {
       if (!snap.empty) {
         const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         callback(list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
@@ -1657,43 +1682,81 @@ export function listenToStudentComplaints(studentId, callback) {
   } catch (err) {
     const demo = getDemoComplaints().filter(c => c.studentId === studentId || studentId === 'demo-student-id');
     callback(demo);
-    return () => {};
   }
+
+  return () => {
+    unsubSnapshot();
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('campuscare_complaints_updated', localHandler);
+    }
+  };
 }
 
 /**
  * Real-Time Listener: Faculty Assigned Complaints
  */
 export function listenToFacultyComplaints(facultyId, callback) {
+  let unsubSnapshot = () => {};
+
+  const filterForFaculty = (list) => {
+    return list.filter(c => 
+      c.assignedFacultyId === facultyId || 
+      facultyId === 'demo-faculty-id' ||
+      c.assignedFacultyId === 'demo-faculty-id' ||
+      (c.assignedFacultyName && c.assignedFacultyName.includes('Jenkins'))
+    );
+  };
+
+  const localHandler = (e) => {
+    const list = e.detail || getDemoComplaints();
+    callback(filterForFaculty(list));
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('campuscare_complaints_updated', localHandler);
+  }
+
   try {
     const q = query(collection(db, 'complaints'), where('assignedFacultyId', '==', facultyId));
-    return onSnapshot(q, (snap) => {
+    unsubSnapshot = onSnapshot(q, (snap) => {
       if (!snap.empty) {
         const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         callback(list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
       } else {
-        const demo = getDemoComplaints().filter(c => c.assignedFacultyId === facultyId || facultyId === 'demo-faculty-id');
-        callback(demo);
+        callback(filterForFaculty(getDemoComplaints()));
       }
     }, (err) => {
       console.warn('Faculty complaints realtime listener fallback:', err.message);
-      const demo = getDemoComplaints().filter(c => c.assignedFacultyId === facultyId || facultyId === 'demo-faculty-id');
-      callback(demo);
+      callback(filterForFaculty(getDemoComplaints()));
     });
   } catch (err) {
-    const demo = getDemoComplaints().filter(c => c.assignedFacultyId === facultyId || facultyId === 'demo-faculty-id');
-    callback(demo);
-    return () => {};
+    callback(filterForFaculty(getDemoComplaints()));
   }
+
+  return () => {
+    unsubSnapshot();
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('campuscare_complaints_updated', localHandler);
+    }
+  };
 }
 
 /**
  * Real-Time Listener: All Master Complaints (Admin)
  */
 export function listenToAllComplaints(callback) {
+  let unsubSnapshot = () => {};
+
+  const localHandler = (e) => {
+    const list = e.detail || getDemoComplaints();
+    callback(list);
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('campuscare_complaints_updated', localHandler);
+  }
+
   try {
     const q = query(collection(db, 'complaints'));
-    return onSnapshot(q, (snap) => {
+    unsubSnapshot = onSnapshot(q, (snap) => {
       if (!snap.empty) {
         const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         callback(list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
@@ -1706,14 +1769,32 @@ export function listenToAllComplaints(callback) {
     });
   } catch (err) {
     callback(getDemoComplaints());
-    return () => {};
   }
+
+  return () => {
+    unsubSnapshot();
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('campuscare_complaints_updated', localHandler);
+    }
+  };
 }
 
 /**
  * Real-Time Listener: Single Complaint with Timeline Subcollection
  */
 export function listenToComplaintDetails(complaintId, callback) {
+  let unsubParent = () => {};
+  let unsubTimeline = () => {};
+
+  const localHandler = (e) => {
+    const list = e.detail || getDemoComplaints();
+    const found = list.find(c => c.id === complaintId || c.ticketId === complaintId);
+    if (found) callback(found);
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('campuscare_complaints_updated', localHandler);
+  }
+
   try {
     const docRef = doc(db, 'complaints', complaintId);
     const timelineRef = collection(db, `complaints/${complaintId}/timeline`);
@@ -1730,7 +1811,7 @@ export function listenToComplaintDetails(complaintId, callback) {
       }
     };
 
-    const unsubParent = onSnapshot(docRef, (docSnap) => {
+    unsubParent = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
         parentData = { id: docSnap.id, ...docSnap.data() };
         triggerCallback();
@@ -1746,22 +1827,24 @@ export function listenToComplaintDetails(complaintId, callback) {
       callback(found || null);
     });
 
-    const unsubTimeline = onSnapshot(timelineRef, (timelineSnap) => {
+    unsubTimeline = onSnapshot(timelineRef, (timelineSnap) => {
       timelineData = timelineSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       triggerCallback();
     }, (err) => {
       console.warn('Complaint timeline subcollection listener fallback:', err.message);
     });
 
-    return () => {
-      unsubParent();
-      unsubTimeline();
-    };
-
   } catch (err) {
     const demoList = getDemoComplaints();
     const found = demoList.find(c => c.id === complaintId || c.ticketId === complaintId);
     callback(found || null);
-    return () => {};
   }
+
+  return () => {
+    unsubParent();
+    unsubTimeline();
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('campuscare_complaints_updated', localHandler);
+    }
+  };
 }

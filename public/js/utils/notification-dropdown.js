@@ -10,8 +10,21 @@ export function initNotificationDropdown(studentId) {
   const navbarActions = document.querySelector('.navbar-actions');
   if (!navbarActions || !studentId) return;
 
+  // Remove any redundant/duplicate bell wrappers that might exist in static HTML or previous initializations
+  const existingWrappers = navbarActions.querySelectorAll('.notif-bell-wrapper');
+  if (existingWrappers.length > 1) {
+    for (let i = 1; i < existingWrappers.length; i++) {
+      existingWrappers[i].remove();
+    }
+  }
+
   // Render Bell Icon Wrapper & Dropdown container if not already present
   let wrapper = document.getElementById('notif-bell-wrapper');
+  if (!wrapper && existingWrappers.length > 0) {
+    wrapper = existingWrappers[0];
+    wrapper.id = 'notif-bell-wrapper';
+  }
+
   if (!wrapper) {
     wrapper = document.createElement('div');
     wrapper.id = 'notif-bell-wrapper';

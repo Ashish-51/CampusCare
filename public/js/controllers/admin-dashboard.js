@@ -479,19 +479,33 @@ function openTriageModal(data) {
   if (facultySelect) facultySelect.value = data.facultyId || '';
   if (remarksInput) remarksInput.value = data.remarks || '';
 
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+  }
 }
 
 function initModalEvents() {
   const modal = document.getElementById('triage-modal-overlay');
   const form = document.getElementById('triage-form');
 
+  const closeModal = () => {
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.display = 'none';
+    }
+    activeSelectedComplaintId = null;
+  };
+
   document.querySelectorAll('.close-modal-trigger').forEach(el => {
-    el.addEventListener('click', () => {
-      if (modal) modal.style.display = 'none';
-      activeSelectedComplaintId = null;
-    });
+    el.addEventListener('click', closeModal);
   });
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
 
   if (form) {
     form.addEventListener('submit', async (e) => {
@@ -518,7 +532,7 @@ function initModalEvents() {
         }
 
         hideLoader();
-        if (modal) modal.style.display = 'none';
+        closeModal();
         showToast('Complaint status updated successfully!', 'success');
       } catch (err) {
         hideLoader();

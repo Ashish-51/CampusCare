@@ -194,17 +194,29 @@ function openTriageModal(data) {
   if (facultySelect) facultySelect.value = data.facultyId || '';
   if (remarksInput) remarksInput.value = data.remarks || '';
 
-  if (modalOverlay) modalOverlay.style.display = 'flex';
+  if (modalOverlay) {
+    modalOverlay.style.display = 'flex';
+    modalOverlay.classList.add('active');
+  }
 }
 
 function closeTriageModal() {
   const modalOverlay = document.getElementById('triage-modal-overlay');
-  if (modalOverlay) modalOverlay.style.display = 'none';
+  if (modalOverlay) {
+    modalOverlay.classList.remove('active');
+    modalOverlay.style.display = 'none';
+  }
   activeSelectedComplaintId = null;
 }
 
 function initModalEvents() {
+  const modalOverlay = document.getElementById('triage-modal-overlay');
   document.querySelectorAll('.close-modal-trigger').forEach(b => b.addEventListener('click', closeTriageModal));
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeTriageModal();
+    });
+  }
 
   const triageForm = document.getElementById('triage-form');
   if (triageForm) {

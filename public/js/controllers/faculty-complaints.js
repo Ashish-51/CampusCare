@@ -4,6 +4,7 @@
 
 import { requireRole, resolveUrl } from '../utils/guards.js';
 import { 
+  getAssignedComplaints,
   listenToFacultyComplaints,
   acceptComplaint,
   startWork,
@@ -204,7 +205,10 @@ function openActionModal(complaint, defaultAction = 'note') {
     evidenceGroup.style.display = defaultAction === 'resolve' ? 'block' : 'none';
   }
 
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+  }
 }
 
 function initModalEvents() {
@@ -216,12 +220,20 @@ function initModalEvents() {
   const evidenceGroup = document.getElementById('evidence-group');
 
   const closeModal = () => {
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.display = 'none';
+    }
     activeModalComplaint = null;
   };
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
   if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
 
   if (actionSelect) {
     actionSelect.addEventListener('change', () => {
@@ -260,6 +272,13 @@ function initModalEvents() {
         } else if (action === 'reassign') {
           await requestReassignment(activeModalComplaint.id, currentFacultyUser, notes);
           showToast('Reassignment request sent to Central Admin.', 'warning');
+        }
+
+        // Immediately reload list locally for snappy UX
+        const updatedList = await getAssignedComplaints(currentFacultyUser.uid);
+        if (updatedList) {
+          currentComplaintsList = updatedList;
+          applyFiltersAndRender();
         }
 
         hideLoader();

@@ -172,7 +172,38 @@ function renderActionButtons(c) {
 
   const s = c.status;
 
-  if (s === 'Assigned') {
+  if (s === 'Submitted') {
+    container.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; width:100%;">
+        <div style="font-size:0.88rem; color:var(--text-secondary); display:flex; align-items:center; gap:0.5rem;">
+          <i class="fa-solid fa-clock" style="color:var(--color-brand);"></i> Submitted by student. Awaiting Central Admin assignment, or you can accept and self-assign below.
+        </div>
+        <button class="btn btn-primary btn-sm" id="btn-action-accept">
+          <i class="fa-solid fa-check"></i> Accept & Self-Assign Ticket
+        </button>
+      </div>
+    `;
+    const btnAccept = document.getElementById('btn-action-accept');
+    if (btnAccept) {
+      btnAccept.addEventListener('click', async () => {
+        try {
+          showLoader('Accepting complaint assignment...');
+          await acceptComplaint(c.id, currentFacultyProfile, 'Accepted and self-assigned by faculty.');
+          const updated = await getAssignedComplaintById(currentComplaintId, currentFacultyProfile.uid);
+          if (updated) {
+            loadedComplaintData = updated;
+            renderDetailUI(updated);
+          }
+          hideLoader();
+          showToast('Complaint accepted and assigned to you!', 'success');
+        } catch (err) {
+          hideLoader();
+          showToast(err.message, 'error');
+        }
+      });
+    }
+
+  } else if (s === 'Assigned') {
     container.innerHTML = `
       <button class="btn btn-primary btn-sm" id="btn-action-accept">
         <i class="fa-solid fa-check-double"></i> Accept Assignment
@@ -185,6 +216,11 @@ function renderActionButtons(c) {
       try {
         showLoader('Accepting complaint assignment...');
         await acceptComplaint(c.id, currentFacultyProfile, 'Accepted by faculty. Proceeding to inspection.');
+        const updated = await getAssignedComplaintById(currentComplaintId, currentFacultyProfile.uid);
+        if (updated) {
+          loadedComplaintData = updated;
+          renderDetailUI(updated);
+        }
         hideLoader();
         showToast('Complaint accepted!', 'success');
       } catch (err) {
@@ -212,6 +248,11 @@ function renderActionButtons(c) {
       try {
         showLoader('Marking work started...');
         await startWork(c.id, currentFacultyProfile, 'Onsite resolution work started.');
+        const updated = await getAssignedComplaintById(currentComplaintId, currentFacultyProfile.uid);
+        if (updated) {
+          loadedComplaintData = updated;
+          renderDetailUI(updated);
+        }
         hideLoader();
         showToast('Work started on complaint!', 'info');
       } catch (err) {
@@ -337,7 +378,10 @@ function openModal(actionType, title, placeholder, showEvidence = false) {
   }
   if (evidenceGroup) evidenceGroup.style.display = showEvidence ? 'block' : 'none';
 
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+  }
 }
 
 function initModalEvents() {
@@ -347,11 +391,19 @@ function initModalEvents() {
   const form = document.getElementById('faculty-action-form');
 
   const closeModal = () => {
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.display = 'none';
+    }
   };
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
   if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
 
   if (form) {
     form.addEventListener('submit', async (e) => {
@@ -373,6 +425,12 @@ function initModalEvents() {
         } else if (actionType === 'reassign') {
           await requestReassignment(currentComplaintId, currentFacultyProfile, notes);
           showToast('Reassignment request sent to Central Admin.', 'warning');
+        }
+
+        const updated = await getAssignedComplaintById(currentComplaintId, currentFacultyProfile.uid);
+        if (updated) {
+          loadedComplaintData = updated;
+          renderDetailUI(updated);
         }
 
         hideLoader();
