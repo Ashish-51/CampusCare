@@ -109,8 +109,56 @@ const INITIAL_DEMO_COMPLAINTS = [
         timestamp: new Date(Date.now() - 86400000 * 1).toISOString()
       }
     ]
+  },
+  {
+    id: 'comp-103',
+    ticketId: 'CC-2026-1003',
+    studentId: 'demo-faculty-id',
+    studentName: 'Prof. Sarah Jenkins',
+    studentEmail: 'faculty@campuscare.edu',
+    studentRole: 'faculty',
+    department: 'Computer Science & Engineering',
+    category: 'IT/Wifi',
+    title: 'Overhead projector HDMI signal cutting off in Seminar Hall 1',
+    description: 'The digital projector in Seminar Hall 1 continuously disconnects during PowerPoint presentations and lectures. Needs port or cable replacement.',
+    location: 'Main Academic Block, Seminar Hall 1',
+    urgency: 'High',
+    status: 'In Progress',
+    imageUrl: null,
+    imagePath: null,
+    assignedTo: 'AV & Classroom Support Team',
+    adminRemarks: 'Assigned AV specialist to replace wall port transmitter.',
+    createdAt: new Date(Date.now() - 86400000 * 1).toISOString(),
+    updatedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+    resolvedAt: null,
+    feedback: null,
+    timeline: [
+      {
+        id: 't-20',
+        status: 'Submitted',
+        title: 'Complaint Submitted',
+        note: 'Faculty maintenance request submitted by Prof. Sarah Jenkins.',
+        updatedByName: 'Prof. Sarah Jenkins',
+        updatedByRole: 'faculty',
+        timestamp: new Date(Date.now() - 86400000 * 1).toISOString()
+      },
+      {
+        id: 't-21',
+        status: 'In Progress',
+        title: 'Status updated to In Progress',
+        note: 'Assigned AV specialist to replace wall port transmitter.',
+        updatedByName: 'Central Admin',
+        updatedByRole: 'admin',
+        timestamp: new Date(Date.now() - 3600000 * 2).toISOString()
+      }
+    ]
   }
 ];
+
+export function resetDemoComplaints() {
+  localStorage.setItem('campuscare_complaints', JSON.stringify(INITIAL_DEMO_COMPLAINTS));
+  return INITIAL_DEMO_COMPLAINTS;
+}
 
 function getDemoComplaints() {
   const raw = localStorage.getItem('campuscare_complaints');
@@ -119,7 +167,13 @@ function getDemoComplaints() {
     return INITIAL_DEMO_COMPLAINTS;
   }
   try {
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    // Ensure faculty complaint exists
+    if (!parsed.some(c => c.id === 'comp-103')) {
+      localStorage.setItem('campuscare_complaints', JSON.stringify(INITIAL_DEMO_COMPLAINTS));
+      return INITIAL_DEMO_COMPLAINTS;
+    }
+    return parsed;
   } catch (e) {
     return INITIAL_DEMO_COMPLAINTS;
   }

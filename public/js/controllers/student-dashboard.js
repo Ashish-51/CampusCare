@@ -11,7 +11,7 @@ let allComplaints = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const { user, profile } = await requireAuth('student');
+    const { user, profile } = await requireAuth(['student', 'faculty']);
     renderProfileSummary(profile);
     initNotificationDropdown(user.uid);
     
@@ -33,7 +33,8 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Populate Profile Summary Widget
  */
 function renderProfileSummary(profile) {
-  const initial = (profile.fullName || 'Student').charAt(0).toUpperCase();
+  const isFaculty = profile.role === 'faculty';
+  const initial = (profile.fullName || (isFaculty ? 'Faculty' : 'Student')).charAt(0).toUpperCase();
 
   const userDisplayNameEl = document.getElementById('user-display-name');
   const userDisplayDeptEl = document.getElementById('user-display-dept');
@@ -44,9 +45,14 @@ function renderProfileSummary(profile) {
   const cardProfileEmailEl = document.getElementById('card-profile-email');
   const cardProfileDeptEl = document.getElementById('card-profile-dept');
   const cardProfileRollEl = document.getElementById('card-profile-roll');
+  const headerTitleEl = document.querySelector('.navbar-title h1');
 
-  if (userDisplayNameEl) userDisplayNameEl.textContent = profile.fullName || 'Student';
-  if (userDisplayDeptEl) userDisplayDeptEl.textContent = profile.department || 'Student Account';
+  if (headerTitleEl && isFaculty) {
+    headerTitleEl.textContent = 'Faculty Operations Portal';
+  }
+
+  if (userDisplayNameEl) userDisplayNameEl.textContent = profile.fullName || (isFaculty ? 'Faculty Member' : 'Student');
+  if (userDisplayDeptEl) userDisplayDeptEl.textContent = isFaculty ? `${profile.department} (Faculty)` : (profile.department || 'Student Account');
 
   if (profile.photoURL) {
     const avatarHtml = `<img src="${profile.photoURL}" alt="Avatar" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" onerror="this.onerror=null; this.parentElement.textContent='${initial}';" />`;
@@ -57,11 +63,21 @@ function renderProfileSummary(profile) {
     if (cardAvatarSmEl) cardAvatarSmEl.textContent = initial;
   }
 
-  if (welcomeNameEl) welcomeNameEl.textContent = profile.fullName || 'Student';
-  if (cardProfileNameEl) cardProfileNameEl.textContent = profile.fullName || 'Student Name';
-  if (cardProfileEmailEl) cardProfileEmailEl.textContent = profile.email || 'student@campus.edu';
+  if (welcomeNameEl) welcomeNameEl.textContent = profile.fullName || (isFaculty ? 'Faculty Member' : 'Student');
+  if (cardProfileNameEl) cardProfileNameEl.textContent = profile.fullName || (isFaculty ? 'Faculty Member' : 'Student Name');
+  if (cardProfileEmailEl) cardProfileEmailEl.textContent = profile.email || 'user@campuscare.edu';
   if (cardProfileDeptEl) cardProfileDeptEl.textContent = profile.department || 'General Science';
-  if (cardProfileRollEl) cardProfileRollEl.textContent = profile.rollNumber || 'CS2026-042';
+  
+  if (cardProfileRollEl) {
+    const idVal = profile.facultyId || profile.rollNumber || (isFaculty ? 'FAC-408' : 'CS2026-042');
+    cardProfileRollEl.textContent = idVal;
+    
+    // Update label text if parent container has roll label
+    const parentDiv = cardProfileRollEl.parentElement;
+    if (parentDiv && isFaculty) {
+      parentDiv.innerHTML = `<i class="fa-solid fa-id-card" style="width:16px; color:var(--color-brand);"></i> Faculty ID: <strong id="card-profile-roll" style="color:var(--text-primary);">${idVal}</strong>`;
+    }
+  }
 }
 
 /**

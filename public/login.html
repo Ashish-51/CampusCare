@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In / Register - CampusCare</title>
-  <meta name="description" content="Sign in or register for CampusCare Digital Complaint Management Portal.">
+  <title>Institutional Sign In - CampusCare</title>
+  <meta name="description" content="Sign in to CampusCare Digital Complaint Management Portal with institution-assigned credentials.">
   
   <!-- Resource Hints -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,8 +22,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem 1rem;
-      background: radial-gradient(circle at 50% 0%, rgba(91, 92, 235, 0.06) 0%, transparent 60%),
+      padding: 2.5rem 1rem;
+      background: radial-gradient(circle at 50% 0%, rgba(91, 92, 235, 0.08) 0%, transparent 60%),
                   var(--bg-app);
       position: relative;
     }
@@ -32,8 +32,8 @@
       content: '';
       position: absolute;
       inset: 0;
-      background-image: linear-gradient(rgba(91, 92, 235, 0.015) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(91, 92, 235, 0.015) 1px, transparent 1px);
+      background-image: linear-gradient(rgba(91, 92, 235, 0.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(91, 92, 235, 0.02) 1px, transparent 1px);
       background-size: 24px 24px;
       pointer-events: none;
       z-index: 0;
@@ -41,44 +41,77 @@
 
     .auth-card {
       width: 100%;
-      max-width: 440px;
+      max-width: 460px;
       position: relative;
       z-index: 1;
       box-shadow: var(--shadow-floating);
     }
 
-    .auth-tabs {
+    .demo-accounts-panel {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-surface-raised);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+    }
+
+    .demo-accounts-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
       display: flex;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 1.5rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .demo-pills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 0.5rem;
     }
 
-    .auth-tab-btn {
-      flex: 1;
-      padding: 0.75rem 0.5rem;
-      background: none;
-      border: none;
-      font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text-secondary);
+    .demo-pill {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.4rem;
+      text-align: center;
       cursor: pointer;
-      border-bottom: 2px solid transparent;
       transition: all var(--transition-fast);
+      font-family: inherit;
+    }
+
+    .demo-pill:hover {
+      border-color: var(--color-brand);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .demo-pill.active {
+      border-color: var(--color-brand);
+      background: var(--color-brand-soft);
+    }
+
+    .demo-pill-role {
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--text-primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.4rem;
+      gap: 0.3rem;
     }
 
-    .auth-tab-btn:hover {
-      color: var(--text-primary);
-    }
-
-    .auth-tab-btn.active {
-      color: var(--color-brand);
-      border-bottom-color: var(--color-brand);
+    .demo-pill-email {
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   </style>
   <link rel="stylesheet" href="css/responsive.css">
@@ -88,23 +121,36 @@
   <div class="auth-wrapper">
     <div class="card auth-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <div style="display:flex; align-items:center; gap:0.6rem;">
+        <a href="./index.html" style="display:flex; align-items:center; gap:0.6rem; text-decoration:none;">
           <div class="brand-icon"><i class="fa-solid fa-building-shield"></i></div>
           <span style="font-family:var(--font-family-display); font-weight:800; font-size:1.15rem; color:var(--text-primary);">CampusCare</span>
+        </a>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <a href="./index.html" class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:0.35rem 0.65rem;" title="Back to Home">
+            <i class="fa-solid fa-house"></i>
+          </a>
+          <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
         </div>
-        <button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
       </div>
 
-      <div class="auth-tabs">
-        <button class="auth-tab-btn active" data-target="login-form"><i class="fa-solid fa-lock"></i> Sign In</button>
-        <button class="auth-tab-btn" data-target="register-form"><i class="fa-solid fa-user-plus"></i> Register</button>
+      <div style="margin-bottom: 1.25rem;">
+        <h2 style="font-family:var(--font-family-display); font-size:1.35rem; font-weight:800; margin-bottom:0.35rem;">Institutional Sign In</h2>
+        <p style="color:var(--text-secondary); font-size:0.88rem; line-height:1.5; margin-bottom:0;">
+          Access your operations dashboard using your pre-assigned institutional credentials.
+        </p>
+      </div>
+
+      <!-- Pre-Provisioned Notice -->
+      <div style="background:var(--bg-surface-raised); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:0.75rem 0.9rem; font-size:0.8rem; color:var(--text-secondary); margin-bottom:1.25rem; display:flex; align-items:flex-start; gap:0.6rem; line-height:1.45;">
+        <i class="fa-solid fa-shield-halved" style="color:var(--color-brand); margin-top:2px;"></i>
+        <span><strong>Predefined Accounts:</strong> Accounts for Students, Faculty, and Administrators are issued by Central Administration. Public self-registration is closed.</span>
       </div>
 
       <!-- Login Form -->
-      <form id="login-form" class="auth-form">
+      <form id="login-form">
         <div class="form-group">
-          <label class="form-label" for="login-email">Email Address</label>
-          <input type="email" id="login-email" name="email" class="form-control" placeholder="name@campus.edu" required />
+          <label class="form-label" for="login-email">Institutional Email</label>
+          <input type="email" id="login-email" name="email" class="form-control" placeholder="name@campuscare.edu" required />
         </div>
 
         <div class="form-group">
@@ -117,106 +163,89 @@
           <input type="password" id="login-password" name="password" class="form-control" placeholder="••••••••" required />
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.75rem; padding: 0.7rem 1.25rem;">Sign In <i class="fa-solid fa-arrow-right"></i></button>
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.75rem; padding: 0.75rem 1.25rem; font-weight:700;">
+          Sign In to Portal <i class="fa-solid fa-arrow-right"></i>
+        </button>
       </form>
 
-      <!-- Unified Registration Form -->
-      <form id="register-form" class="auth-form" style="display:none;">
-        <div class="form-group" style="margin-bottom: 1.25rem;">
-          <label class="form-label">Account Type</label>
-          <div style="display: flex; gap: 1rem;">
-            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-primary);">
-              <input type="radio" name="accountRole" value="student" checked> Student
-            </label>
-            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-primary);">
-              <input type="radio" name="accountRole" value="admin"> Administrator
-            </label>
-          </div>
+      <!-- Predefined Demo Accounts Quick-Select -->
+      <div class="demo-accounts-panel">
+        <div class="demo-accounts-title">
+          <span><i class="fa-solid fa-id-badge" style="color:var(--color-brand);"></i> Predefined Demo Logins</span>
+          <button type="button" id="reset-db-btn" style="background:none; border:none; color:var(--text-secondary); font-size:0.72rem; cursor:pointer; text-decoration:underline;" title="Wipe old data & restore pristine demo accounts">
+            <i class="fa-solid fa-arrows-rotate"></i> Reset DB
+          </button>
         </div>
+        <div class="demo-pills">
+          <button type="button" class="demo-pill" data-email="student@campuscare.edu" data-pass="Student@123" title="Student Demo">
+            <div class="demo-pill-role"><i class="fa-solid fa-user-graduate" style="color:#3b82f6;"></i> Student</div>
+            <div class="demo-pill-email">student@...</div>
+          </button>
 
-        <div class="form-group">
-          <label class="form-label" for="reg-name">Full Name *</label>
-          <input type="text" id="reg-name" name="fullName" class="form-control" placeholder="Alex Morgan" required />
+          <button type="button" class="demo-pill" data-email="faculty@campuscare.edu" data-pass="Faculty@123" title="Faculty Demo">
+            <div class="demo-pill-role"><i class="fa-solid fa-chalkboard-user" style="color:#8b5cf6;"></i> Faculty</div>
+            <div class="demo-pill-email">faculty@...</div>
+          </button>
+
+          <button type="button" class="demo-pill" data-email="admin@campuscare.edu" data-pass="Admin@123" title="Admin Demo">
+            <div class="demo-pill-role"><i class="fa-solid fa-shield-halved" style="color:#10b981;"></i> Admin</div>
+            <div class="demo-pill-email">admin@...</div>
+          </button>
         </div>
-
-        <div class="form-group">
-          <label class="form-label" id="label-reg-email" for="reg-email">Institutional Email *</label>
-          <input type="email" id="reg-email" name="email" class="form-control" placeholder="alex@campus.edu" required />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="reg-password">Password *</label>
-          <input type="password" id="reg-password" name="password" class="form-control" placeholder="At least 6 characters" required />
-        </div>
-
-        <!-- Student Fields -->
-        <div id="student-fields">
-          <div class="form-group">
-            <label class="form-label" for="reg-dept-student">Department</label>
-            <select id="reg-dept-student" name="departmentStudent" class="form-select">
-              <option value="Computer Science & Engineering">Computer Science & Engineering</option>
-              <option value="Electrical & Electronics">Electrical & Electronics</option>
-              <option value="Mechanical Engineering">Mechanical Engineering</option>
-              <option value="Civil Engineering">Civil Engineering</option>
-              <option value="Business Administration">Business Administration</option>
-              <option value="General Science">General Science</option>
-            </select>
-          </div>
-
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
-            <div class="form-group">
-              <label class="form-label" for="reg-roll">Roll / ID No.</label>
-              <input type="text" id="reg-roll" name="rollNumber" class="form-control" placeholder="CS2026-042" />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="reg-phone-student">Phone No.</label>
-              <input type="tel" id="reg-phone-student" name="phoneStudent" class="form-control" placeholder="+1 555-0192" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Admin Fields -->
-        <div id="admin-fields" style="display: none;">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
-            <div class="form-group">
-              <label class="form-label" for="reg-dept-admin">Department Lead</label>
-              <select id="reg-dept-admin" name="departmentAdmin" class="form-select">
-                <option value="Central Administration">Central Administration</option>
-                <option value="Hostel & Estate Management">Hostel & Estate</option>
-                <option value="IT Infrastructure & Network">IT Infrastructure</option>
-                <option value="Electrical & Maintenance">Electrical & Maintenance</option>
-                <option value="Academic Affairs">Academic Affairs</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="reg-phone-admin">Contact Phone</label>
-              <input type="tel" id="reg-phone-admin" name="phoneAdmin" class="form-control" placeholder="+91 9876543210" />
-            </div>
-          </div>
-
-          <div class="form-group" style="background:var(--bg-surface-raised); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-top:0.5rem;">
-            <label class="form-label" for="admin-key" style="color:var(--color-brand); font-weight:700;">
-              <i class="fa-solid fa-key"></i> Secret Admin Security Passcode *
-            </label>
-            <input type="password" id="admin-key" name="adminKey" class="form-control" placeholder="Enter Secret Admin Key" />
-            <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.4rem;">
-              <i class="fa-solid fa-lock"></i> Requires authorized key (Default: <code style="color:var(--color-brand);">CAMPUS_26</code>)
-            </div>
-          </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.75rem; padding: 0.7rem 1.25rem;">Create Account <i class="fa-solid fa-arrow-right"></i></button>
-      </form>
+      </div>
 
     </div>
   </div>
 
-  <!-- Password Reset Modal Overlay (Glass Effect) -->
+  <!-- Mandatory First-Time Password Change Modal -->
+  <div class="modal-overlay" id="first-time-modal" style="display:none;">
+    <div class="modal" style="max-width:440px; border-radius: var(--radius-lg);">
+      <div class="modal-header">
+        <h3 style="font-family:var(--font-family-display); font-size:1.1rem; font-weight:800; display:flex; align-items:center; gap:0.5rem;">
+          <i class="fa-solid fa-key" style="color:var(--color-brand);"></i> First-Time Password Setup
+        </h3>
+      </div>
+
+      <form id="first-time-password-form">
+        <div class="modal-body">
+          <div style="background:var(--color-brand-soft); color:var(--color-brand); padding:0.85rem; border-radius:var(--radius-md); font-size:0.85rem; line-height:1.5; margin-bottom:1.25rem; border:1px solid rgba(91,92,235,0.15);">
+            Welcome, <strong id="first-time-user-name">User</strong>! 
+            <span id="first-time-role-badge" class="badge" style="margin-left:0.3rem; text-transform:uppercase; font-size:0.7rem;"></span><br>
+            Since this is your first time logging in with your temporary institutional credentials, you must set a secure personal password before continuing.
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="first-time-current">Assigned Default Password</label>
+            <input type="text" id="first-time-current" class="form-control" readonly style="opacity:0.75; cursor:not-allowed; background:var(--bg-surface-raised);" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="first-time-new">New Personal Password *</label>
+            <input type="password" id="first-time-new" name="newPassword" class="form-control" placeholder="Minimum 6 characters" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="first-time-confirm">Confirm New Password *</label>
+            <input type="password" id="first-time-confirm" name="confirmPassword" class="form-control" placeholder="Re-enter new password" required />
+          </div>
+        </div>
+
+        <div class="modal-footer" style="padding-top:0.5rem;">
+          <button type="submit" class="btn btn-primary" style="width:100%; padding:0.75rem; font-weight:700;">
+            Save Personal Password & Enter Dashboard <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Password Reset Modal Overlay -->
   <div class="modal-overlay" id="forgot-password-modal" style="display:none;">
     <div class="modal" style="max-width:420px; border-radius: var(--radius-lg);">
       <div class="modal-header">
-        <h3 style="font-family:var(--font-family-display); font-size:1.05rem; font-weight:800;"><i class="fa-solid fa-paper-plane" style="color:var(--color-brand);"></i> Reset Password</h3>
+        <h3 style="font-family:var(--font-family-display); font-size:1.05rem; font-weight:800;">
+          <i class="fa-solid fa-paper-plane" style="color:var(--color-brand);"></i> Reset Password
+        </h3>
         <button type="button" class="close-modal-btn" id="close-reset-modal">✕</button>
       </div>
 
@@ -228,13 +257,13 @@
 
           <div class="form-group">
             <label class="form-label" for="reset-email">Registered Email Address *</label>
-            <input type="email" id="reset-email" name="resetEmail" class="form-control" placeholder="name@campus.edu" required />
+            <input type="email" id="reset-email" name="resetEmail" class="form-control" placeholder="name@campuscare.edu" required />
           </div>
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-outline btn-sm" id="cancel-reset-btn">Cancel</button>
-          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-paper-plane"></i> Send Reset Link</button>
+          <button type="submit" class="btn btn-primary btn-sm">Send Reset Link <i class="fa-solid fa-arrow-right"></i></button>
         </div>
       </form>
     </div>

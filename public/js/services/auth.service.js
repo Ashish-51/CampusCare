@@ -1,5 +1,6 @@
 /* ==========================================================================
-   CampusCare - Authentication Service Layer with Demo Mode Fallback
+   CampusCare - Authentication Service Layer with Predefined Institutional Accounts
+   Roles: student | faculty | admin (No public self-registration)
    ========================================================================== */
 
 import { 
@@ -10,174 +11,191 @@ import {
   updatePassword,
   sendPasswordResetEmail
 } from '../config/firebase-config.js';
-import { createUserProfile, getUserProfile } from './user.service.js';
+import { createUserProfile, getUserProfile, updateUserProfile } from './user.service.js';
+import { resolveUrl } from '../utils/guards.js';
 
 /**
- * Register a new student account
+ * Predefined institutional demo accounts for instant evaluation
  */
-export async function registerStudent(userData) {
-  const { email, password, fullName, department, rollNumber, phone } = userData;
-
-  try {
-    const credential = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = credential.user.uid;
-
-    const profileData = {
-      uid,
-      email,
-      fullName,
-      role: 'student',
-      department: department || 'Computer Science & Engineering',
-      rollNumber: rollNumber || 'CS2026-001',
-      phone: phone || '+1 555-0192',
-      createdAt: new Date().toISOString()
-    };
-
-    await createUserProfile(uid, profileData);
-    localStorage.setItem('campuscare_demo_session', JSON.stringify(profileData));
-    return { user: credential.user, profile: profileData };
-  } catch (err) {
-    if (isDemoOrApiKeyError(err)) {
-      console.warn('Firebase API Key invalid or demo mode active. Using local session storage.');
-      const demoProfile = {
-        uid: 'demo-student-' + Date.now(),
-        email,
-        fullName,
-        role: 'student',
-        department: department || 'Computer Science & Engineering',
-        rollNumber: rollNumber || 'CS2026-001',
-        phone: phone || '+1 555-0192',
-        createdAt: new Date().toISOString()
-      };
-      
-      // Persist the registered user locally in demo mode
-      try {
-        const existingUsers = JSON.parse(localStorage.getItem('campuscare_demo_users') || '[]');
-        existingUsers.push(demoProfile);
-        localStorage.setItem('campuscare_demo_users', JSON.stringify(existingUsers));
-      } catch (e) {
-        console.error('Error saving user to demo database:', e);
-      }
-
-      localStorage.setItem('campuscare_demo_session', JSON.stringify(demoProfile));
-      return { user: { uid: demoProfile.uid, email: demoProfile.email }, profile: demoProfile };
-    }
-    throw err;
+export const PREDEFINED_USERS = [
+  {
+    uid: 'demo-student-id',
+    email: 'student@campuscare.edu',
+    defaultPassword: 'Student@123',
+    password: 'Student@123',
+    fullName: 'Alex Morgan',
+    role: 'student',
+    department: 'Computer Science & Engineering',
+    rollNumber: 'CS2026-042',
+    phone: '+1 555-0192',
+    isFirstLogin: true,
+    createdAt: new Date().toISOString()
+  },
+  {
+    uid: 'demo-faculty-id',
+    email: 'faculty@campuscare.edu',
+    defaultPassword: 'Faculty@123',
+    password: 'Faculty@123',
+    fullName: 'Prof. Sarah Jenkins',
+    role: 'faculty',
+    department: 'Computer Science & Engineering',
+    rollNumber: 'FAC-2026-408',
+    facultyId: 'FAC-2026-408',
+    phone: '+1 555-0284',
+    isFirstLogin: true,
+    createdAt: new Date().toISOString()
+  },
+  {
+    uid: 'demo-admin-id',
+    email: 'admin@campuscare.edu',
+    defaultPassword: 'Admin@123',
+    password: 'Admin@123',
+    fullName: 'Dr. Robert Vance',
+    role: 'admin',
+    department: 'Central Administration',
+    rollNumber: 'ADM-101',
+    phone: '+1 555-0100',
+    isFirstLogin: true,
+    createdAt: new Date().toISOString()
   }
-}
-
-export const DEFAULT_ADMIN_SECRET_KEY = 'CAMPUS_26';
+];
 
 /**
- * Register a new Admin account (Requires Secret Security Key)
+ * Retrieve or initialize the predefined demo users list from localStorage
  */
-export async function registerAdmin(adminData) {
-  const { email, password, fullName, department, phone, adminKey } = adminData;
-
-  if (adminKey !== DEFAULT_ADMIN_SECRET_KEY) {
-    throw new Error('Invalid Admin Security Passcode! Access denied.');
-  }
-
+export function getPredefinedUsers() {
   try {
-    const credential = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = credential.user.uid;
-
-    const profileData = {
-      uid,
-      email,
-      fullName,
-      role: 'admin',
-      department: department || 'Central Administration',
-      rollNumber: 'ADM-' + Math.floor(100 + Math.random() * 900),
-      phone: phone || '+91 9876543210',
-      createdAt: new Date().toISOString()
-    };
-
-    await createUserProfile(uid, profileData);
-    localStorage.setItem('campuscare_demo_session', JSON.stringify(profileData));
-    return { user: credential.user, profile: profileData };
-  } catch (err) {
-    if (isDemoOrApiKeyError(err)) {
-      console.warn('Firebase API Key invalid or demo mode active. Using local admin session storage.');
-      const demoProfile = {
-        uid: 'demo-admin-' + Date.now(),
-        email,
-        fullName,
-        role: 'admin',
-        department: department || 'Central Administration',
-        rollNumber: 'ADM-' + Math.floor(100 + Math.random() * 900),
-        phone: phone || '+91 9876543210',
-        createdAt: new Date().toISOString()
-      };
-      
-      // Persist the registered user locally in demo mode
-      try {
-        const existingUsers = JSON.parse(localStorage.getItem('campuscare_demo_users') || '[]');
-        existingUsers.push(demoProfile);
-        localStorage.setItem('campuscare_demo_users', JSON.stringify(existingUsers));
-      } catch (e) {
-        console.error('Error saving user to demo database:', e);
+    const raw = localStorage.getItem('campuscare_demo_users');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Validate that it has the required roles including faculty
+      const hasFaculty = parsed.some(u => u.role === 'faculty');
+      if (hasFaculty && parsed.length >= 3) {
+        return parsed;
       }
-
-      localStorage.setItem('campuscare_demo_session', JSON.stringify(demoProfile));
-      return { user: { uid: demoProfile.uid, email: demoProfile.email }, profile: demoProfile };
     }
-    throw err;
+  } catch (e) {
+    console.warn('Error reading demo users, resetting to default:', e);
   }
+
+  // Auto-seed default predefined users
+  localStorage.setItem('campuscare_demo_users', JSON.stringify(PREDEFINED_USERS));
+  return PREDEFINED_USERS;
 }
 
 /**
- * Login user (Student or Admin)
+ * Hard Reset: Remove all old user and admin data from database & storage,
+ * and restore pristine predefined demo accounts.
+ */
+export function resetAllDatabaseData() {
+  localStorage.removeItem('campuscare_demo_session');
+  localStorage.setItem('campuscare_demo_users', JSON.stringify(PREDEFINED_USERS));
+  localStorage.removeItem('campuscare_demo_complaints');
+  console.log('CampusCare database wiped and re-initialized with predefined users.');
+}
+
+/**
+ * Complete First-Time Login Password Change
+ * Updates the user's permanent personal password and clears firstLogin flag
+ */
+export async function completeFirstTimePasswordChange(uid, newPassword) {
+  if (!newPassword || newPassword.length < 6) {
+    throw new Error('New password must be at least 6 characters long.');
+  }
+
+  // 1. If Firebase Auth user is present, update in Firebase Auth
+  if (auth.currentUser) {
+    try {
+      await updatePassword(auth.currentUser, newPassword);
+    } catch (e) {
+      console.warn('Firebase updatePassword warning:', e.message);
+    }
+  }
+
+  // 2. Update Firestore profile if connected
+  try {
+    await updateUserProfile(uid, { isFirstLogin: false });
+  } catch (e) {
+    console.warn('Firestore profile update warning:', e.message);
+  }
+
+  // 3. Update localStorage demo users registry
+  try {
+    const users = getPredefinedUsers();
+    const index = users.findIndex(u => u.uid === uid || u.email.toLowerCase() === (auth.currentUser?.email || '').toLowerCase());
+    if (index !== -1) {
+      users[index].password = newPassword;
+      users[index].isFirstLogin = false;
+      users[index].updatedAt = new Date().toISOString();
+      localStorage.setItem('campuscare_demo_users', JSON.stringify(users));
+
+      // Also update active session
+      const currentSessionRaw = localStorage.getItem('campuscare_demo_session');
+      if (currentSessionRaw) {
+        const session = JSON.parse(currentSessionRaw);
+        session.isFirstLogin = false;
+        session.password = newPassword;
+        localStorage.setItem('campuscare_demo_session', JSON.stringify(session));
+      }
+      return users[index];
+    }
+  } catch (e) {
+    console.error('Error updating demo user password:', e);
+  }
+
+  return { isFirstLogin: false };
+}
+
+/**
+ * Authenticate any user (Student, Faculty, or Administrator)
  */
 export async function loginUser(email, password) {
+  const cleanEmail = (email || '').trim().toLowerCase();
+  const cleanPassword = (password || '');
+
   try {
-    const credential = await signInWithEmailAndPassword(auth, email, password);
+    const credential = await signInWithEmailAndPassword(auth, cleanEmail, cleanPassword);
     let profile = await getUserProfile(credential.user.uid);
     if (!profile) {
-      // Default to 'student' role — never guess role from email string
-      // Admin role must be assigned manually in the Firestore console
       profile = {
         uid: credential.user.uid,
         email: credential.user.email,
-        fullName: 'Student',
-        role: 'student',
-        department: 'Computer Science & Engineering'
+        fullName: cleanEmail.includes('admin') ? 'Administrator' : (cleanEmail.includes('faculty') ? 'Faculty Member' : 'Student'),
+        role: cleanEmail.includes('admin') ? 'admin' : (cleanEmail.includes('faculty') ? 'faculty' : 'student'),
+        department: 'Computer Science & Engineering',
+        isFirstLogin: false
       };
       await createUserProfile(credential.user.uid, profile);
     }
     localStorage.setItem('campuscare_demo_session', JSON.stringify(profile));
     return { user: credential.user, profile };
   } catch (err) {
-    if (isDemoOrApiKeyError(err)) {
-      console.warn('Firebase Auth API Key invalid or demo environment detected. Granting demo login.');
-      const isAdmin = email.toLowerCase().includes('admin');
+    if (isDemoOrApiKeyError(err) || (err.code && (err.code.includes('invalid-credential') || err.code.includes('user-not-found')))) {
+      console.warn('Firebase Auth fallback to predefined institutional user registry.');
       
-      // Try to find the user in our demo users list
-      let foundProfile = null;
-      try {
-        const existingUsers = JSON.parse(localStorage.getItem('campuscare_demo_users') || '[]');
-        foundProfile = existingUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
-      } catch (e) {
-        console.error('Error searching demo users list:', e);
+      const users = getPredefinedUsers();
+      const matchedUser = users.find(u => u.email.toLowerCase() === cleanEmail);
+
+      if (!matchedUser) {
+        throw new Error('Account not found. Access is restricted to pre-assigned institutional accounts. Contact administration.');
       }
 
-      const demoProfile = foundProfile || {
-        uid: isAdmin ? 'demo-admin-id' : 'demo-student-id',
-        email: email,
-        fullName: isAdmin ? 'System Administrator' : 'Demo Student',
-        role: isAdmin ? 'admin' : 'student',
-        department: isAdmin ? 'Central Administration' : 'Computer Science & Engineering',
-        rollNumber: isAdmin ? '' : 'CS2026-042',
-        phone: '+1 555-0199'
+      // Check password (matches personalized password or default initial password)
+      const validPasswords = [matchedUser.password, matchedUser.defaultPassword].filter(Boolean);
+      if (!validPasswords.includes(cleanPassword)) {
+        throw new Error('Incorrect password. Please verify your credentials or use the assigned default password.');
+      }
+
+      // Persist active session
+      localStorage.setItem('campuscare_demo_session', JSON.stringify(matchedUser));
+      return { 
+        user: { uid: matchedUser.uid, email: matchedUser.email }, 
+        profile: matchedUser 
       };
-      localStorage.setItem('campuscare_demo_session', JSON.stringify(demoProfile));
-      return { user: { uid: demoProfile.uid, email: demoProfile.email }, profile: demoProfile };
     }
     throw err;
   }
 }
-
-import { resolveUrl } from '../utils/guards.js';
 
 /**
  * Sign out current user session
@@ -193,14 +211,17 @@ export async function logoutUser() {
 }
 
 /**
- * Update current user password
+ * Update current user password from profile settings
  */
 export async function changeUserPassword(newPassword) {
   if (auth.currentUser) {
     await updatePassword(auth.currentUser, newPassword);
   } else {
-    // Demo mode simulation
-    console.log('Password updated in demo session mode.');
+    const sessionRaw = localStorage.getItem('campuscare_demo_session');
+    if (sessionRaw) {
+      const session = JSON.parse(sessionRaw);
+      await completeFirstTimePasswordChange(session.uid, newPassword);
+    }
   }
 }
 
@@ -222,6 +243,15 @@ export async function sendResetPassword(email) {
     }
     throw err;
   }
+}
+
+// Backward compatibility stubs (registration is disabled via UI)
+export async function registerStudent(userData) {
+  throw new Error('Public registration is disabled. Accounts are pre-assigned by administration.');
+}
+
+export async function registerAdmin(adminData) {
+  throw new Error('Admin registration is disabled. Administrator accounts are pre-provisioned.');
 }
 
 function isDemoOrApiKeyError(err) {

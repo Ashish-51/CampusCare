@@ -56,7 +56,10 @@ function renderComplaintsTable(list) {
         <div style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(c.location || 'N/A')}</div>
       </td>
       <td>
-        <div>${escapeHtml(c.studentName)}</div>
+        <div style="display:flex; align-items:center; gap:0.35rem;">
+          <span>${escapeHtml(c.studentName)}</span>
+          ${c.studentRole === 'faculty' ? '<span class="badge" style="background:rgba(139,92,246,0.15); color:#8b5cf6; font-size:0.68rem; padding:0.15rem 0.4rem;">Faculty</span>' : ''}
+        </div>
         <div style="font-size:0.78rem; color:var(--text-muted);">${escapeHtml(c.department || 'Student')}</div>
       </td>
       <td><span class="badge" style="background:var(--border-light); color:var(--text-primary);">${escapeHtml(c.category)}</span></td>

@@ -15,6 +15,14 @@ export function resolveUrl(targetPath) {
   return targetPath;
 }
 
+export function getRoleDashboardUrl(role) {
+  if (role === 'admin') {
+    return '/admin/dashboard.html';
+  }
+  // Both student and faculty use the user dashboard (with personalized role presentation)
+  return '/student/dashboard.html';
+}
+
 export function requireAuth(expectedRole = null) {
   showLoader('Authenticating session...');
   return new Promise((resolve, reject) => {
@@ -25,11 +33,21 @@ export function requireAuth(expectedRole = null) {
         const demoProfile = JSON.parse(demoSessionRaw);
         hideLoader();
 
-        if (expectedRole && demoProfile.role !== expectedRole) {
-          showToast(`Access Denied. Requires ${expectedRole} role.`, 'error');
-          window.location.href = resolveUrl(demoProfile.role === 'admin' ? '/admin/dashboard.html' : '/student/dashboard.html');
-          reject('Unauthorized Role');
+        // Enforce First-Time Password Change
+        if (demoProfile.isFirstLogin) {
+          window.location.href = resolveUrl('/login.html?action=first-login');
+          reject('First-time password change required.');
           return;
+        }
+
+        if (expectedRole) {
+          const allowed = Array.isArray(expectedRole) ? expectedRole : [expectedRole];
+          if (!allowed.includes(demoProfile.role)) {
+            showToast(`Access Denied. Requires ${allowed.join(' or ')} role.`, 'error');
+            window.location.href = resolveUrl(getRoleDashboardUrl(demoProfile.role));
+            reject('Unauthorized Role');
+            return;
+          }
         }
 
         resolve({ user: { uid: demoProfile.uid, email: demoProfile.email }, profile: demoProfile });
@@ -60,12 +78,22 @@ export function requireAuth(expectedRole = null) {
           return;
         }
 
-        // Check role permission
-        if (expectedRole && profile.role !== expectedRole) {
-          showToast(`Access Denied. Requires ${expectedRole} role.`, 'error');
-          window.location.href = resolveUrl(profile.role === 'admin' ? '/admin/dashboard.html' : '/student/dashboard.html');
-          reject('Unauthorized Role');
+        // Enforce First-Time Password Change
+        if (profile.isFirstLogin) {
+          window.location.href = resolveUrl('/login.html?action=first-login');
+          reject('First-time password change required.');
           return;
+        }
+
+        // Check role permission
+        if (expectedRole) {
+          const allowed = Array.isArray(expectedRole) ? expectedRole : [expectedRole];
+          if (!allowed.includes(profile.role)) {
+            showToast(`Access Denied. Requires ${allowed.join(' or ')} role.`, 'error');
+            window.location.href = resolveUrl(getRoleDashboardUrl(profile.role));
+            reject('Unauthorized Role');
+            return;
+          }
         }
 
         resolve({ user, profile });
@@ -84,8 +112,9 @@ export function redirectIfAuthenticated() {
   if (demoSessionRaw) {
     try {
       const demoProfile = JSON.parse(demoSessionRaw);
-      if (demoProfile && demoProfile.role) {
-        window.location.href = resolveUrl(demoProfile.role === 'admin' ? '/admin/dashboard.html' : '/student/dashboard.html');
+      // If user still needs to change password, do not auto-redirect away from login
+      if (demoProfile && demoProfile.role && !demoProfile.isFirstLogin) {
+        window.location.href = resolveUrl(getRoleDashboardUrl(demoProfile.role));
         return;
       }
     } catch (e) {
@@ -97,8 +126,8 @@ export function redirectIfAuthenticated() {
     if (user) {
       try {
         const profile = await getUserProfile(user.uid);
-        if (profile) {
-          window.location.href = resolveUrl(profile.role === 'admin' ? '/admin/dashboard.html' : '/student/dashboard.html');
+        if (profile && !profile.isFirstLogin) {
+          window.location.href = resolveUrl(getRoleDashboardUrl(profile.role));
         }
       } catch (e) {
         console.error('Redirect check error:', e);

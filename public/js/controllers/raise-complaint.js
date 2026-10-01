@@ -11,7 +11,7 @@ let selectedImageFile = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const { user, profile } = await requireAuth('student');
+    const { user, profile } = await requireAuth(['student', 'faculty']);
     initDropzone();
     initFormValidation(profile);
 
